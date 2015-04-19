@@ -1,0 +1,68 @@
+@import "var";
+
+header {
+    z-index: 20;
+    position: relative;
+    width: 100%;
+    top: 0;
+    padding: 10px 0;
+    margin-bottom: 30px;
+
+    .name {
+        position: absolute;
+        right: 50px;
+        bottom: 100%;
+        margin-bottom: 5px;
+        font: 700 16px/1 @font-family-base;
+        color: #777;
+
+    }
+
+    .savings-wrap {
+        padding-top: 22px;
+        padding-left: 30px;
+
+        .add-block {
+            width: 230px;
+
+            .btn {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+            }
+
+            .form-group {
+                width: 120px;
+                margin: 0;
+            }
+        }
+
+        .title {
+            vertical-align: middle;
+            display: inline-block;
+
+            .value {
+                font-size: 18px;
+            }
+        }
+    }
+
+    .money-now {
+        text-align: right;
+        display: inline-block;
+        color: #333;
+        font: 300 72px/1 @OSCondencedLight;
+
+        .money-now-val {
+            padding-top: 2px;
+            display: inline-block;
+            border-top: 1px solid #eee;
+        }
+    }
+
+    .savings {
+        font-size: 28px;
+        padding-right: 5px;
+        margin-bottom: 7px;
+    }
+}

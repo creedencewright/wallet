@@ -1,0 +1,149 @@
+.sizing() {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.border-radius(@radius: @borderRadius) {
+    border-radius: @radius;
+}
+
+.size(@width, @height: @width) {
+    width:  @width;
+    height: @height;
+}
+
+.sprite (@x: 0, @y: 0) {
+    background: url('../images/sprite.png') (0px + (-1 * @x)) (0px + (-1 * @y)) no-repeat;
+}
+
+.animation(@name, @function: linear, @time: 1s, @iteration: infinite, @mode: forwards, @delay: 0s) {
+
+    animation: @name @function @time;
+    animation-iteration-count: @iteration;
+    animation-fill-mode: @mode;
+    animation-delay: @delay;
+
+    -webkit-animation: @name @function @time;
+    -webkit-animation-iteration-count: @iteration;
+    -webkit-animation-fill-mode: @mode;
+    -webkit-animation-delay: @delay;
+
+    -moz-animation: @name @function @time;
+    -moz-animation-iteration-count: @iteration;
+    -moz-animation-fill-mode: @mode;
+    -moz-animation-delay: @delay;
+
+    -ms-animation: @name @function @time;
+    -ms-animation-iteration-count: @iteration;
+    -ms-animation-fill-mode: @mode;
+    -ms-animation-delay: @delay;
+
+    -o-animation: @name @function @time;
+    -o-animation-iteration-count: @iteration;
+    -o-animation-fill-mode: @mode;
+    -o-animation-delay: @delay;
+}
+
+.opacity(@opacity: 0.75) {
+    @opacity100: @opacity * 100;
+    filter: alpha(opacity=@opacity100);
+    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=@opacity100);
+    opacity: @opacity;
+}
+
+.hover-opacity(@opacity: 0.75) {
+    cursor: pointer;
+
+    &:hover {
+        .opacity(@opacity);
+    }
+}
+
+.transition(@property: all, @time: 0.3s, @ease: ease) {
+    -webkit-transition: @property @time @ease;
+    -moz-transition: @property @time @ease;
+    -ms-transition: @property @time @ease;
+    -o-transition: @property @time @ease;
+    transition: @property @time @ease;
+}
+
+.transition-transform(@time: 0.3s) {
+    -webkit-transition: -webkit-transform @time ease;
+    -moz-transition:    -moz-transform @time ease;
+    -ms-transition:     -ms-transform @time ease;
+    -o-transition:      -o-transform @time ease;
+    transition:         transform @time ease;
+}
+
+.transform(@propvalue) {
+    -webkit-transform: @propvalue;
+    -moz-transform: @propvalue;
+    -ms-transform: @propvalue;
+    -o-transform: @propvalue;
+    transform: @propvalue;
+}
+
+.rotate(@degree) {
+    -webkit-transform: rotate(@degree);
+    -moz-transform: rotate(@degree);
+    -ms-transform: rotate(@degree);
+    -o-transform: rotate(@degree);
+    transform: rotate(@degree);
+}
+
+.transform-origin(@x, @y) {
+    -webkit-transform-origin: @x @y;
+    -moz-transform-origin: @x @y;
+    -ms-transform-origin: @x @y;
+    -o-transform-origin: @x @y;
+    transform-origin: @x @y;
+}
+
+.backface(@value: hidden) {
+    -webkit-backface-visibility: @value;
+    -moz-backface-visibility: @value;
+    -ms-backface-visibility: @value;
+    -o-backface-visibility: @value;
+    backface-visibility: @value;
+}
+
+.font-face-params(@title, @file-name, @font-weight: normal, @font-style: normal) {
+    font-family: @title;
+    src: url('fonts/@{file-name}.eot');
+    src: local("?"),
+    url('fonts/@{file-name}.eot?#iefix') format('embedded-opentype'),
+    url('fonts/@{file-name}.woff') format('woff'),
+    url('fonts/@{file-name}.ttf') format('truetype'),
+    url('fonts/@{file-name}.svg#@{file-name}') format('svg');
+    font-weight: @font-weight;
+    font-style: @font-style;
+}
+
+.remove-space {
+    font-size: 0;
+    letter-spacing: -4px;
+}
+
+.pseudo {
+    content: '';
+    position: absolute;
+}
+
+.box-shadow-inset (@horizontalLength: 0px, @verticalLength: 0px, @blurRadius: 5px, @spreadRadius: 0px, @color: #e3e3e3, @position: inset) {
+    -webkit-box-shadow: @position @horizontalLength @verticalLength @blurRadius @spreadRadius @color;
+    -moz-box-shadow: @position @horizontalLength @verticalLength @blurRadius @spreadRadius @color;
+    box-shadow: @position @horizontalLength @verticalLength @blurRadius @spreadRadius @color;
+}
+
+.box-shadow (@horizontalLength: 0px, @verticalLength: 0px, @blurRadius: 5px, @spreadRadius: 0px, @color: #e3e3e3) {
+    -webkit-box-shadow: @horizontalLength @verticalLength @blurRadius @spreadRadius @color;
+    -moz-box-shadow: @horizontalLength @verticalLength @blurRadius @spreadRadius @color;
+    box-shadow: @horizontalLength @verticalLength @blurRadius @spreadRadius @color;
+}
+
+.grad-vertical(@start-color: #555; @end-color: #333; @start-percent: 0%; @end-percent: 100%) {
+    background-image: -webkit-linear-gradient(top, @start-color @start-percent, @end-color @end-percent);  // Safari 5.1-6, Chrome 10+
+    background-image: -o-linear-gradient(top, @start-color @start-percent, @end-color @end-percent);  // Opera 12
+    background-image: linear-gradient(to bottom, @start-color @start-percent, @end-color @end-percent); // Standard, IE10, Firefox 16+, Opera 12.10+, Safari 7+, Chrome 26+
+    background-repeat: repeat-x;
+}

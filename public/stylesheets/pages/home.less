@@ -1,0 +1,95 @@
+@import "../var";
+
+.home {
+    .title-wrap {
+        hr {
+            margin-bottom: 0;
+        }
+    }
+    .entries-wrap {
+        &.loading {
+            position: relative;
+
+            &:after {
+                .pseudo();
+                .size(32px, 26px);
+                .sprite(0, 0);
+                .animation(loader, ease, .8s);
+                left: 50%;
+                margin-left: -16px;
+                top: 30px;
+            }
+        }
+
+        hr {
+            margin: 0;
+        }
+
+        .entry {
+            .sizing();
+            .transition();
+            padding: 26px 16px;
+            position: relative;
+            
+
+            &.expense {
+                color: @red;
+
+                .type-img {
+                    background-color: #ffebee;
+                }
+            }
+            &.income {
+                color: @green;
+
+                .type-img {
+                    background-color: #C8E6C9;
+                }
+            }
+
+            &:hover {
+                background-color: #fcfcfc;
+                .remove {
+                    .transform(scale(1) translate(0px,0));
+                    opacity: 1;
+                    visibility: visible;
+                }
+            }
+
+            .remove {
+                .size(23px);
+                .sprite(40, 0);
+                .transition(all,.2s);
+                .transform(scale(.9) translate(5px,0));
+                .transform-origin(center, right);
+                opacity: 0;
+                visibility: hidden;
+                display: block;
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                margin-top: -11px;
+            }
+
+            .type-img {
+                .size(60px);
+                margin-right: 20px;
+                border-radius: 50%;
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .value {
+                font-size: 18px;
+                display: inline-block;
+                line-height: 1;
+                vertical-align: middle;
+
+                .time {
+                    color: #B0BEC5;
+                    font-size: 11px;
+                }
+            }
+        }
+    }
+}
