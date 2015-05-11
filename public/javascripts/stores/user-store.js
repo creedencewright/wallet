@@ -12,32 +12,6 @@ var _user = {
     name: ''
 }
 
-function _add(user) {
-    reqwest({
-        url: '/register/',
-        method: 'post',
-        data: user,
-        success: function(data) {
-            if (data) {
-                window.location('/');
-            }
-        }
-    })
-}
-
-function _login(user) {
-    reqwest({
-        url: '/login/',
-        method: 'post',
-        data: user,
-        success: function(data) {
-            if (data) {
-                window.location('/');
-            }
-        }
-    })
-}
-
 var User = assign(EventEmitter.prototype, {
     emitChange: function() {
         this.emit(CHANGE_EVENT);
@@ -66,12 +40,7 @@ var User = assign(EventEmitter.prototype, {
     dispatcherIndex: Dispatcher.register(function(payload) {
         var action = payload.action;
         switch(action.actionType) {
-            case Constants.user.ADD:
-                _add(payload.action.user);
-                break;
-            case Constants.user.LOGIN:
-                _login(payload.action.user);
-                break;
+
         }
 
         User.emitChange();

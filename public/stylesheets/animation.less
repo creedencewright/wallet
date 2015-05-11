@@ -1,3 +1,6 @@
+@import "var";
+@import "mixins";
+
 @keyframes loader {
     0% {
         .rotate(0deg);
@@ -13,5 +16,55 @@
     }
     100% {
         .rotate(360deg);
+    }
+}
+
+@keyframes showRegisterForm {
+    to {
+        padding-bottom: 200px;
+    }
+}
+@-webkit-keyframes showRegisterForm {
+    to {
+        padding-bottom: 200px;
+    }
+}
+@keyframes hideRegisterForm {
+    to {
+        padding-bottom: 60px;
+    }
+}
+@-webkit-keyframes hideRegisterForm {
+    to {
+        padding-bottom: 60px;
+    }
+}
+
+@keyframes showRegisterBlocks {
+    to {
+        .transform(translate(0, 0));
+        opacity: 1;
+        visibility: visible;
+    }
+}
+@-webkit-keyframes showRegisterBlocks {
+    to {
+        .transform(translate(0, 0));
+        opacity: 1;
+        visibility: visible;
+    }
+}
+@keyframes hideRegisterBlocks {
+    to {
+        .transform(translate(0, -10px));
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+@-webkit-keyframes hideRegisterBlocks {
+    to {
+        .transform(translate(0, -10px));
+        opacity: 0;
+        visibility: hidden;
     }
 }

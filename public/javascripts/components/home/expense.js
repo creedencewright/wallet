@@ -1,65 +1,151 @@
 /*** @jsx React.DOM */
 
-var React           = require('react');
-var User            = require('../../stores/user-store');
-var Data            = require('../../stores/data-store');
-var Actions         = require('../../actions/app-actions');
-var AddEntry        = require('./add-entry');
-var _               = require('underscore');
-var EntryWatchMixin = require('../../mixins/entry-watch-mixin');
-var moment          = require('moment');
+const React         = require('react');
+const User          = require('../../stores/user-store');
+const Data          = require('../../stores/data-store');
+const Actions       = require('../../actions/app-actions');
+const AddExpense    = require('./add-expense');
+const _             = require('underscore');
+const moment        = require('moment');
+const Highlights    = require('./highlights');
+const TimePicker    = require('./time-picker');
 
-function getEntries() {
-    return Data.getExpenses();
+function _getCurrentData(params) {
+    return Data.getCurrentData(params);
 }
-function fetch(limit) {
-    return Data.fetch({type: 'expense', limit: limit});
+function _fetch(params) {
+    return Data.fetch(params);
 }
 
-var Expense = React.createClass({
-    mixins: [EntryWatchMixin(getEntries)],
-    componentDidMount: function() {
-        this.setState({loading: true});
-        fetch(5);
+const Expense = React.createClass({
+    getInitialState() {
+        return {
+            data: [],
+            tab: 'expense',
+            loading: true,
+            monthPicker: false,
+            month: moment().month(),
+            year: moment().year()
+        };
     },
-    toggleForm: function() {
+
+    _onChange() {
+        this.setState({
+            data: _getCurrentData({type: this.state.tab}),
+            loading: false
+        })
+    },
+
+    componentDidUpdate() {
+        if (this.state.loading) {
+            this.setState({loading: false});
+        }
+    },
+
+    componentWillMount() {
+        Data.addChangeListener(this._onChange);
+    },
+
+    componentWillUnmount() {
+        Data.removeChangeListener(this._onChange);
+    },
+
+    componentDidMount() {
+        Data.fetchInitData();
+    },
+
+    toggleForm() {
         this.setState({
             opened: this.state.opened ? false : true
         })
     },
-    render: function() {
+
+    setTab(tab) {
+        this.setState({
+            tab: tab,
+            loading: true,
+            data: _getCurrentData({type: tab})
+        });
+    },
+
+    monthChange(month, e) {
+        _fetch({month: month, year: this.state.year});
+
+        this.setState({
+            month: month
+        });
+    },
+
+    togglePicker() {
+        this.setState({
+            monthPicker: this.state.monthPicker ? false : true
+        })
+    },
+
+    render() {
         return (
-            <div className="col-sm-6 title-wrap">
-                <div className={this.state.opened ? 'opened add-entry' : 'add-entry'}>
-                    <a onClick={this.toggleForm} href="javascript:void(0)"></a>
-                    <AddEntry type="expense" addEvent={this.toggleForm} />
-                </div>
-                <div className="title">Expense</div>
-                <hr/>
-                <div className={this.state.loading ? 'loading entries-wrap' : 'entries-wrap'}>
-                    {this.state.data.map(function(entry, i){
-                        return <Entry entry={entry} key={i} />
-                    })}
+            <div>
+                <Highlights />
+                <div className="container">
+                    <div className="col-sm-9 title-wrap">
+                        <AddExpense type={this.state.tab} addEvent={this.toggleForm} />
+                        <Tabs onClick={this.setTab} tab={this.state.tab} />
+                        <TimePicker close={this.togglePicker} opened={this.state.monthPicker} changeHandler={this.monthChange} month={this.state.month} />
+                        <a onClick={this.togglePicker} href="javascript:void(0);" className="link current-month">
+                            {moment().month(this.state.month).format('MMMM')}
+                        </a>
+                        <hr/>
+                        <Entries loading={this.state.loading} data={this.state.data} />
+                    </div>
                 </div>
             </div>
         )
     }
 });
 
-var Entry = React.createClass({
-    remove: function() {
+const Tabs = React.createClass({
+    click(tab) {
+        this.props.onClick(tab)
+    },
+    render() {
+        return (
+            <div className="tabs">
+                <a href="javascript:void(0);" onClick={this.click.bind(this, 'expense')} className={this.props.tab == 'expense' ? 'expense active' : 'expense'}>Expense</a>
+                <a  href="javascript:void(0);" onClick={this.click.bind(this, 'savings')} className={this.props.tab == 'savings' ? 'savings active' : 'savings'}>Savings</a>
+                <a  href="javascript:void(0);" onClick={this.click.bind(this, 'income')} className={this.props.tab == 'income' ? 'income active' : 'savings'}>Income</a>
+            </div>
+        )
+    }
+});
+
+const Entries = React.createClass({
+    render: function() {
+        return (
+            <div className={this.props.loading ? 'loading entries-wrap expense' : 'entries-wrap expense'}>
+                {this.props.data.map((entry, i) =>
+                        <Entry entry={entry} key={i} />
+                )}
+            </div>
+        )
+    }
+});
+
+const Entry = React.createClass({
+    remove() {
         Actions.entry.remove(this.props.entry);
     },
-    render: function() {
-        var time = moment.unix(this.props.entry.time);
+    render() {
+        let entry   = this.props.entry,
+            sign    = entry.type === 'expense' ? '-' : '+',
+            time    = entry ? moment(entry.time, 'X') : 0;
 
         return (
-            <div>
-                <div className="entry expense" data-id={this.props.entry._id}>
-                    <a href="javascript:void(0);" onClick={this.remove} data-id={this.props.entry._id} className="remove"></a>
+            <div className="col-sm-12">
+                <div className={entry.type + ' entry'}>
+                    <a href="javascript:void(0);" onClick={this.remove} className="remove"></a>
                     <div className="type-img"></div>
                     <div className="value">
-                        <span>-{this.props.entry.value}</span><br/>
+                        <span>{sign + entry.value }</span><br/>
                         <span className="time">{moment(time).fromNow()}</span>
                     </div>
                 </div>

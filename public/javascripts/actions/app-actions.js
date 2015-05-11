@@ -3,18 +3,7 @@ var Dispatcher   = require('../dispatchers/app-dispatcher');
 
 module.exports = {
     user: {
-        add: function(user) {
-            Dispatcher.handleViewAction({
-                actionType: Constants.user.ADD,
-                user: user
-            })
-        },
-        login: function(user) {
-            Dispatcher.handleViewAction({
-                actionType: Constants.user.LOGIN,
-                user: user
-            })
-        }
+
     },
     entry: {
         add: function(entry) {

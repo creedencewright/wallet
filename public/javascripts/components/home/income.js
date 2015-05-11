@@ -11,15 +11,23 @@ var moment          = require('moment');
 function getEntries() {
     return Data.getIncomes();
 }
-function fetch(limit) {
-    return Data.fetch({type: 'income', limit: limit});
+function fetch(params) {
+    return Data.fetch(params);
 }
 
 var Expense = React.createClass({
     mixins: [EntryWatchMixin(getEntries)],
+    getInitialState: function() {
+        return {
+            data: getEntries(),
+            time: moment().startOf('month').unix(),
+            endTime: moment().endOf('month').unix(),
+            loading: true
+        };
+    },
     componentDidMount: function() {
         this.setState({loading: true});
-        fetch(5);
+        fetch({type: 'income', start: this.state.time, end: this.state.endTime});
     },
     toggleForm: function() {
         this.setState({
@@ -33,7 +41,9 @@ var Expense = React.createClass({
                     <a onClick={this.toggleForm} href="javascript:void(0)"></a>
                     <AddEntry type="income" addEvent={this.toggleForm} />
                 </div>
-                <div className="title">Income</div>
+                <div className="tabs">
+                    <a href="javascript:void(0);" className="active">Income</a>
+                </div>
                 <hr/>
                 <div className="entries-wrap">
                     {this.state.data.map(function(entry, i){

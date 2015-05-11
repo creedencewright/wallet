@@ -1,21 +1,21 @@
 /*** @jsx React.DOM */
 
-var React = require('react');
-var User = require('../../stores/user-store');
-var Expense = require('./expense');
-var Income = require('./income');
+const React     = require('react');
+const User      = require('../../stores/user-store');
+const Expense   = require('./expense');
+const Graph     = require('./graph');
 
-var Home = React.createClass({
-    getInitialState: function() {
+const Home = React.createClass({
+    getInitialState() {
         return {
             user: User.getInfo()
         };
     },
-    render: function() {
+    render() {
         return (
             <div className="home clearfix">
+                <Graph />
                 <Expense />
-                <Income />
             </div>
         )
     }

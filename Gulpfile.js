@@ -8,9 +8,11 @@ var notify      = require('gulp-notify');
 var plumber     = require('gulp-plumber');
 var minifycss   = require('gulp-minify-css');
 var gaze        = require('gaze');
+var babelify    = require('babelify');
 
 gulp.task('browserify', function(){
     var b = browserify();
+    b.transform(babelify);
     b.transform(reactify);
     b.add('./public/javascripts/main.js');
     return b.bundle()

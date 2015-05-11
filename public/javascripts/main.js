@@ -18,8 +18,7 @@ var DefaultRoute    = Router.DefaultRoute;
 var Route           = Router.Route;
 var RouteHandler    = Router.RouteHandler;
 var Home            = require('./components/home/home');
-var Login           = require('./components/login/login');
-var Register        = require('./components/login/register');
+var LoginWrap       = require('./components/login/login-wrap');
 var User            = require('./stores/user-store');
 
 User.setData({id: id, name: name});
@@ -29,8 +28,7 @@ Type.setTypesFromString(types);
 
 var routes = (
     <Route name='app' path='/' handler={App}>
-        <Route name='login' handler={Login} />
-        <Route name='register' handler={Register} />
+        <Route name='login' handler={LoginWrap} />
         <Route name='home' handler={Home} />
     </Route>
 );

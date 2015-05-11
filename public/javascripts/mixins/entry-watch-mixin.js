@@ -5,12 +5,6 @@ var Data        = require('../stores/data-store');
 
 var EntryWatchMixin = function(cb) {
     return {
-        getInitialState: function() {
-            return {
-                data: cb(this),
-                loading: true
-            };
-        },
         componentWillMount: function() {
             Data.addChangeListener(this._onChange);
         },

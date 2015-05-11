@@ -1,191 +1,214 @@
-var Dispatcher      = require('../dispatchers/app-dispatcher');
-var Constants       = require('../constants/app-constants');
-var assign          = require('object-assign');
-var EventEmitter    = require('events').EventEmitter;
-var _               = require('underscore');
-var reqwest         = require('reqwest');
-var moment          = require('moment');
-var User            = require('./user-store');
+const Dispatcher      = require('../dispatchers/app-dispatcher');
+const Constants       = require('../constants/app-constants');
+const assign          = require('object-assign');
+const EventEmitter    = require('events').EventEmitter;
+const _               = require('underscore');
+const reqwest         = require('reqwest');
+const moment          = require('moment');
+const User            = require('./user-store');
 
-var CHANGE_EVENT = 'change';
+const CHANGE_EVENT = 'change';
 
-var _balance    = 0;
-var _savings    = 0;
-var _expense    = [];
-var _income     = [];
+let _balance    = 0;
+let _saved      = 0;
+let _expense    = [];
+let _savings    = [];
+let _income     = [];
 
 function _add(entry) {
     entry.time      = moment().unix();
     entry.userId    = User.id();
 
-    if (entry.type == 'expense') {
-        _expense.unshift(entry);
-        Data.recount(0 - entry.value);
-
-        if (_expense.length == 6) {
-            _expense.pop();
-        }
+    if (entry.type === 'expense') {
+        _handleExpense(entry)
+    } else if (entry.type === 'savings') {
+        _handleSavings(entry)
     } else {
-        _income.unshift(entry);
-        if (_income.length == 6) {
-            _income.pop();
-        }
-        Data.recount(entry.value);
+        _handleIncome(entry)
     }
 
     entry.balance = _balance;
+    entry.savings = _saved;
 
     reqwest({
         url: '/add-entry',
         method: 'post',
         data: entry,
-        success: function(data) {
-            console.log(data);
-            Data.updateEntry(data.entry);
+        success(data) {
+            _update(data.entry)
         }
     })
 }
 
+function _handleIncome(entry) {
+    _income.unshift(entry);
+    _balance += entry.value;
+}
+
+function _handleExpense(entry) {
+    _expense.unshift(entry);
+    _balance -= entry.value;
+}
+
+function _handleSavings(entry) {
+    _savings.unshift(entry);
+    _saved += entry.value;
+    _balance -= entry.value;
+}
+
 function _remove(entry) {
-    if (entry.type== 'expense') {
-        var i = _expense.indexOf(entry);
+    let i;
+    if (entry.type === 'expense') {
+        i = _expense.indexOf(entry);
         _expense.splice(i, 1);
+        _balance += entry.value;
+
+    } else if (entry.type === 'savings') {
+        i = _savings.indexOf(entry);
+        _savings.splice(i ,1);
+        _balance    += entry.value;
+        _saved      -= entry.value;
+
     } else {
-        var i = _income.indexOf(entry);
+        i = _income.indexOf(entry);
         _income.splice(i, 1);
+        _balance -= entry.value;
     }
+
+    entry.balance = _balance;
+    entry.savings = _savings;
 
     reqwest({
         url: '/remove-entry/',
         method: 'post',
         data: entry,
-        success: function(data) {
+        success(data) {
             console.log(data);
         }
     })
 }
 
-function _addSavings(savings) {
-    savings.time    = moment().unix();
-    savings.userId  = User.id();
-    _expense.unshift(savings);
+function _update(entry) {
+    if (entry.type === 'savings') {
+        let toUpdate = _.find(_savings, function(v) {
+            return v.time == entry.time
+        });
 
-    if (_expense.length == 6) {
-        _expense.pop();
+        let ind = _savings.indexOf(toUpdate);
+        assign(_savings[ind], entry);
+
+    } else if (entry.type === 'expense') {
+        let toUpdate = _.find(_expense, function(v) {
+            return v.time == entry.time
+        });
+
+        let ind = _expense.indexOf(toUpdate);
+        assign(_expense[ind], entry);
+
+    } else {
+        let toUpdate = _.find(_income, function(v) {
+            return v.time == entry.time
+        });
+
+        let ind = _income.indexOf(toUpdate);
+        assign(_income[ind], entry);
     }
+}
 
-    _savings += savings.value;
-    Data.recount(0 - savings.value);
-
-    savings.balance = _balance;
-    savings.savings = _savings;
-
+function _fetchInitData() {
     reqwest({
-        url: '/add-savings',
+        url: '/fetch-all/',
         method: 'post',
-        data: savings,
-        success: function(data) {
-            console.log(data);
-            Data.updateEntry(data.entry);
-        }
+        success: _setInitData
     })
 }
 
-function _fetch(params, cb) {
-    reqwest({
-        method: 'post',
-        url: '/fetch-entries/',
-        data: params,
-        success: function(entries) {
-            if (params.type == 'expense') {
-                _.each(entries, function(entry) {
-                    _expense.push(entry);
-                })
-            } else {
-                _.each(entries, function(entry) {
-                    _income.push(entry);
-                })
-            }
+function _setInitData(data) {
+    _savings    = data.savings ? data.savings : [];
+    _income     = data.income ? data.income : [];
+    _expense    = data.expense ? data.expense : [];
 
-            cb();
-        }
-    });
+    Data.emitChange();
 }
 
-function _updateExpense(entry) {
-    var toUpdate = _.find(_expense, function(v) {
-        return v.time == entry.time
-    });
-
-    var ind = _expense.indexOf(toUpdate);
-    assign(_expense[ind], entry);
+function _fetch(params) {
+    reqwest({
+        url: '/fetch/',
+        method: 'post',
+        data: params,
+        success: _setInitData
+    })
 }
 
 var Data = assign(EventEmitter.prototype, {
-    emitChange: function() {
+    emitChange() {
         this.emit(CHANGE_EVENT);
     },
 
-    recount: function(value) {
-        _balance += value;
-        this.emit(CHANGE_EVENT);
+    fetchInitData() {
+        _fetchInitData()
     },
 
-    fetch: function(params) {
-        _fetch(params, _.bind(this.emitChange, this));
-    },
-
-    updateEntry: function(entry) {
-        if (entry.type == 'expense') {
-            _updateExpense(entry);
-        } else {
-            _updateIncome(entry);
-        }
-
-        this.emitChange();
-    },
-
-    addChangeListener: function(cb) {
+    addChangeListener(cb) {
         this.on(CHANGE_EVENT, cb);
     },
 
-    removeChangeListener: function(cb) {
+    removeChangeListener(cb) {
         this.removeListener(CHANGE_EVENT, cb);
     },
 
-    getExpenses: function() {
-        return _expense;
+    fetch(params) {
+        _fetch(params)
     },
 
-    setBalance: function(val) {
+    getCurrentData(params) {
+        if (params.type === 'expense') {
+            return _expense
+        } else if (params.type === 'savings') {
+            return _savings
+        } else {
+            return _income
+        }
+    },
+
+    setBalance(val) {
         _balance = val;
     },
-    setSavings: function(val) {
-        _savings = val;
-    },
-    getSavings: function(val) {
-        return _savings;
+
+    setSavings(val) {
+        _saved = val;
     },
 
-    getIncomes: function() {
-        return _income;
+    getSavings() {
+        return _saved;
     },
 
-    getBalance: function() {
+    getBalance() {
         return _balance;
+    },
+    
+    getGraphData() {
+        let expense = {},
+            max = 0;
+
+        _.each(_expense, function(entry, i) {
+            expense[moment(entry.time, 'X').date()] = expense[moment(entry.time, 'X').date()] ? expense[moment(entry.time, 'X').date()] : 0;
+            expense[moment(entry.time, 'X').date()] += entry.value;
+
+            max = max > expense[moment(entry.time, 'X').date()] ? max : expense[moment(entry.time, 'X').date()];
+        })
+
+        return {expense: expense, max: max}
     },
 
     dispatcherIndex: Dispatcher.register(function(payload) {
-        var action = payload.action;
+        let action = payload.action;
         switch(action.actionType) {
             case Constants.entry.add:
                 _add(payload.action.entry);
                 break;
             case Constants.entry.remove:
                 _remove(payload.action.entry);
-                break;
-            case Constants.savings.add:
-                _addSavings(payload.action.savings);
                 break;
         }
 

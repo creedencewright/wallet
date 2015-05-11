@@ -2,15 +2,15 @@
 var React   = require('react');
 var User    = require('../../stores/user-store');
 var Data    = require('../../stores/data-store');
-var AddSavings  = require('../common/add-savings');
 
 var Header = React.createClass({
     getInitialState: function() {
+        var id = parseInt(User.getInfo().id);
         return {
             name: User.getInfo().name,
-            user: User.getInfo().id,
-            savings: User.getInfo().id ? parseFloat(Data.getSavings()) : '',
-            balance: User.getInfo().id ? parseFloat(Data.getBalance()) : ''
+            user: id,
+            savings: id ? parseFloat(Data.getSavings()) : '',
+            balance: id ? parseFloat(Data.getBalance()) : ''
         }
     },
     componentWillMount: function() {
@@ -33,13 +33,24 @@ var Header = React.createClass({
     },
     render: function() {
         return (
-            <header className="row">
-                <div className="col-sm-6 savings-wrap"></div>
-                <div className={"col-sm-6 money-now " + this.state.color}>
-                    <div className="savings">{this.state.savings}</div>
-                    <div className="money-now-val">{this.state.balance}</div>
+            <header className="container">
+                <div className="row">
+                    {this.state.user ? <Info data={this.state} /> : ''}
                 </div>
             </header>
+        )
+    }
+});
+
+var Info = React.createClass({
+    render: function() {
+        return (
+            <div className={"col-sm-6 money-now " + this.props.data.color}>
+                <div className="money-now-val">
+                    <span className="text">Balance:</span> {this.props.data.balance}</div>
+                <div className="savings">
+                    <span className="text">Savings:</span> {this.props.data.savings}</div>
+            </div>
         )
     }
 });

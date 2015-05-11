@@ -2,6 +2,8 @@ var Type    = require('../models/types');
 var Entry   = require('../models/data');
 var User    = require('../models/user');
 var async   = require('async');
+var moment  = require('moment');
+var _       = require('underscore');
 
 module.exports = function(app, passport) {
 
@@ -59,11 +61,51 @@ module.exports = function(app, passport) {
     }));
 
     app.post('/fetch-entries/', function(req, res) {
-        Entry.find({"type": req.body.type}).limit(req.body.limit).sort({"time":-1}).exec(function(err,data) {
+        Entry.find({"type": req.body.type, "time": {$gt: req.body.start, $lt: req.body.end}}).limit(req.body.limit).sort({"time":-1}).exec(function(err,data) {
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify(data));
         });
 
+    });
+
+    app.post('/fetch-all/', function(req, res) {
+        Entry
+            .find({
+                "userId": req.user.id,
+                "time": {$gt: moment().startOf('month').unix(), $lt: moment().endOf('month').unix()}
+            })
+            .sort({"time":-1})
+            .exec(function(err, data) {
+                var grouped = _.groupBy(data, function(entry) { return entry.type });
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify(grouped));
+            });
+    });
+
+    app.post('/fetch/', function(req, res) {
+        var time = moment();
+
+        time
+            .set('year', parseInt(req.body.year))
+            .set('month', parseInt(req.body.month))
+            .set('date', 1)
+            .set('hour', 0)
+            .set('minutes', 0)
+            .set('seconds', 0);
+        Entry
+            .find({
+                "userId": req.user.id,
+                "time": {
+                    $gt: time.unix(),
+                    $lt: time.set('date', time.daysInMonth()).unix()
+                }
+            })
+            .sort({"time":-1})
+            .exec(function(err, data) {
+                var grouped = _.groupBy(data, function(entry) { return entry.type });
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify(grouped));
+            });
     });
 
     app.post('/add-entry', function(req, res) {
@@ -73,7 +115,7 @@ module.exports = function(app, passport) {
                 },
                 user: function(cb) {
                     var id = req.body.userId;
-                    User.findOneAndUpdate({"id": id}, {"balance": req.body.balance}, {}, function(e, d) {
+                    User.findOneAndUpdate({"id": id}, {"balance": req.body.balance, "savings": req.body.savings}, {}, function(e, d) {
                         cb(e, d);
                     });
                 }
@@ -103,7 +145,24 @@ module.exports = function(app, passport) {
         );
     });
 
-    app.post('/remove-entry/', function(req, res) {});
+    app.post('/remove-entry/', function(req, res) {
+        console.log(req.body);
+        async.parallel({
+                entry: function(cb) {
+                    Entry.remove({"id": req.body.id}, cb);
+                },
+                user: function(cb) {
+                    User.findOneAndUpdate({"id": req.body.userId}, {"balance": req.body.balance, "savings": req.body.savings}, {}, function(e, d) {
+                        cb(e, d);
+                    });
+                }
+            },
+            function(err, result) {
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify(result));
+            }
+        )
+    });
 
     //404
     app.get('/404', function(req, res) {

@@ -1,8 +1,9 @@
 extends layout
 
 block content
-  div#app.container.app(
+  div#app.app(
     data-logged=logged,
+    class=logged ? 'logged' : 'not-logged',
     data-name=name,
     data-types=types,
     data-balance=balance,
