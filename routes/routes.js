@@ -83,22 +83,32 @@ module.exports = function(app, passport) {
     });
 
     app.post('/fetch/', function(req, res) {
-        var time = moment();
+        var timeStart = moment(),
+            timeEnd = moment();
 
-        time
+        timeStart
             .set('year', parseInt(req.body.year))
             .set('month', parseInt(req.body.month))
             .set('date', 1)
             .set('hour', 0)
             .set('minutes', 0)
             .set('seconds', 0);
+
+        timeEnd
+            .set('year', parseInt(req.body.year))
+            .set('month', parseInt(req.body.month))
+            .set('date', timeStart.daysInMonth())
+            .set('hour', 23)
+            .set('minutes', 59)
+            .set('seconds', 59);
+
+        var timeFilter = {$gte: timeStart.unix(), $lte: timeEnd.unix()};
+        console.log(timeFilter)
+
         Entry
             .find({
                 "userId": req.user.id,
-                "time": {
-                    $gt: time.unix(),
-                    $lt: time.set('date', time.daysInMonth()).unix()
-                }
+                "time": timeFilter
             })
             .sort({"time":-1})
             .exec(function(err, data) {

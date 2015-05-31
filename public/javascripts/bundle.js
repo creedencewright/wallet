@@ -38405,7 +38405,7 @@ var Entry = React.createClass({
                     React.createElement(
                         'span',
                         { className: 'time' },
-                        moment(time).fromNow()
+                        moment(time).calendar()
                     )
                 )
             ),
@@ -38424,8 +38424,10 @@ var React = require('react');
 var Snap = require('snapsvg');
 var Data = require('../../stores/data-store');
 var _ = require('underscore');
-var _w = 1200;
-var _h = 400;
+var _w = 1000;
+var _h = 390;
+
+var _s = false;
 
 var _d = 0;
 
@@ -38434,15 +38436,19 @@ function _get() {
 }
 
 function _build(max, data) {
-    var line = 'M0,400 L';
+    var line = 'M0,390 L';
+    var pins = [];
+
     _.each(data, function (entry, day) {
         var x = day * _d;
         var y = _h - entry * _h / max;
 
         line += x + ',' + y + ',';
+
+        pins.push({ x: x, y: y });
     });
 
-    return { line: line };
+    return { line: line, pins: pins };
 }
 
 var Graph = React.createClass({
@@ -38454,20 +38460,19 @@ var Graph = React.createClass({
         };
     },
     componentDidMount: function componentDidMount() {
+        _s = Snap('#svgGraphWrap');
         this.setState({ data: _get() });
         this.draw();
     },
     draw: function draw() {
-        console.log(this.state.data);
-        var s = Snap('#svgGraphWrap');
-        var exLine = s.path('M0,400, L1200,400');
-        exLine.attr({ stroke: 'rgba(4,169,244,1)', fill: 'transparent', 'stroke-width': '4' });
+        var exLine = _s.path('M0,390, L1000,390');
+        exLine.attr({ stroke: 'rgba(4,169,244,1)', fill: 'transparent', 'stroke-width': '1' });
         this.setState({
             exLine: exLine
         });
     },
     _onChange: function _onChange() {
-        var days = 30,
+        var days = 31,
             data = _get();
         _d = _w / days;
 
@@ -38479,12 +38484,20 @@ var Graph = React.createClass({
 
         this.build();
     },
-
     build: function build() {
         var expense = _build(this.state.data.max, this.state.data.expense);
-        console.log(this.state.data.expense);
         var line = expense.line;
         this.state.exLine.animate({ d: line }, 500);
+
+        this.dropPins(expense.pins);
+    },
+    dropPins: function dropPins(pins) {
+        _.each(pins, function (pin) {
+            var pcover = _s.circle(pin.x, pin.y, 10);
+            var p = _s.circle(pin.x, pin.y, 5);
+            pcover.attr({ fill: '#fff' });
+            p.attr({ stroke: '#5ad', 'stroke-width': 2, fill: '#fff' });
+        });
     },
     componentWillMount: function componentWillMount() {
         Data.addChangeListener(this._onChange);
@@ -39192,9 +39205,7 @@ function _remove(entry) {
         url: '/remove-entry/',
         method: 'post',
         data: entry,
-        success: function success(data) {
-            console.log(data);
-        }
+        success: function success(data) {}
     });
 }
 

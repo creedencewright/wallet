@@ -83,7 +83,6 @@ function _remove(entry) {
         method: 'post',
         data: entry,
         success(data) {
-            console.log(data);
         }
     })
 }
@@ -186,7 +185,7 @@ var Data = assign(EventEmitter.prototype, {
     getBalance() {
         return _balance;
     },
-    
+
     getGraphData() {
         let expense = {},
             max = 0;

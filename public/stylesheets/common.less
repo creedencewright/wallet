@@ -9,7 +9,7 @@ body {
 }
 
 .app {
-    padding: 50px 0;
+    padding: 50px 0 200px;
     height: 100%;
     position: relative;
     min-height: 300px;
@@ -28,21 +28,21 @@ body {
 
 .btn {
     display: inline-block;
-    
+
     &.btn-blue {
         .transition(background-color);
         background-color: @blue;
         border-radius: 0;
         text-decoration: none;
         color: #fff;
-        
+
         &:hover {
             background-color: lighten(@blue, 3%);
         }
     }
-    
+
     &.bare {
-        
+
     }
 }
 

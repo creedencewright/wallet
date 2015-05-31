@@ -146,7 +146,7 @@ const Entry = React.createClass({
                     <div className="type-img"></div>
                     <div className="value">
                         <span>{sign + entry.value }</span><br/>
-                        <span className="time">{moment(time).fromNow()}</span>
+                        <span className="time">{moment(time).calendar()}</span>
                     </div>
                 </div>
                 <hr/>
