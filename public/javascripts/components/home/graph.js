@@ -1,3 +1,5 @@
+'use strict';
+
 const React = require('react');
 const Snap  = require('snapsvg');
 const Data  = require('../../stores/data-store');
@@ -6,7 +8,6 @@ const _w    = 1000;
 const _h    = 390;
 
 let _s      = false;
-
 let _d      = 0;
 
 function _get() {
@@ -14,12 +15,12 @@ function _get() {
 }
 
 function _build(max, data) {
-    let line = 'M0,390 L';
+    let line = 'M10,390 L';
     let pins = [];
 
     _.each(data, function(entry, day) {
         let x   = day * _d;
-        let y = _h - (entry * _h) / max;
+        let y = 10 + _h - (entry * _h) / max;
 
         line += x + ',' + y + ',';
 
@@ -45,7 +46,7 @@ const Graph = React.createClass({
         exLine.attr({stroke: 'rgba(4,169,244,1)', fill: 'transparent', 'stroke-width':'1'})
         this.setState({
             exLine: exLine
-        })
+        });
     },
     _onChange() {
         let days = 31,
@@ -64,16 +65,23 @@ const Graph = React.createClass({
         let expense = _build(this.state.data.max, this.state.data.expense);
         let line = expense.line;
         this.state.exLine.animate({d: line}, 500);
-
+        this.removePins();
         this.dropPins(expense.pins);
     },
+    removePins() {
+        _.each(this.state.pins, function(p) { p.remove(); }.bind(this));
+    },
     dropPins(pins) {
+        this.state.pins = [];
         _.each(pins, function(pin) {
             let pcover = _s.circle(pin.x,pin.y,10);
             let p = _s.circle(pin.x,pin.y,5);
             pcover.attr({fill: '#fff'});
             p.attr({stroke: '#5ad', 'stroke-width':2, fill: '#fff'});
-        })
+
+            this.state.pins.push(p);
+            this.state.pins.push(pcover);
+        }.bind(this));
     },
     componentWillMount() {
         Data.addChangeListener(this._onChange);

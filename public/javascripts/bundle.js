@@ -38428,7 +38428,6 @@ var _w = 1000;
 var _h = 390;
 
 var _s = false;
-
 var _d = 0;
 
 function _get() {
@@ -38436,12 +38435,12 @@ function _get() {
 }
 
 function _build(max, data) {
-    var line = 'M0,390 L';
+    var line = 'M10,390 L';
     var pins = [];
 
     _.each(data, function (entry, day) {
         var x = day * _d;
-        var y = _h - entry * _h / max;
+        var y = 10 + _h - entry * _h / max;
 
         line += x + ',' + y + ',';
 
@@ -38488,16 +38487,25 @@ var Graph = React.createClass({
         var expense = _build(this.state.data.max, this.state.data.expense);
         var line = expense.line;
         this.state.exLine.animate({ d: line }, 500);
-
+        this.removePins();
         this.dropPins(expense.pins);
     },
+    removePins: function removePins() {
+        _.each(this.state.pins, (function (p) {
+            p.remove();
+        }).bind(this));
+    },
     dropPins: function dropPins(pins) {
-        _.each(pins, function (pin) {
+        this.state.pins = [];
+        _.each(pins, (function (pin) {
             var pcover = _s.circle(pin.x, pin.y, 10);
             var p = _s.circle(pin.x, pin.y, 5);
             pcover.attr({ fill: '#fff' });
             p.attr({ stroke: '#5ad', 'stroke-width': 2, fill: '#fff' });
-        });
+
+            this.state.pins.push(p);
+            this.state.pins.push(pcover);
+        }).bind(this));
     },
     componentWillMount: function componentWillMount() {
         Data.addChangeListener(this._onChange);
@@ -39160,6 +39168,7 @@ function _add(entry) {
         method: 'post',
         data: entry,
         success: function success(data) {
+            console.log(data);
             _update(data.entry);
         }
     });

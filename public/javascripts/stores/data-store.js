@@ -35,6 +35,7 @@ function _add(entry) {
         method: 'post',
         data: entry,
         success(data) {
+            console.log(data)
             _update(data.entry)
         }
     })
