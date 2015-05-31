@@ -13,7 +13,7 @@ var Type    = require('./stores/types-store');
 var Data    = require('./stores/data-store');
 
 var React           = require('react');
-var Router          = require('react-router'); // or var Router = ReactRouter; in browsers
+var Router          = require('react-router');
 var DefaultRoute    = Router.DefaultRoute;
 var Route           = Router.Route;
 var RouteHandler    = Router.RouteHandler;

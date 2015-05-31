@@ -34,6 +34,7 @@ const Graph = React.createClass({
         this.draw();
     },
     draw() {
+        console.log(this.state.data);
         let s = Snap('#svgGraphWrap');
         let exLine = s.path('M0,400, L1200,400');
         exLine.attr({stroke: 'rgba(4,169,244,1)', fill: 'transparent', 'stroke-width':'4'})
