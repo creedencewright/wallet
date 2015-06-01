@@ -1,12 +1,11 @@
 var Type    = require('../models/types');
-var Entry   = require('../models/data');
 var User    = require('../models/user');
 var async   = require('async');
 var moment  = require('moment');
 var _       = require('underscore');
 
-module.exports = function(app, passport) {
-
+module.exports = function(app, passport, mongoose) {
+    var Entry = require('../models/data')(mongoose);
     /* GET home page. */
     app.get('/', function(req, res) {
         var data = {

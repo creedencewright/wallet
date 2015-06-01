@@ -49,8 +49,10 @@ const Graph = React.createClass({
         });
     },
     _onChange() {
-        let days = 31,
-            data = _get();
+        console.log('change')
+        let data = _get(),
+            days = 31;
+
         _d = _w/days;
 
         this.setState({

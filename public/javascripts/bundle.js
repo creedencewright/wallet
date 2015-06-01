@@ -38471,8 +38471,10 @@ var Graph = React.createClass({
         });
     },
     _onChange: function _onChange() {
-        var days = 31,
-            data = _get();
+        console.log('change');
+        var data = _get(),
+            days = 31;
+
         _d = _w / days;
 
         this.setState({
@@ -39168,7 +39170,6 @@ function _add(entry) {
         method: 'post',
         data: entry,
         success: function success(data) {
-            console.log(data);
             _update(data.entry);
         }
     });
@@ -39252,6 +39253,11 @@ function _fetchInitData() {
 }
 
 function _setInitData(data) {
+    _setData(data);
+    Data.emitChange();
+}
+
+function _setData(data) {
     _savings = data.savings ? data.savings : [];
     _income = data.income ? data.income : [];
     _expense = data.expense ? data.expense : [];
@@ -39320,11 +39326,14 @@ var Data = assign(EventEmitter.prototype, {
             max = 0;
 
         _.each(_expense, function (entry, i) {
-            expense[moment(entry.time, 'X').date()] = expense[moment(entry.time, 'X').date()] ? expense[moment(entry.time, 'X').date()] : 0;
-            expense[moment(entry.time, 'X').date()] += entry.value;
+            console.log(expense);
+            var time = moment(entry.time, 'X').date();
+            expense[time] = expense[time] ? expense[time] : 0;
+            expense[time] += entry.value;
 
             max = max > expense[moment(entry.time, 'X').date()] ? max : expense[moment(entry.time, 'X').date()];
         });
+        console.log('=====');
 
         return { expense: expense, max: max };
     },

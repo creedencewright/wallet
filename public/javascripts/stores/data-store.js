@@ -35,7 +35,6 @@ function _add(entry) {
         method: 'post',
         data: entry,
         success(data) {
-            console.log(data)
             _update(data.entry)
         }
     })
@@ -84,6 +83,7 @@ function _remove(entry) {
         method: 'post',
         data: entry,
         success(data) {
+
         }
     })
 }
@@ -124,6 +124,11 @@ function _fetchInitData() {
 }
 
 function _setInitData(data) {
+    _setData(data);
+    Data.emitChange();
+}
+
+function _setData(data) {
     _savings    = data.savings ? data.savings : [];
     _income     = data.income ? data.income : [];
     _expense    = data.expense ? data.expense : [];
@@ -192,11 +197,14 @@ var Data = assign(EventEmitter.prototype, {
             max = 0;
 
         _.each(_expense, function(entry, i) {
-            expense[moment(entry.time, 'X').date()] = expense[moment(entry.time, 'X').date()] ? expense[moment(entry.time, 'X').date()] : 0;
-            expense[moment(entry.time, 'X').date()] += entry.value;
+            console.log(expense)
+            let time = moment(entry.time, 'X').date();
+            expense[time] = expense[time] ? expense[time] : 0;
+            expense[time] += entry.value;
 
             max = max > expense[moment(entry.time, 'X').date()] ? max : expense[moment(entry.time, 'X').date()];
-        })
+        });
+        console.log('=====')
 
         return {expense: expense, max: max}
     },
