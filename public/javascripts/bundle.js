@@ -38425,17 +38425,26 @@ var Snap = require('snapsvg');
 var Data = require('../../stores/data-store');
 var _ = require('underscore');
 var _w = 1000;
-var _h = 390;
+var _h = 300;
+
+var _savingsColor = '#03A9F4';
+var _savingsPinColor = '#4FC3F7';
+var _expenseColor = '#f44336';
+var _expensePinColor = '#e57373';
+var _incomeColor = '#4CAF50';
+var _incomePinColor = '#81C784';
 
 var _s = false;
 var _d = 0;
+var _lines = {};
+var _pins = {};
 
 function _get() {
     return Data.getGraphData();
 }
 
 function _build(max, data) {
-    var line = 'M10,390 L';
+    var line = 'M10, ' + (_h + 10) + ' L';
     var pins = [];
 
     _.each(data, function (entry, day) {
@@ -38464,14 +38473,72 @@ var Graph = React.createClass({
         this.draw();
     },
     draw: function draw() {
-        var exLine = _s.path('M0,390, L1000,390');
-        exLine.attr({ stroke: 'rgba(4,169,244,1)', fill: 'transparent', 'stroke-width': '1' });
-        this.setState({
-            exLine: exLine
+        var exLine = _s.path('M0,' + _h + ', L1000,' + _h);
+        var saLine = _s.path('M0,' + _h + ', L1000,' + _h);
+        var inLine = _s.path('M0,' + _h + ', L1000,' + _h);
+
+        exLine.attr({ stroke: _expenseColor, fill: 'transparent', 'stroke-width': '1' });
+        saLine.attr({ stroke: _savingsColor, fill: 'transparent', 'stroke-width': '1' });
+        inLine.attr({ stroke: _incomeColor, fill: 'transparent', 'stroke-width': '1' });
+
+        exLine.hover(function () {
+            exLine.animate({ 'stroke-width': '2' }, 100);
+            _.each(_pins.expense.pin, function (p) {
+                return p.animate({ r: 5 }, 100);
+            });
+            _.each(_pins.expense.cover, function (c) {
+                return c.animate({ r: 10 }, 100);
+            });
+        }, function () {
+            exLine.animate({ 'stroke-width': '1' }, 100);
+            _.each(_pins.expense.pin, function (p) {
+                return p.animate({ r: 2 }, 100);
+            });
+            _.each(_pins.expense.cover, function (c) {
+                return c.animate({ r: 5 }, 100);
+            });
         });
+        saLine.hover(function () {
+            saLine.animate({ 'stroke-width': '2' }, 100);
+            _.each(_pins.savings.pin, function (p) {
+                return p.animate({ r: 5 }, 100);
+            });
+            _.each(_pins.savings.cover, function (c) {
+                return c.animate({ r: 10 }, 100);
+            });
+        }, function () {
+            saLine.animate({ 'stroke-width': '1' }, 100);
+            _.each(_pins.savings.pin, function (p) {
+                return p.animate({ r: 2 }, 100);
+            });
+            _.each(_pins.savings.cover, function (c) {
+                return c.animate({ r: 5 }, 100);
+            });
+        });
+        inLine.hover(function () {
+            inLine.animate({ 'stroke-width': '2' }, 100);
+            _.each(_pins.income.pin, function (p) {
+                return p.animate({ r: 5 }, 100);
+            });
+            _.each(_pins.income.cover, function (c) {
+                return c.animate({ r: 10 }, 100);
+            });
+        }, function () {
+            inLine.animate({ 'stroke-width': '1' }, 100);
+            _.each(_pins.income.pin, function (p) {
+                return p.animate({ r: 2 }, 100);
+            });
+            _.each(_pins.income.cover, function (c) {
+                return c.animate({ r: 5 }, 100);
+            });
+        });
+
+        _lines = {
+            expense: { line: exLine },
+            savings: { line: saLine },
+            income: { line: inLine } };
     },
     _onChange: function _onChange() {
-        console.log('change');
         var data = _get(),
             days = 31;
 
@@ -38483,30 +38550,47 @@ var Graph = React.createClass({
             max: data.max
         });
 
-        this.build();
+        this.build(data);
     },
-    build: function build() {
-        var expense = _build(this.state.data.max, this.state.data.expense);
-        var line = expense.line;
-        this.state.exLine.animate({ d: line }, 500);
-        this.removePins();
-        this.dropPins(expense.pins);
+    build: function build(data) {
+        var expense = _build(data.max, data.expense);
+        var income = _build(data.max, data.income);
+        var savings = _build(data.max, data.savings);
+
+        _lines.expense.line.animate({ d: expense.line }, 200);
+        _lines.savings.line.animate({ d: savings.line }, 200);
+        _lines.income.line.animate({ d: income.line }, 200);
+
+        if (_.keys(_pins).length) this.removePins();
+
+        this.dropPins(expense.pins, 'expense', _expensePinColor);
+        this.dropPins(savings.pins, 'savings', _savingsPinColor);
+        this.dropPins(income.pins, 'income', _incomePinColor);
     },
     removePins: function removePins() {
-        _.each(this.state.pins, (function (p) {
-            p.remove();
+        _.each(_pins, (function (sect) {
+            _.each(sect, function (p) {
+                _.each(p, function (el) {
+                    el.remove();
+                });
+            });
         }).bind(this));
     },
-    dropPins: function dropPins(pins) {
-        this.state.pins = [];
-        _.each(pins, (function (pin) {
-            var pcover = _s.circle(pin.x, pin.y, 10);
-            var p = _s.circle(pin.x, pin.y, 5);
-            pcover.attr({ fill: '#fff' });
-            p.attr({ stroke: '#5ad', 'stroke-width': 2, fill: '#fff' });
+    dropPins: function dropPins(pins, line, pinColor) {
+        _pins = _pins ? _pins : {};
+        _pins[line] = { pin: [], cover: [] };
 
-            this.state.pins.push(p);
-            this.state.pins.push(pcover);
+        _.each(pins, (function (pin) {
+            var pcover = _s.circle(pin.x, pin.y, 5);
+            var p = _s.circle(pin.x, pin.y, 2);
+            pcover.attr({ fill: 'rgba(255,255,255,0)' });
+            p.attr({ stroke: 'rgba(255,255,255,0)', 'stroke-width': 2, fill: 'rgba(255,255,255,0)' });
+
+            pcover.animate({ fill: '#fff' }, 400);
+            p.animate({ fill: '#fff', stroke: pinColor }, 400);
+
+            _pins[line].pin.push(p);
+            _pins[line].cover.push(pcover);
         }).bind(this));
     },
     componentWillMount: function componentWillMount() {
@@ -39323,19 +39407,33 @@ var Data = assign(EventEmitter.prototype, {
 
     getGraphData: function getGraphData() {
         var expense = {},
+            income = {},
+            savings = {},
             max = 0;
 
         _.each(_expense, function (entry, i) {
-            console.log(expense);
             var time = moment(entry.time, 'X').date();
             expense[time] = expense[time] ? expense[time] : 0;
             expense[time] += entry.value;
 
             max = max > expense[moment(entry.time, 'X').date()] ? max : expense[moment(entry.time, 'X').date()];
         });
-        console.log('=====');
+        _.each(_income, function (entry, i) {
+            var time = moment(entry.time, 'X').date();
+            income[time] = income[time] ? income[time] : 0;
+            income[time] += entry.value;
 
-        return { expense: expense, max: max };
+            max = max > income[moment(entry.time, 'X').date()] ? max : income[moment(entry.time, 'X').date()];
+        });
+        _.each(_savings, function (entry, i) {
+            var time = moment(entry.time, 'X').date();
+            savings[time] = savings[time] ? savings[time] : 0;
+            savings[time] += entry.value;
+
+            max = max > savings[moment(entry.time, 'X').date()] ? max : savings[moment(entry.time, 'X').date()];
+        });
+
+        return { savings: savings, expense: expense, income: income, max: max };
     },
 
     dispatcherIndex: Dispatcher.register(function (payload) {

@@ -194,19 +194,33 @@ var Data = assign(EventEmitter.prototype, {
 
     getGraphData() {
         let expense = {},
+            income = {},
+            savings = {},
             max = 0;
 
         _.each(_expense, function(entry, i) {
-            console.log(expense)
             let time = moment(entry.time, 'X').date();
             expense[time] = expense[time] ? expense[time] : 0;
             expense[time] += entry.value;
 
             max = max > expense[moment(entry.time, 'X').date()] ? max : expense[moment(entry.time, 'X').date()];
         });
-        console.log('=====')
+        _.each(_income, function(entry, i) {
+            let time = moment(entry.time, 'X').date();
+            income[time] = income[time] ? income[time] : 0;
+            income[time] += entry.value;
 
-        return {expense: expense, max: max}
+            max = max > income[moment(entry.time, 'X').date()] ? max : income[moment(entry.time, 'X').date()];
+        });
+        _.each(_savings, function(entry, i) {
+            let time = moment(entry.time, 'X').date();
+            savings[time] = savings[time] ? savings[time] : 0;
+            savings[time] += entry.value;
+
+            max = max > savings[moment(entry.time, 'X').date()] ? max : savings[moment(entry.time, 'X').date()];
+        });
+
+        return {savings: savings, expense: expense, income: income, max: max}
     },
 
     dispatcherIndex: Dispatcher.register(function(payload) {
