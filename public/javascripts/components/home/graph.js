@@ -5,7 +5,8 @@ const Snap  = require('snapsvg');
 const Data  = require('../../stores/data-store');
 const _     = require('underscore');
 const _w    = 1100;
-let _h    = 60;
+const _maxH = 300;
+let _h      = 60;
 
 const _savingsColor     = '#03A9F4';
 const _savingsPinColor  = '#4FC3F7';
@@ -20,6 +21,8 @@ let _d      = 0;
 let _hover = false;
 let _lines = {};
 let _pins = {};
+let _tooltip = {};
+let _tooltipTimeout = false;
 
 function _get() {
     return Data.getGraphData()
@@ -35,7 +38,7 @@ function _build(max, data) {
 
         line += x + ',' + y + ',';
 
-        pins.push({x:x,y:y});
+        pins.push({x:x,y:y,day:day,value:entry});
     });
 
     line += `${_w},${_h}`;
@@ -47,6 +50,7 @@ const Graph = React.createClass({
     getInitialState() {
         return {
             data: {},
+            big: false,
             height: _h
         }
     },
@@ -104,7 +108,6 @@ const Graph = React.createClass({
         _hover.attr({d: path, 'fill-opacity': '0', 'stroke-opacity':'0', fill: color, 'stroke-width': '2', stroke: color});
         _hover.animate({'fill-opacity':'.2', 'stroke-opacity':'1'}, 100);
         _hover.hover(function(){}, this.onHoverLeave.bind(this));
-        // this.dropPins(_pins[lineName]);
     },
     onHoverLeave() {
         _hover.animate({'fill-opacity':'0', 'stroke-opacity':'0'}, 100);
@@ -157,10 +160,19 @@ const Graph = React.createClass({
             let pcover = _s.circle(pin.x,pin.y,5);
             let p = _s.circle(pin.x,pin.y,2);
             pcover.attr({fill: '#fff', 'fill-opacity':'0'});
-            p.attr({stroke: color, 'stroke-opacity':'0', 'stroke-width':2, fill: 'rgba(255,255,255,0)'});
+            p.attr({
+                value: pin.value,
+                day: pin.day,
+                stroke: color,
+                'stroke-opacity':'0',
+                'stroke-width':2,
+                fill: 'rgba(255,255,255,0)'
+            });
 
             pcover.animate({'fill-opacity':'1'}, 400);
             p.animate({fill:'#fff', 'stroke-opacity': '1'}, 400);
+            p.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 300));
+            pcover.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 300));
 
             _pins[line].pin.push(p);
             _pins[line].cover.push(pcover);
@@ -173,25 +185,64 @@ const Graph = React.createClass({
     componentWillUnmount() {
         Data.removeChangeListener(this._onChange);
     },
-    showMore(){
-        _h = 300;
+    toggleHeight(){
+        _h = this.state.big ? 60 : _maxH;
         this.setState({
-            height: _h
+            height: _h,
+            big: this.state.big ? false : true
         });
 
         this._onChange();
     },
+    pinHover(pin) {
+        if (!this.state.big || _tooltip[pin.id]) return;
+        let x = pin.attr('cx') - 70;
+        let y = parseInt(pin.attr('cy')) + 10;
+        let shadow = _s.filter(Snap.filter.shadow(0,4,3,'rgba(0,0,0)','.2'));
+        let rect = _s.rect(x, y, 140, 50);
+        let text = _s.text(x+20,y+20,'Day:'+pin.attr('day')+'-'+pin.attr('value'))
+        _tooltip[pin.id] = _s.g(rect, text);
+        rect.attr({
+            'fill-opacity': '0',
+            filter: shadow,
+            fill: '#fff',
+        })
+        rect.animate({
+            transform: 'translate(0,10)',
+            'fill-opacity': '1'
+        }, 200)
+    },
+    pinHoverLeave(pin) {
+        clearTimeout(_tooltipTimeout);
+        _tooltipTimeout = setTimeout(function(){
+            _tooltip[pin.id].remove();
+            _tooltip[pin.id] = false;
+        }, 500);
+    },
     render() {
         return (
-            <div className="graph-wrap" style={{height: this.state.height+20}}>
-                <a href='javascript:void(0)' onClick={this.showMore}>showMore</a>
+            <div className="graph-wrap" style={{height: 'auto'}} >
                 <div className="t-max">{this.state.max}</div>
                 <div className="r-max">{this.state.days}</div>
                 <div className="min"></div>
-                <svg id="svgGraphWrap"></svg>
+                <svg style={{height: this.state.height+20}} id="svgGraphWrap"></svg>
+                <a href='javascript:void(0)' onClick={this.toggleHeight}>{this.state.big ? 'Less' : 'More'}</a>
+                {this.state.big ? <Dash /> : ''}
             </div>
         )
     }
 });
+
+const Dash = React.createClass({
+    render() {
+        return (
+            <div className="dash">
+                <div>Expense</div>
+                <div>Expense</div>
+                <div>Expense</div>
+            </div>
+        )
+    }
+})
 
 module.exports = Graph;

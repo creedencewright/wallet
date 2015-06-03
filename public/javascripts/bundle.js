@@ -38425,6 +38425,7 @@ var Snap = require('snapsvg');
 var Data = require('../../stores/data-store');
 var _ = require('underscore');
 var _w = 1100;
+var _maxH = 300;
 var _h = 60;
 
 var _savingsColor = '#03A9F4';
@@ -38440,6 +38441,8 @@ var _d = 0;
 var _hover = false;
 var _lines = {};
 var _pins = {};
+var _tooltip = {};
+var _tooltipTimeout = false;
 
 function _get() {
     return Data.getGraphData();
@@ -38455,7 +38458,7 @@ function _build(max, data) {
 
         line += x + ',' + y + ',';
 
-        pins.push({ x: x, y: y });
+        pins.push({ x: x, y: y, day: day, value: entry });
     });
 
     line += '' + _w + ',' + _h;
@@ -38469,6 +38472,7 @@ var Graph = React.createClass({
     getInitialState: function getInitialState() {
         return {
             data: {},
+            big: false,
             height: _h
         };
     },
@@ -38549,7 +38553,6 @@ var Graph = React.createClass({
         _hover.attr({ d: path, 'fill-opacity': '0', 'stroke-opacity': '0', fill: color, 'stroke-width': '2', stroke: color });
         _hover.animate({ 'fill-opacity': '.2', 'stroke-opacity': '1' }, 100);
         _hover.hover(function () {}, this.onHoverLeave.bind(this));
-        // this.dropPins(_pins[lineName]);
     },
     onHoverLeave: function onHoverLeave() {
         _hover.animate({ 'fill-opacity': '0', 'stroke-opacity': '0' }, 100);
@@ -38603,10 +38606,19 @@ var Graph = React.createClass({
             var pcover = _s.circle(pin.x, pin.y, 5);
             var p = _s.circle(pin.x, pin.y, 2);
             pcover.attr({ fill: '#fff', 'fill-opacity': '0' });
-            p.attr({ stroke: color, 'stroke-opacity': '0', 'stroke-width': 2, fill: 'rgba(255,255,255,0)' });
+            p.attr({
+                value: pin.value,
+                day: pin.day,
+                stroke: color,
+                'stroke-opacity': '0',
+                'stroke-width': 2,
+                fill: 'rgba(255,255,255,0)'
+            });
 
             pcover.animate({ 'fill-opacity': '1' }, 400);
             p.animate({ fill: '#fff', 'stroke-opacity': '1' }, 400);
+            p.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 300));
+            pcover.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 300));
 
             _pins[line].pin.push(p);
             _pins[line].cover.push(pcover);
@@ -38619,23 +38631,43 @@ var Graph = React.createClass({
     componentWillUnmount: function componentWillUnmount() {
         Data.removeChangeListener(this._onChange);
     },
-    showMore: function showMore() {
-        _h = 300;
+    toggleHeight: function toggleHeight() {
+        _h = this.state.big ? 60 : _maxH;
         this.setState({
-            height: _h
+            height: _h,
+            big: this.state.big ? false : true
         });
 
         this._onChange();
     },
+    pinHover: function pinHover(pin) {
+        if (!this.state.big || _tooltip[pin.id]) return;
+        var x = pin.attr('cx') - 70;
+        var y = parseInt(pin.attr('cy')) + 10;
+        var shadow = _s.filter(Snap.filter.shadow(0, 4, 3, 'rgba(0,0,0)', '.2'));
+        var rect = _s.rect(x, y, 140, 50);
+        var text = _s.text(x + 20, y + 20, 'Day:' + pin.attr('day') + '-' + pin.attr('value'));
+        _tooltip[pin.id] = _s.g(rect, text);
+        rect.attr({
+            'fill-opacity': '0',
+            filter: shadow,
+            fill: '#fff' });
+        rect.animate({
+            transform: 'translate(0,10)',
+            'fill-opacity': '1'
+        }, 200);
+    },
+    pinHoverLeave: function pinHoverLeave(pin) {
+        clearTimeout(_tooltipTimeout);
+        _tooltipTimeout = setTimeout(function () {
+            _tooltip[pin.id].remove();
+            _tooltip[pin.id] = false;
+        }, 500);
+    },
     render: function render() {
         return React.createElement(
             'div',
-            { className: 'graph-wrap', style: { height: this.state.height + 20 } },
-            React.createElement(
-                'a',
-                { href: 'javascript:void(0)', onClick: this.showMore },
-                'showMore'
-            ),
+            { className: 'graph-wrap', style: { height: 'auto' } },
             React.createElement(
                 'div',
                 { className: 't-max' },
@@ -38647,7 +38679,39 @@ var Graph = React.createClass({
                 this.state.days
             ),
             React.createElement('div', { className: 'min' }),
-            React.createElement('svg', { id: 'svgGraphWrap' })
+            React.createElement('svg', { style: { height: this.state.height + 20 }, id: 'svgGraphWrap' }),
+            React.createElement(
+                'a',
+                { href: 'javascript:void(0)', onClick: this.toggleHeight },
+                this.state.big ? 'Less' : 'More'
+            ),
+            this.state.big ? React.createElement(Dash, null) : ''
+        );
+    }
+});
+
+var Dash = React.createClass({
+    displayName: 'Dash',
+
+    render: function render() {
+        return React.createElement(
+            'div',
+            { className: 'dash' },
+            React.createElement(
+                'div',
+                null,
+                'Expense'
+            ),
+            React.createElement(
+                'div',
+                null,
+                'Expense'
+            ),
+            React.createElement(
+                'div',
+                null,
+                'Expense'
+            )
         );
     }
 });
