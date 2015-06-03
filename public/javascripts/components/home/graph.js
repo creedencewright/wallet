@@ -4,8 +4,8 @@ const React = require('react');
 const Snap  = require('snapsvg');
 const Data  = require('../../stores/data-store');
 const _     = require('underscore');
-const _w    = 1000;
-const _h    = 300;
+const _w    = 1100;
+let _h    = 60;
 
 const _savingsColor     = '#03A9F4';
 const _savingsPinColor  = '#4FC3F7';
@@ -13,9 +13,11 @@ const _expenseColor     = '#f44336';
 const _expensePinColor  = '#e57373';
 const _incomeColor      = '#4CAF50';
 const _incomePinColor   = '#81C784';
+const _incomeFillColor  = 'rgba(76,175,80,1)';
 
 let _s      = false;
 let _d      = 0;
+let _hover = false;
 let _lines = {};
 let _pins = {};
 
@@ -36,13 +38,16 @@ function _build(max, data) {
         pins.push({x:x,y:y});
     });
 
+    line += `${_w},${_h}`;
+
     return {line: line, pins: pins}
 }
 
 const Graph = React.createClass({
     getInitialState() {
         return {
-            data: {}
+            data: {},
+            height: _h
         }
     },
     componentDidMount() {
@@ -55,15 +60,15 @@ const Graph = React.createClass({
         let saLine = _s.path(`M0,${_h}, L1000,${_h}`);
         let inLine = _s.path(`M0,${_h}, L1000,${_h}`);
 
-        exLine.attr({stroke: _expenseColor, fill: 'transparent', 'stroke-width':'1'});
-        saLine.attr({stroke: _savingsColor, fill: 'transparent', 'stroke-width':'1'});
-        inLine.attr({stroke: _incomeColor, fill: 'transparent', 'stroke-width':'1'});
+        exLine.attr({stroke: _expenseColor, fill: _expenseColor, 'fill-opacity':'0','stroke-width':'1'});
+        saLine.attr({stroke: _savingsColor, fill: _savingsColor, 'fill-opacity':'0','stroke-width':'1'});
+        inLine.attr({stroke: _incomeColor, fill: _incomeColor, 'fill-opacity':'0','stroke-width':'1'});
 
         exLine.hover(function(){
             exLine.animate({'stroke-width': '2'}, 100);
             _.each(_pins.expense.pin, (p) => p.animate({r:5}, 100));
             _.each(_pins.expense.cover, (c) => c.animate({r:10}, 100));
-        }, function(){
+        }.bind(this), function(){
             exLine.animate({'stroke-width': '1'}, 100);
             _.each(_pins.expense.pin, (p) => p.animate({r:2}, 100));
             _.each(_pins.expense.cover, (c) => c.animate({r:5}, 100));
@@ -72,7 +77,7 @@ const Graph = React.createClass({
             saLine.animate({'stroke-width': '2'}, 100);
             _.each(_pins.savings.pin, (p) => p.animate({r:5}, 100));
             _.each(_pins.savings.cover, (c) => c.animate({r:10}, 100));
-        }, function(){
+        }.bind(this), function(){
             saLine.animate({'stroke-width': '1'}, 100);
             _.each(_pins.savings.pin, (p) => p.animate({r:2}, 100));
             _.each(_pins.savings.cover, (c) => c.animate({r:5}, 100));
@@ -81,17 +86,29 @@ const Graph = React.createClass({
             inLine.animate({'stroke-width': '2'}, 100);
             _.each(_pins.income.pin, (p) => p.animate({r:5}, 100));
             _.each(_pins.income.cover, (c) => c.animate({r:10}, 100));
-        }, function(){
+        }.bind(this), function(){
             inLine.animate({'stroke-width': '1'}, 100);
             _.each(_pins.income.pin, (p) => p.animate({r:2}, 100));
             _.each(_pins.income.cover, (c) => c.animate({r:5}, 100));
-        });
+        }.bind(this));
 
         _lines = {
             expense:    {line: exLine},
             savings:    {line: saLine},
             income:     {line: inLine},
-        }
+        };
+    },
+    onHover(line, color, lineName) {
+        let path = line.attr('d');
+        _hover = _s.path(`M0,${_h}, L${_w},${_h}`);
+        _hover.attr({d: path, 'fill-opacity': '0', 'stroke-opacity':'0', fill: color, 'stroke-width': '2', stroke: color});
+        _hover.animate({'fill-opacity':'.2', 'stroke-opacity':'1'}, 100);
+        _hover.hover(function(){}, this.onHoverLeave.bind(this));
+        // this.dropPins(_pins[lineName]);
+    },
+    onHoverLeave() {
+        _hover.animate({'fill-opacity':'0', 'stroke-opacity':'0'}, 100);
+        setTimeout(function(){_hover.remove()},100);
     },
     _onChange() {
         let data = _get(),
@@ -132,18 +149,18 @@ const Graph = React.createClass({
             }.bind(this)
         );
     },
-    dropPins(pins, line, pinColor) {
+    dropPins(pins, line, color) {
         _pins = _pins ? _pins : {};
         _pins[line] = {pin:[],cover:[]};
 
         _.each(pins, function(pin) {
             let pcover = _s.circle(pin.x,pin.y,5);
             let p = _s.circle(pin.x,pin.y,2);
-            pcover.attr({fill: 'rgba(255,255,255,0)'});
-            p.attr({stroke: 'rgba(255,255,255,0)', 'stroke-width':2, fill: 'rgba(255,255,255,0)'});
+            pcover.attr({fill: '#fff', 'fill-opacity':'0'});
+            p.attr({stroke: color, 'stroke-opacity':'0', 'stroke-width':2, fill: 'rgba(255,255,255,0)'});
 
-            pcover.animate({fill:'#fff'}, 400);
-            p.animate({fill:'#fff', stroke: pinColor}, 400);
+            pcover.animate({'fill-opacity':'1'}, 400);
+            p.animate({fill:'#fff', 'stroke-opacity': '1'}, 400);
 
             _pins[line].pin.push(p);
             _pins[line].cover.push(pcover);
@@ -156,12 +173,21 @@ const Graph = React.createClass({
     componentWillUnmount() {
         Data.removeChangeListener(this._onChange);
     },
+    showMore(){
+        _h = 300;
+        this.setState({
+            height: _h
+        });
+
+        this._onChange();
+    },
     render() {
         return (
-            <div className="graph-wrap">
+            <div className="graph-wrap" style={{height: this.state.height+20}}>
+                <a href='javascript:void(0)' onClick={this.showMore}>showMore</a>
                 <div className="t-max">{this.state.max}</div>
                 <div className="r-max">{this.state.days}</div>
-                <div className="min">0</div>
+                <div className="min"></div>
                 <svg id="svgGraphWrap"></svg>
             </div>
         )

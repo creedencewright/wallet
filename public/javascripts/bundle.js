@@ -38424,8 +38424,8 @@ var React = require('react');
 var Snap = require('snapsvg');
 var Data = require('../../stores/data-store');
 var _ = require('underscore');
-var _w = 1000;
-var _h = 300;
+var _w = 1100;
+var _h = 60;
 
 var _savingsColor = '#03A9F4';
 var _savingsPinColor = '#4FC3F7';
@@ -38433,9 +38433,11 @@ var _expenseColor = '#f44336';
 var _expensePinColor = '#e57373';
 var _incomeColor = '#4CAF50';
 var _incomePinColor = '#81C784';
+var _incomeFillColor = 'rgba(76,175,80,1)';
 
 var _s = false;
 var _d = 0;
+var _hover = false;
 var _lines = {};
 var _pins = {};
 
@@ -38456,6 +38458,8 @@ function _build(max, data) {
         pins.push({ x: x, y: y });
     });
 
+    line += '' + _w + ',' + _h;
+
     return { line: line, pins: pins };
 }
 
@@ -38464,7 +38468,8 @@ var Graph = React.createClass({
 
     getInitialState: function getInitialState() {
         return {
-            data: {}
+            data: {},
+            height: _h
         };
     },
     componentDidMount: function componentDidMount() {
@@ -38477,11 +38482,11 @@ var Graph = React.createClass({
         var saLine = _s.path('M0,' + _h + ', L1000,' + _h);
         var inLine = _s.path('M0,' + _h + ', L1000,' + _h);
 
-        exLine.attr({ stroke: _expenseColor, fill: 'transparent', 'stroke-width': '1' });
-        saLine.attr({ stroke: _savingsColor, fill: 'transparent', 'stroke-width': '1' });
-        inLine.attr({ stroke: _incomeColor, fill: 'transparent', 'stroke-width': '1' });
+        exLine.attr({ stroke: _expenseColor, fill: _expenseColor, 'fill-opacity': '0', 'stroke-width': '1' });
+        saLine.attr({ stroke: _savingsColor, fill: _savingsColor, 'fill-opacity': '0', 'stroke-width': '1' });
+        inLine.attr({ stroke: _incomeColor, fill: _incomeColor, 'fill-opacity': '0', 'stroke-width': '1' });
 
-        exLine.hover(function () {
+        exLine.hover((function () {
             exLine.animate({ 'stroke-width': '2' }, 100);
             _.each(_pins.expense.pin, function (p) {
                 return p.animate({ r: 5 }, 100);
@@ -38489,7 +38494,7 @@ var Graph = React.createClass({
             _.each(_pins.expense.cover, function (c) {
                 return c.animate({ r: 10 }, 100);
             });
-        }, function () {
+        }).bind(this), function () {
             exLine.animate({ 'stroke-width': '1' }, 100);
             _.each(_pins.expense.pin, function (p) {
                 return p.animate({ r: 2 }, 100);
@@ -38498,7 +38503,7 @@ var Graph = React.createClass({
                 return c.animate({ r: 5 }, 100);
             });
         });
-        saLine.hover(function () {
+        saLine.hover((function () {
             saLine.animate({ 'stroke-width': '2' }, 100);
             _.each(_pins.savings.pin, function (p) {
                 return p.animate({ r: 5 }, 100);
@@ -38506,7 +38511,7 @@ var Graph = React.createClass({
             _.each(_pins.savings.cover, function (c) {
                 return c.animate({ r: 10 }, 100);
             });
-        }, function () {
+        }).bind(this), function () {
             saLine.animate({ 'stroke-width': '1' }, 100);
             _.each(_pins.savings.pin, function (p) {
                 return p.animate({ r: 2 }, 100);
@@ -38515,7 +38520,7 @@ var Graph = React.createClass({
                 return c.animate({ r: 5 }, 100);
             });
         });
-        inLine.hover(function () {
+        inLine.hover((function () {
             inLine.animate({ 'stroke-width': '2' }, 100);
             _.each(_pins.income.pin, function (p) {
                 return p.animate({ r: 5 }, 100);
@@ -38523,7 +38528,7 @@ var Graph = React.createClass({
             _.each(_pins.income.cover, function (c) {
                 return c.animate({ r: 10 }, 100);
             });
-        }, function () {
+        }).bind(this), (function () {
             inLine.animate({ 'stroke-width': '1' }, 100);
             _.each(_pins.income.pin, function (p) {
                 return p.animate({ r: 2 }, 100);
@@ -38531,12 +38536,26 @@ var Graph = React.createClass({
             _.each(_pins.income.cover, function (c) {
                 return c.animate({ r: 5 }, 100);
             });
-        });
+        }).bind(this));
 
         _lines = {
             expense: { line: exLine },
             savings: { line: saLine },
             income: { line: inLine } };
+    },
+    onHover: function onHover(line, color, lineName) {
+        var path = line.attr('d');
+        _hover = _s.path('M0,' + _h + ', L' + _w + ',' + _h);
+        _hover.attr({ d: path, 'fill-opacity': '0', 'stroke-opacity': '0', fill: color, 'stroke-width': '2', stroke: color });
+        _hover.animate({ 'fill-opacity': '.2', 'stroke-opacity': '1' }, 100);
+        _hover.hover(function () {}, this.onHoverLeave.bind(this));
+        // this.dropPins(_pins[lineName]);
+    },
+    onHoverLeave: function onHoverLeave() {
+        _hover.animate({ 'fill-opacity': '0', 'stroke-opacity': '0' }, 100);
+        setTimeout(function () {
+            _hover.remove();
+        }, 100);
     },
     _onChange: function _onChange() {
         var data = _get(),
@@ -38576,18 +38595,18 @@ var Graph = React.createClass({
             });
         }).bind(this));
     },
-    dropPins: function dropPins(pins, line, pinColor) {
+    dropPins: function dropPins(pins, line, color) {
         _pins = _pins ? _pins : {};
         _pins[line] = { pin: [], cover: [] };
 
         _.each(pins, (function (pin) {
             var pcover = _s.circle(pin.x, pin.y, 5);
             var p = _s.circle(pin.x, pin.y, 2);
-            pcover.attr({ fill: 'rgba(255,255,255,0)' });
-            p.attr({ stroke: 'rgba(255,255,255,0)', 'stroke-width': 2, fill: 'rgba(255,255,255,0)' });
+            pcover.attr({ fill: '#fff', 'fill-opacity': '0' });
+            p.attr({ stroke: color, 'stroke-opacity': '0', 'stroke-width': 2, fill: 'rgba(255,255,255,0)' });
 
-            pcover.animate({ fill: '#fff' }, 400);
-            p.animate({ fill: '#fff', stroke: pinColor }, 400);
+            pcover.animate({ 'fill-opacity': '1' }, 400);
+            p.animate({ fill: '#fff', 'stroke-opacity': '1' }, 400);
 
             _pins[line].pin.push(p);
             _pins[line].cover.push(pcover);
@@ -38600,10 +38619,23 @@ var Graph = React.createClass({
     componentWillUnmount: function componentWillUnmount() {
         Data.removeChangeListener(this._onChange);
     },
+    showMore: function showMore() {
+        _h = 300;
+        this.setState({
+            height: _h
+        });
+
+        this._onChange();
+    },
     render: function render() {
         return React.createElement(
             'div',
-            { className: 'graph-wrap' },
+            { className: 'graph-wrap', style: { height: this.state.height + 20 } },
+            React.createElement(
+                'a',
+                { href: 'javascript:void(0)', onClick: this.showMore },
+                'showMore'
+            ),
             React.createElement(
                 'div',
                 { className: 't-max' },
@@ -38614,11 +38646,7 @@ var Graph = React.createClass({
                 { className: 'r-max' },
                 this.state.days
             ),
-            React.createElement(
-                'div',
-                { className: 'min' },
-                '0'
-            ),
+            React.createElement('div', { className: 'min' }),
             React.createElement('svg', { id: 'svgGraphWrap' })
         );
     }
