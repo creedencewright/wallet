@@ -1,13 +1,5 @@
 'use strict';
 
-const React = require('react');
-const Snap  = require('snapsvg');
-const Data  = require('../../stores/data-store');
-const _     = require('underscore');
-const _w    = 1100;
-const _maxH = 300;
-let _h      = 60;
-
 const _savingsColor     = '#03A9F4';
 const _savingsPinColor  = '#4FC3F7';
 const _expenseColor     = '#f44336';
@@ -16,13 +8,20 @@ const _incomeColor      = '#4CAF50';
 const _incomePinColor   = '#81C784';
 const _incomeFillColor  = 'rgba(76,175,80,1)';
 
+const React     = require('react');
+const Snap      = require('snapsvg');
+const moment    = require('moment');
+const Data      = require('../../stores/data-store');
+const _         = require('underscore');
+const _w        = 1100;
+const _maxH     = 300;
+
+let _h      = 60;
 let _s      = false;
 let _d      = 0;
 let _hover = false;
 let _lines = {};
 let _pins = {};
-let _tooltip = {};
-let _tooltipTimeout = false;
 
 function _get() {
     return Data.getGraphData()
@@ -51,6 +50,7 @@ const Graph = React.createClass({
         return {
             data: {},
             big: false,
+            tooltip: false,
             height: _h
         }
     },
@@ -115,12 +115,14 @@ const Graph = React.createClass({
     },
     _onChange() {
         let data = _get(),
-            days = 31;
+            days = moment().set('month', data.month).daysInMonth();
 
         _d = _w/days;
 
         this.setState({
             data: data,
+            month: data.month,
+            year: data.year,
             days: days,
             max: data.max
         });
@@ -171,8 +173,8 @@ const Graph = React.createClass({
 
             pcover.animate({'fill-opacity':'1'}, 400);
             p.animate({fill:'#fff', 'stroke-opacity': '1'}, 400);
-            p.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 300));
-            pcover.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 300));
+            p.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 2000));
+            pcover.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 2000));
 
             _pins[line].pin.push(p);
             _pins[line].cover.push(pcover);
@@ -195,39 +197,67 @@ const Graph = React.createClass({
         this._onChange();
     },
     pinHover(pin) {
-        if (!this.state.big || _tooltip[pin.id]) return;
-        let x = pin.attr('cx') - 70;
-        let y = parseInt(pin.attr('cy')) + 10;
-        let shadow = _s.filter(Snap.filter.shadow(0,4,3,'rgba(0,0,0)','.2'));
-        let rect = _s.rect(x, y, 140, 50);
-        let text = _s.text(x+20,y+20,'Day:'+pin.attr('day')+'-'+pin.attr('value'))
-        _tooltip[pin.id] = _s.g(rect, text);
-        rect.attr({
-            'fill-opacity': '0',
-            filter: shadow,
-            fill: '#fff',
+        let svg = this.refs.svg.getDOMNode();
+        let svgRect = svg.getBoundingClientRect();
+
+        let date = moment().set({
+            year: this.state.year,
+            month: this.state.month,
+            date: pin.attr('day')
+        }).format('L');
+        console.log(date)
+
+        this.setState({
+            tooltip: {
+                color: pin.attr('stroke'),
+                left: parseFloat(pin.attr('cx')) + svgRect.left,
+                top: parseFloat(pin.attr('cy')) + svgRect.top,
+                visible: true,
+                date: date,
+                value: pin.attr('value')
+            }
         })
-        rect.animate({
-            transform: 'translate(0,10)',
-            'fill-opacity': '1'
-        }, 200)
     },
     pinHoverLeave(pin) {
-        clearTimeout(_tooltipTimeout);
-        _tooltipTimeout = setTimeout(function(){
-            _tooltip[pin.id].remove();
-            _tooltip[pin.id] = false;
-        }, 500);
+        this.setState({
+            tooltip: {
+                visible: false
+            }
+        })
     },
     render() {
         return (
             <div className="graph-wrap" style={{height: 'auto'}} >
+                <Tooltip tooltip={this.state.tooltip} />
                 <div className="t-max">{this.state.max}</div>
                 <div className="r-max">{this.state.days}</div>
                 <div className="min"></div>
-                <svg style={{height: this.state.height+20}} id="svgGraphWrap"></svg>
+                <svg ref="svg" style={{height: this.state.height+20}} id="svgGraphWrap"></svg>
                 <a href='javascript:void(0)' onClick={this.toggleHeight}>{this.state.big ? 'Less' : 'More'}</a>
                 {this.state.big ? <Dash /> : ''}
+            </div>
+        )
+    }
+});
+
+const Tooltip = React.createClass({
+    render() {
+
+        let style = {
+            backgroundColor: this.props.tooltip.color,
+            left: this.props.tooltip.left - 40,
+            top: this.props.tooltip.top - 57
+        };
+
+        let triangleStyle = {
+            borderColor: this.props.tooltip.color + ' transparent transparent transparent'
+        };
+
+        return (
+            <div style={style} className={this.props.tooltip.visible ? "vis graph-tooltip" : 'graph-tooltip'}>
+                <div className="triangle" style={triangleStyle}></div>
+                <div className="date">{this.props.tooltip.date}</div>
+                <div className="value">{this.props.tooltip.value}</div>
             </div>
         )
     }

@@ -38420,14 +38420,6 @@ module.exports = Expense;
 },{"../../actions/app-actions":204,"../../stores/data-store":220,"../../stores/user-store":222,"./add-expense":208,"./highlights":211,"./time-picker":213,"moment":5,"react":199,"underscore":203}],210:[function(require,module,exports){
 'use strict';
 
-var React = require('react');
-var Snap = require('snapsvg');
-var Data = require('../../stores/data-store');
-var _ = require('underscore');
-var _w = 1100;
-var _maxH = 300;
-var _h = 60;
-
 var _savingsColor = '#03A9F4';
 var _savingsPinColor = '#4FC3F7';
 var _expenseColor = '#f44336';
@@ -38436,13 +38428,20 @@ var _incomeColor = '#4CAF50';
 var _incomePinColor = '#81C784';
 var _incomeFillColor = 'rgba(76,175,80,1)';
 
+var React = require('react');
+var Snap = require('snapsvg');
+var moment = require('moment');
+var Data = require('../../stores/data-store');
+var _ = require('underscore');
+var _w = 1100;
+var _maxH = 300;
+
+var _h = 60;
 var _s = false;
 var _d = 0;
 var _hover = false;
 var _lines = {};
 var _pins = {};
-var _tooltip = {};
-var _tooltipTimeout = false;
 
 function _get() {
     return Data.getGraphData();
@@ -38473,6 +38472,7 @@ var Graph = React.createClass({
         return {
             data: {},
             big: false,
+            tooltip: false,
             height: _h
         };
     },
@@ -38562,12 +38562,14 @@ var Graph = React.createClass({
     },
     _onChange: function _onChange() {
         var data = _get(),
-            days = 31;
+            days = moment().set('month', data.month).daysInMonth();
 
         _d = _w / days;
 
         this.setState({
             data: data,
+            month: data.month,
+            year: data.year,
             days: days,
             max: data.max
         });
@@ -38617,8 +38619,8 @@ var Graph = React.createClass({
 
             pcover.animate({ 'fill-opacity': '1' }, 400);
             p.animate({ fill: '#fff', 'stroke-opacity': '1' }, 400);
-            p.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 300));
-            pcover.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 300));
+            p.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 2000));
+            pcover.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 2000));
 
             _pins[line].pin.push(p);
             _pins[line].cover.push(pcover);
@@ -38641,33 +38643,39 @@ var Graph = React.createClass({
         this._onChange();
     },
     pinHover: function pinHover(pin) {
-        if (!this.state.big || _tooltip[pin.id]) return;
-        var x = pin.attr('cx') - 70;
-        var y = parseInt(pin.attr('cy')) + 10;
-        var shadow = _s.filter(Snap.filter.shadow(0, 4, 3, 'rgba(0,0,0)', '.2'));
-        var rect = _s.rect(x, y, 140, 50);
-        var text = _s.text(x + 20, y + 20, 'Day:' + pin.attr('day') + '-' + pin.attr('value'));
-        _tooltip[pin.id] = _s.g(rect, text);
-        rect.attr({
-            'fill-opacity': '0',
-            filter: shadow,
-            fill: '#fff' });
-        rect.animate({
-            transform: 'translate(0,10)',
-            'fill-opacity': '1'
-        }, 200);
+        var svg = this.refs.svg.getDOMNode();
+        var svgRect = svg.getBoundingClientRect();
+
+        var date = moment().set({
+            year: this.state.year,
+            month: this.state.month,
+            date: pin.attr('day')
+        }).format('L');
+        console.log(date);
+
+        this.setState({
+            tooltip: {
+                color: pin.attr('stroke'),
+                left: parseFloat(pin.attr('cx')) + svgRect.left,
+                top: parseFloat(pin.attr('cy')) + svgRect.top,
+                visible: true,
+                date: date,
+                value: pin.attr('value')
+            }
+        });
     },
     pinHoverLeave: function pinHoverLeave(pin) {
-        clearTimeout(_tooltipTimeout);
-        _tooltipTimeout = setTimeout(function () {
-            _tooltip[pin.id].remove();
-            _tooltip[pin.id] = false;
-        }, 500);
+        this.setState({
+            tooltip: {
+                visible: false
+            }
+        });
     },
     render: function render() {
         return React.createElement(
             'div',
             { className: 'graph-wrap', style: { height: 'auto' } },
+            React.createElement(Tooltip, { tooltip: this.state.tooltip }),
             React.createElement(
                 'div',
                 { className: 't-max' },
@@ -38679,13 +38687,46 @@ var Graph = React.createClass({
                 this.state.days
             ),
             React.createElement('div', { className: 'min' }),
-            React.createElement('svg', { style: { height: this.state.height + 20 }, id: 'svgGraphWrap' }),
+            React.createElement('svg', { ref: 'svg', style: { height: this.state.height + 20 }, id: 'svgGraphWrap' }),
             React.createElement(
                 'a',
                 { href: 'javascript:void(0)', onClick: this.toggleHeight },
                 this.state.big ? 'Less' : 'More'
             ),
             this.state.big ? React.createElement(Dash, null) : ''
+        );
+    }
+});
+
+var Tooltip = React.createClass({
+    displayName: 'Tooltip',
+
+    render: function render() {
+
+        var style = {
+            backgroundColor: this.props.tooltip.color,
+            left: this.props.tooltip.left - 40,
+            top: this.props.tooltip.top - 57
+        };
+
+        var triangleStyle = {
+            borderColor: this.props.tooltip.color + ' transparent transparent transparent'
+        };
+
+        return React.createElement(
+            'div',
+            { style: style, className: this.props.tooltip.visible ? 'vis graph-tooltip' : 'graph-tooltip' },
+            React.createElement('div', { className: 'triangle', style: triangleStyle }),
+            React.createElement(
+                'div',
+                { className: 'date' },
+                this.props.tooltip.date
+            ),
+            React.createElement(
+                'div',
+                { className: 'value' },
+                this.props.tooltip.value
+            )
         );
     }
 });
@@ -38719,7 +38760,7 @@ var Dash = React.createClass({
 module.exports = Graph;
 
 
-},{"../../stores/data-store":220,"react":199,"snapsvg":201,"underscore":203}],211:[function(require,module,exports){
+},{"../../stores/data-store":220,"moment":5,"react":199,"snapsvg":201,"underscore":203}],211:[function(require,module,exports){
 /*** @jsx React.DOM */
 
 'use strict';
@@ -39501,10 +39542,14 @@ var Data = assign(EventEmitter.prototype, {
         var expense = {},
             income = {},
             savings = {},
+            month = 0,
+            year = 0,
             max = 0;
 
         _.each(_expense, function (entry, i) {
             var time = moment(entry.time, 'X').date();
+            month = moment(entry.time, 'X').month();
+            year = moment(entry.time, 'X').year();
             expense[time] = expense[time] ? expense[time] : 0;
             expense[time] += entry.value;
 
@@ -39512,6 +39557,8 @@ var Data = assign(EventEmitter.prototype, {
         });
         _.each(_income, function (entry, i) {
             var time = moment(entry.time, 'X').date();
+            month = moment(entry.time, 'X').month();
+            year = moment(entry.time, 'X').year();
             income[time] = income[time] ? income[time] : 0;
             income[time] += entry.value;
 
@@ -39519,13 +39566,15 @@ var Data = assign(EventEmitter.prototype, {
         });
         _.each(_savings, function (entry, i) {
             var time = moment(entry.time, 'X').date();
+            month = moment(entry.time, 'X').month();
+            year = moment(entry.time, 'X').year();
             savings[time] = savings[time] ? savings[time] : 0;
             savings[time] += entry.value;
 
             max = max > savings[moment(entry.time, 'X').date()] ? max : savings[moment(entry.time, 'X').date()];
         });
 
-        return { savings: savings, expense: expense, income: income, max: max };
+        return { month: month, year: year, savings: savings, expense: expense, income: income, max: max };
     },
 
     dispatcherIndex: Dispatcher.register(function (payload) {
