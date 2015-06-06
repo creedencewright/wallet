@@ -267,27 +267,32 @@
         height: 320px;
 
         .graph-tooltip {
-            .size(80px, auto);
-            .transition();
-            .transform(scale(0.9) translate(0,10px));
-            opacity: 0;
-            visibility: hidden;
+            .size(90px, auto);
+            .transition(all,.6s);
             .transform-origin(center, bottom);
+            height: 55px;
+            opacity: .7;
             border-radius: 5px;
             position: fixed;
-            top: 100px;
-            left: 50%;
+            right: 0;
+            top: 40px;
             padding: 5px 0;
             z-index: 30000;
             font: 12px/1 @font-family-base;
 
-            &.vis {
-                .transform(scale(1) translate(0,0));
-                opacity: 1;
-                visibility: visible;
+            &.active {
+                .triangle {
+                    .transform(translate(0,0));
+                    opacity: 1;
+                    visibility: visible;
+                }
             }
 
             .triangle {
+                .transition(all,.2s, ease, .2s);
+                .transform(translate(0,-10px));
+                opacity: 0;
+                visibility: hidden;
                 position: absolute;
                 display: block;
                 width: 0;
@@ -323,6 +328,20 @@
                 text-align: center;
                 color: #fff;
 
+            }
+        }
+
+        .dash {
+            position: absolute;
+            left: 90px;
+            top: 100%;
+            margin-top: 20px;
+
+            .value {
+                font: 12px/1 @font-family-base;
+                text-align: center;
+                width: 65px;
+                display: inline-block;
             }
         }
 

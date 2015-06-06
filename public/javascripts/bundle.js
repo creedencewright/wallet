@@ -38426,7 +38426,6 @@ var _expenseColor = '#f44336';
 var _expensePinColor = '#e57373';
 var _incomeColor = '#4CAF50';
 var _incomePinColor = '#81C784';
-var _incomeFillColor = 'rgba(76,175,80,1)';
 
 var React = require('react');
 var Snap = require('snapsvg');
@@ -38437,10 +38436,9 @@ var _w = 1100;
 var _maxH = 300;
 
 var _h = 60;
+var _lines = {};
 var _s = false;
 var _d = 0;
-var _hover = false;
-var _lines = {};
 var _pins = {};
 
 function _get() {
@@ -38468,6 +38466,7 @@ function _build(max, data) {
 var Graph = React.createClass({
     displayName: 'Graph',
 
+    tooltipTimeout: false,
     getInitialState: function getInitialState() {
         return {
             data: {},
@@ -38476,11 +38475,26 @@ var Graph = React.createClass({
             height: _h
         };
     },
+
     componentDidMount: function componentDidMount() {
+        var svg = this.refs.svg.getDOMNode();
+
         _s = Snap('#svgGraphWrap');
-        this.setState({ data: _get() });
+        this.setState({
+            data: _get(),
+            rect: svg.getBoundingClientRect()
+        });
         this.draw();
     },
+
+    componentWillMount: function componentWillMount() {
+        Data.addChangeListener(this._onChange);
+    },
+
+    componentWillUnmount: function componentWillUnmount() {
+        Data.removeChangeListener(this._onChange);
+    },
+
     draw: function draw() {
         var exLine = _s.path('M0,' + _h + ', L1000,' + _h);
         var saLine = _s.path('M0,' + _h + ', L1000,' + _h);
@@ -38490,76 +38504,13 @@ var Graph = React.createClass({
         saLine.attr({ stroke: _savingsColor, fill: _savingsColor, 'fill-opacity': '0', 'stroke-width': '1' });
         inLine.attr({ stroke: _incomeColor, fill: _incomeColor, 'fill-opacity': '0', 'stroke-width': '1' });
 
-        exLine.hover((function () {
-            exLine.animate({ 'stroke-width': '2' }, 100);
-            _.each(_pins.expense.pin, function (p) {
-                return p.animate({ r: 5 }, 100);
-            });
-            _.each(_pins.expense.cover, function (c) {
-                return c.animate({ r: 10 }, 100);
-            });
-        }).bind(this), function () {
-            exLine.animate({ 'stroke-width': '1' }, 100);
-            _.each(_pins.expense.pin, function (p) {
-                return p.animate({ r: 2 }, 100);
-            });
-            _.each(_pins.expense.cover, function (c) {
-                return c.animate({ r: 5 }, 100);
-            });
-        });
-        saLine.hover((function () {
-            saLine.animate({ 'stroke-width': '2' }, 100);
-            _.each(_pins.savings.pin, function (p) {
-                return p.animate({ r: 5 }, 100);
-            });
-            _.each(_pins.savings.cover, function (c) {
-                return c.animate({ r: 10 }, 100);
-            });
-        }).bind(this), function () {
-            saLine.animate({ 'stroke-width': '1' }, 100);
-            _.each(_pins.savings.pin, function (p) {
-                return p.animate({ r: 2 }, 100);
-            });
-            _.each(_pins.savings.cover, function (c) {
-                return c.animate({ r: 5 }, 100);
-            });
-        });
-        inLine.hover((function () {
-            inLine.animate({ 'stroke-width': '2' }, 100);
-            _.each(_pins.income.pin, function (p) {
-                return p.animate({ r: 5 }, 100);
-            });
-            _.each(_pins.income.cover, function (c) {
-                return c.animate({ r: 10 }, 100);
-            });
-        }).bind(this), (function () {
-            inLine.animate({ 'stroke-width': '1' }, 100);
-            _.each(_pins.income.pin, function (p) {
-                return p.animate({ r: 2 }, 100);
-            });
-            _.each(_pins.income.cover, function (c) {
-                return c.animate({ r: 5 }, 100);
-            });
-        }).bind(this));
-
         _lines = {
             expense: { line: exLine },
             savings: { line: saLine },
-            income: { line: inLine } };
+            income: { line: inLine }
+        };
     },
-    onHover: function onHover(line, color, lineName) {
-        var path = line.attr('d');
-        _hover = _s.path('M0,' + _h + ', L' + _w + ',' + _h);
-        _hover.attr({ d: path, 'fill-opacity': '0', 'stroke-opacity': '0', fill: color, 'stroke-width': '2', stroke: color });
-        _hover.animate({ 'fill-opacity': '.2', 'stroke-opacity': '1' }, 100);
-        _hover.hover(function () {}, this.onHoverLeave.bind(this));
-    },
-    onHoverLeave: function onHoverLeave() {
-        _hover.animate({ 'fill-opacity': '0', 'stroke-opacity': '0' }, 100);
-        setTimeout(function () {
-            _hover.remove();
-        }, 100);
-    },
+
     _onChange: function _onChange() {
         var data = _get(),
             days = moment().set('month', data.month).daysInMonth();
@@ -38576,6 +38527,7 @@ var Graph = React.createClass({
 
         this.build(data);
     },
+
     build: function build(data) {
         var expense = _build(data.max, data.expense);
         var income = _build(data.max, data.income);
@@ -38591,6 +38543,7 @@ var Graph = React.createClass({
         this.dropPins(savings.pins, 'savings', _savingsPinColor);
         this.dropPins(income.pins, 'income', _incomePinColor);
     },
+
     removePins: function removePins() {
         _.each(_pins, (function (sect) {
             _.each(sect, function (p) {
@@ -38600,6 +38553,7 @@ var Graph = React.createClass({
             });
         }).bind(this));
     },
+
     dropPins: function dropPins(pins, line, color) {
         _pins = _pins ? _pins : {};
         _pins[line] = { pin: [], cover: [] };
@@ -38619,20 +38573,14 @@ var Graph = React.createClass({
 
             pcover.animate({ 'fill-opacity': '1' }, 400);
             p.animate({ fill: '#fff', 'stroke-opacity': '1' }, 400);
-            p.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 2000));
-            pcover.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 2000));
+            p.hover(this.pinHover.bind(this, p), this.pinHoverLeave);
+            pcover.hover(this.pinHover.bind(this, p), this.pinHoverLeave);
 
             _pins[line].pin.push(p);
             _pins[line].cover.push(pcover);
         }).bind(this));
     },
-    componentWillMount: function componentWillMount() {
-        Data.addChangeListener(this._onChange);
-    },
 
-    componentWillUnmount: function componentWillUnmount() {
-        Data.removeChangeListener(this._onChange);
-    },
     toggleHeight: function toggleHeight() {
         _h = this.state.big ? 60 : _maxH;
         this.setState({
@@ -38642,40 +38590,43 @@ var Graph = React.createClass({
 
         this._onChange();
     },
+
+    pinHoverLeave: function pinHoverLeave() {
+        this.tooltipTimeout = setTimeout((function () {
+            this.setState({
+                tooltip: {
+                    active: false
+                }
+            });
+        }).bind(this), 500);
+    },
+
     pinHover: function pinHover(pin) {
+        clearTimeout(this.tooltipTimeout);
+        this.tooltipTimeout = false;
+
         var svg = this.refs.svg.getDOMNode();
         var svgRect = svg.getBoundingClientRect();
 
-        var date = moment().set({
-            year: this.state.year,
-            month: this.state.month,
-            date: pin.attr('day')
-        }).format('L');
-        console.log(date);
-
         this.setState({
             tooltip: {
+                year: this.state.year,
+                month: this.state.month,
+                day: pin.attr('day'),
                 color: pin.attr('stroke'),
                 left: parseFloat(pin.attr('cx')) + svgRect.left,
                 top: parseFloat(pin.attr('cy')) + svgRect.top,
-                visible: true,
-                date: date,
+                active: true,
                 value: pin.attr('value')
             }
         });
     },
-    pinHoverLeave: function pinHoverLeave(pin) {
-        this.setState({
-            tooltip: {
-                visible: false
-            }
-        });
-    },
+
     render: function render() {
         return React.createElement(
             'div',
             { className: 'graph-wrap', style: { height: 'auto' } },
-            React.createElement(Tooltip, { tooltip: this.state.tooltip }),
+            React.createElement(Tooltip, { data: this.state.data, rect: this.state.rect, tooltip: this.state.tooltip }),
             React.createElement(
                 'div',
                 { className: 't-max' },
@@ -38693,7 +38644,7 @@ var Graph = React.createClass({
                 { href: 'javascript:void(0)', onClick: this.toggleHeight },
                 this.state.big ? 'Less' : 'More'
             ),
-            this.state.big ? React.createElement(Dash, null) : ''
+            React.createElement(Dash, { data: this.state.data })
         );
     }
 });
@@ -38701,12 +38652,55 @@ var Graph = React.createClass({
 var Tooltip = React.createClass({
     displayName: 'Tooltip',
 
+    getInitialState: function getInitialState() {
+        return { active: false };
+    },
+
+    getDefaultPosition: function getDefaultPosition() {
+        var rect = this.state.rect;
+
+        return {
+            left: rect.left + rect.width / 2 - 350,
+            top: rect.top + rect.height + 30
+        };
+    },
+
+    componentWillReceiveProps: function componentWillReceiveProps(props) {
+        var date = undefined;
+        var m = moment().set({ year: this.state.year, month: this.state.month });
+        if (props.tooltip.active) {
+            m.set({ date: props.day });
+            date = '' + m.format('MMMM') + ' ' + m.format('D') + ', ' + m.format('YYYY');
+        } else {
+            var _m = moment().set({ year: this.state.year, month: this.state.month });
+            date = '' + _m.format('MMMM') + ', ' + _m.format('YYYY');
+        }
+        this.setState({
+            date: date,
+            year: props.tooltip.year ? props.tooltip.year : this.state.year,
+            month: props.tooltip.month ? props.tooltip.month : this.state.month,
+            active: props.tooltip.active,
+            rect: this.props.rect
+        });
+    },
+
     render: function render() {
+        var left = undefined,
+            top = undefined;
+
+        if (!this.state.active && this.state.rect) {
+            var pos = this.getDefaultPosition();
+            left = pos.left;
+            top = pos.top;
+        } else {
+            left = this.props.tooltip.left - 45;
+            top = this.props.tooltip.top - 67;
+        }
 
         var style = {
             backgroundColor: this.props.tooltip.color,
-            left: this.props.tooltip.left - 40,
-            top: this.props.tooltip.top - 57
+            left: left,
+            top: top
         };
 
         var triangleStyle = {
@@ -38715,16 +38709,16 @@ var Tooltip = React.createClass({
 
         return React.createElement(
             'div',
-            { style: style, className: this.props.tooltip.visible ? 'vis graph-tooltip' : 'graph-tooltip' },
+            { style: style, className: this.state.active ? 'graph-tooltip active' : 'graph-tooltip' },
             React.createElement('div', { className: 'triangle', style: triangleStyle }),
             React.createElement(
                 'div',
                 { className: 'date' },
-                this.props.tooltip.date
+                this.state.date
             ),
             React.createElement(
                 'div',
-                { className: 'value' },
+                { className: 'value pin' },
                 this.props.tooltip.value
             )
         );
@@ -38734,24 +38728,33 @@ var Tooltip = React.createClass({
 var Dash = React.createClass({
     displayName: 'Dash',
 
+    getSumm: function getSumm(arr) {
+        var sum = 0;
+        _.each(arr, function (v) {
+            return sum += parseInt(v);
+        });
+
+        return sum;
+    },
+
     render: function render() {
         return React.createElement(
             'div',
             { className: 'dash' },
             React.createElement(
                 'div',
-                null,
-                'Expense'
+                { className: 'value' },
+                this.getSumm(_.values(this.props.data.expense))
             ),
             React.createElement(
                 'div',
-                null,
-                'Expense'
+                { className: 'value' },
+                this.getSumm(_.values(this.props.data.savings))
             ),
             React.createElement(
                 'div',
-                null,
-                'Expense'
+                { className: 'value' },
+                this.getSumm(_.values(this.props.data.income))
             )
         );
     }

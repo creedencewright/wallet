@@ -6,7 +6,6 @@ const _expenseColor     = '#f44336';
 const _expensePinColor  = '#e57373';
 const _incomeColor      = '#4CAF50';
 const _incomePinColor   = '#81C784';
-const _incomeFillColor  = 'rgba(76,175,80,1)';
 
 const React     = require('react');
 const Snap      = require('snapsvg');
@@ -17,10 +16,9 @@ const _w        = 1100;
 const _maxH     = 300;
 
 let _h      = 60;
+let _lines  = {};
 let _s      = false;
 let _d      = 0;
-let _hover = false;
-let _lines = {};
 let _pins = {};
 
 function _get() {
@@ -46,6 +44,7 @@ function _build(max, data) {
 }
 
 const Graph = React.createClass({
+    tooltipTimeout: false,
     getInitialState() {
         return {
             data: {},
@@ -54,11 +53,26 @@ const Graph = React.createClass({
             height: _h
         }
     },
+
     componentDidMount() {
+        let svg = this.refs.svg.getDOMNode();
+
         _s = Snap('#svgGraphWrap');
-        this.setState({data: _get()});
+        this.setState({
+            data: _get(),
+            rect: svg.getBoundingClientRect()
+        });
         this.draw();
     },
+
+    componentWillMount() {
+        Data.addChangeListener(this._onChange);
+    },
+
+    componentWillUnmount() {
+        Data.removeChangeListener(this._onChange);
+    },
+
     draw() {
         let exLine = _s.path(`M0,${_h}, L1000,${_h}`);
         let saLine = _s.path(`M0,${_h}, L1000,${_h}`);
@@ -68,51 +82,13 @@ const Graph = React.createClass({
         saLine.attr({stroke: _savingsColor, fill: _savingsColor, 'fill-opacity':'0','stroke-width':'1'});
         inLine.attr({stroke: _incomeColor, fill: _incomeColor, 'fill-opacity':'0','stroke-width':'1'});
 
-        exLine.hover(function(){
-            exLine.animate({'stroke-width': '2'}, 100);
-            _.each(_pins.expense.pin, (p) => p.animate({r:5}, 100));
-            _.each(_pins.expense.cover, (c) => c.animate({r:10}, 100));
-        }.bind(this), function(){
-            exLine.animate({'stroke-width': '1'}, 100);
-            _.each(_pins.expense.pin, (p) => p.animate({r:2}, 100));
-            _.each(_pins.expense.cover, (c) => c.animate({r:5}, 100));
-        });
-        saLine.hover(function(){
-            saLine.animate({'stroke-width': '2'}, 100);
-            _.each(_pins.savings.pin, (p) => p.animate({r:5}, 100));
-            _.each(_pins.savings.cover, (c) => c.animate({r:10}, 100));
-        }.bind(this), function(){
-            saLine.animate({'stroke-width': '1'}, 100);
-            _.each(_pins.savings.pin, (p) => p.animate({r:2}, 100));
-            _.each(_pins.savings.cover, (c) => c.animate({r:5}, 100));
-        });
-        inLine.hover(function(){
-            inLine.animate({'stroke-width': '2'}, 100);
-            _.each(_pins.income.pin, (p) => p.animate({r:5}, 100));
-            _.each(_pins.income.cover, (c) => c.animate({r:10}, 100));
-        }.bind(this), function(){
-            inLine.animate({'stroke-width': '1'}, 100);
-            _.each(_pins.income.pin, (p) => p.animate({r:2}, 100));
-            _.each(_pins.income.cover, (c) => c.animate({r:5}, 100));
-        }.bind(this));
-
         _lines = {
             expense:    {line: exLine},
             savings:    {line: saLine},
-            income:     {line: inLine},
+            income:     {line: inLine}
         };
     },
-    onHover(line, color, lineName) {
-        let path = line.attr('d');
-        _hover = _s.path(`M0,${_h}, L${_w},${_h}`);
-        _hover.attr({d: path, 'fill-opacity': '0', 'stroke-opacity':'0', fill: color, 'stroke-width': '2', stroke: color});
-        _hover.animate({'fill-opacity':'.2', 'stroke-opacity':'1'}, 100);
-        _hover.hover(function(){}, this.onHoverLeave.bind(this));
-    },
-    onHoverLeave() {
-        _hover.animate({'fill-opacity':'0', 'stroke-opacity':'0'}, 100);
-        setTimeout(function(){_hover.remove()},100);
-    },
+
     _onChange() {
         let data = _get(),
             days = moment().set('month', data.month).daysInMonth();
@@ -129,6 +105,7 @@ const Graph = React.createClass({
 
         this.build(data);
     },
+
     build(data) {
         let expense = _build(data.max, data.expense);
         let income  = _build(data.max, data.income);
@@ -144,6 +121,7 @@ const Graph = React.createClass({
         this.dropPins(savings.pins, 'savings', _savingsPinColor);
         this.dropPins(income.pins, 'income', _incomePinColor);
     },
+
     removePins() {
         _.each(_pins, function(sect) {
                 _.each(sect, function(p) {
@@ -154,6 +132,7 @@ const Graph = React.createClass({
             }.bind(this)
         );
     },
+
     dropPins(pins, line, color) {
         _pins = _pins ? _pins : {};
         _pins[line] = {pin:[],cover:[]};
@@ -173,20 +152,14 @@ const Graph = React.createClass({
 
             pcover.animate({'fill-opacity':'1'}, 400);
             p.animate({fill:'#fff', 'stroke-opacity': '1'}, 400);
-            p.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 2000));
-            pcover.hover(this.pinHover.bind(this, p), _.throttle(this.pinHoverLeave.bind(this, p), 2000));
+            p.hover(this.pinHover.bind(this, p), this.pinHoverLeave);
+            pcover.hover(this.pinHover.bind(this, p), this.pinHoverLeave);
 
             _pins[line].pin.push(p);
             _pins[line].cover.push(pcover);
         }.bind(this));
     },
-    componentWillMount() {
-        Data.addChangeListener(this._onChange);
-    },
 
-    componentWillUnmount() {
-        Data.removeChangeListener(this._onChange);
-    },
     toggleHeight(){
         _h = this.state.big ? 60 : _maxH;
         this.setState({
@@ -196,57 +169,102 @@ const Graph = React.createClass({
 
         this._onChange();
     },
+
+    pinHoverLeave() {
+        this.tooltipTimeout = setTimeout(function() {
+            this.setState({
+                tooltip: {
+                    active: false
+                }
+            })
+        }.bind(this), 500);
+    },
+
     pinHover(pin) {
+        clearTimeout(this.tooltipTimeout);
+        this.tooltipTimeout = false;
+
         let svg = this.refs.svg.getDOMNode();
         let svgRect = svg.getBoundingClientRect();
 
-        let date = moment().set({
-            year: this.state.year,
-            month: this.state.month,
-            date: pin.attr('day')
-        }).format('L');
-        console.log(date)
-
         this.setState({
             tooltip: {
+                year: this.state.year,
+                month: this.state.month,
+                day: pin.attr('day'),
                 color: pin.attr('stroke'),
                 left: parseFloat(pin.attr('cx')) + svgRect.left,
                 top: parseFloat(pin.attr('cy')) + svgRect.top,
-                visible: true,
-                date: date,
+                active: true,
                 value: pin.attr('value')
             }
         })
     },
-    pinHoverLeave(pin) {
-        this.setState({
-            tooltip: {
-                visible: false
-            }
-        })
-    },
+
     render() {
         return (
             <div className="graph-wrap" style={{height: 'auto'}} >
-                <Tooltip tooltip={this.state.tooltip} />
+                <Tooltip data={this.state.data} rect={this.state.rect} tooltip={this.state.tooltip} />
                 <div className="t-max">{this.state.max}</div>
                 <div className="r-max">{this.state.days}</div>
                 <div className="min"></div>
                 <svg ref="svg" style={{height: this.state.height+20}} id="svgGraphWrap"></svg>
                 <a href='javascript:void(0)' onClick={this.toggleHeight}>{this.state.big ? 'Less' : 'More'}</a>
-                {this.state.big ? <Dash /> : ''}
+                <Dash data={this.state.data} />
             </div>
         )
     }
 });
 
 const Tooltip = React.createClass({
+    getInitialState() {
+        return {active: false}
+    },
+
+    getDefaultPosition() {
+        let rect = this.state.rect;
+
+        return {
+            left: rect.left + rect.width/2 - 350,
+            top: rect.top + rect.height + 30
+        }
+    },
+
+    componentWillReceiveProps(props) {
+        let date;
+        let m = moment().set({year: this.state.year, month: this.state.month})
+        if (props.tooltip.active) {
+            m.set({date: props.day});
+            date = `${m.format('MMMM')} ${m.format('D')}, ${m.format('YYYY')}`;
+        } else {
+            let m = moment().set({year: this.state.year, month: this.state.month})
+            date = `${m.format('MMMM')}, ${m.format('YYYY')}`;
+        }
+        this.setState({
+            date: date,
+            year: props.tooltip.year ? props.tooltip.year : this.state.year,
+            month: props.tooltip.month ? props.tooltip.month : this.state.month,
+            active: props.tooltip.active,
+            rect: this.props.rect
+        })
+    },
+
     render() {
+        let left, top;
+
+        if (!this.state.active && this.state.rect) {
+            let pos = this.getDefaultPosition();
+            left = pos.left;
+            top = pos.top;
+        } else {
+            left = this.props.tooltip.left - 45;
+            top = this.props.tooltip.top - 67;
+        }
 
         let style = {
             backgroundColor: this.props.tooltip.color,
-            left: this.props.tooltip.left - 40,
-            top: this.props.tooltip.top - 57
+            left: left,
+            top: top
         };
 
         let triangleStyle = {
@@ -254,22 +272,29 @@ const Tooltip = React.createClass({
         };
 
         return (
-            <div style={style} className={this.props.tooltip.visible ? "vis graph-tooltip" : 'graph-tooltip'}>
+            <div style={style} className={this.state.active ? 'graph-tooltip active' : 'graph-tooltip'}>
                 <div className="triangle" style={triangleStyle}></div>
-                <div className="date">{this.props.tooltip.date}</div>
-                <div className="value">{this.props.tooltip.value}</div>
+                <div className="date">{this.state.date}</div>
+                <div className="value pin">{this.props.tooltip.value}</div>
             </div>
         )
     }
 });
 
 const Dash = React.createClass({
+    getSumm(arr) {
+        let sum = 0;
+        _.each(arr, (v) => sum += parseInt(v));
+
+        return sum;
+    },
+
     render() {
         return (
             <div className="dash">
-                <div>Expense</div>
-                <div>Expense</div>
-                <div>Expense</div>
+                <div className="value">{this.getSumm(_.values(this.props.data.expense))}</div>
+                <div className="value">{this.getSumm(_.values(this.props.data.savings))}</div>
+                <div className="value">{this.getSumm(_.values(this.props.data.income))}</div>
             </div>
         )
     }

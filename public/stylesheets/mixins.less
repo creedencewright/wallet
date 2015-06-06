@@ -59,12 +59,12 @@
     }
 }
 
-.transition(@property: all, @time: 0.3s, @ease: ease) {
-    -webkit-transition: @property @time @ease;
-    -moz-transition: @property @time @ease;
-    -ms-transition: @property @time @ease;
-    -o-transition: @property @time @ease;
-    transition: @property @time @ease;
+.transition(@property: all, @time: 0.3s, @ease: ease, @delay: 0) {
+    -webkit-transition: @property @time @ease @delay;
+    -moz-transition: @property @time @ease @delay;
+    -ms-transition: @property @time @ease @delay;
+    -o-transition: @property @time @ease @delay;
+    transition: @property @time @ease @delay;
 }
 
 .transition-transform(@time: 0.3s) {
