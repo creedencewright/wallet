@@ -198,12 +198,14 @@ var Data = assign(EventEmitter.prototype, {
             savings = {},
             month = 0,
             year = 0,
+            lastDay = 1,
             max = 0;
 
         _.each(_expense, function(entry, i) {
             let time = moment(entry.time, 'X').date();
             month = moment(entry.time, 'X').month();
             year = moment(entry.time, 'X').year();
+            lastDay = moment(entry.time, 'X').date() > lastDay ? moment(entry.time, 'X').date() : lastDay;
             expense[time] = expense[time] ? expense[time] : 0;
             expense[time] += entry.value;
 
@@ -211,6 +213,7 @@ var Data = assign(EventEmitter.prototype, {
         });
         _.each(_income, function(entry, i) {
             let time = moment(entry.time, 'X').date();
+            lastDay = moment(entry.time, 'X').date() > lastDay ? moment(entry.time, 'X').date() : lastDay;
             month = moment(entry.time, 'X').month();
             year = moment(entry.time, 'X').year();
             income[time] = income[time] ? income[time] : 0;
@@ -220,6 +223,7 @@ var Data = assign(EventEmitter.prototype, {
         });
         _.each(_savings, function(entry, i) {
             let time = moment(entry.time, 'X').date();
+            lastDay = moment(entry.time, 'X').date() > lastDay ? moment(entry.time, 'X').date() : lastDay;
             month = moment(entry.time, 'X').month();
             year = moment(entry.time, 'X').year();
             savings[time] = savings[time] ? savings[time] : 0;
@@ -228,7 +232,7 @@ var Data = assign(EventEmitter.prototype, {
             max = max > savings[moment(entry.time, 'X').date()] ? max : savings[moment(entry.time, 'X').date()];
         });
 
-        return {month: month, year: year, savings: savings, expense: expense, income: income, max: max}
+        return {lastDay: lastDay, month: month, year: year, savings: savings, expense: expense, income: income, max: max}
     },
 
     dispatcherIndex: Dispatcher.register(function(payload) {

@@ -38450,7 +38450,7 @@ function _build(max, data) {
     var pins = [];
 
     _.each(data, function (entry, day) {
-        var x = day * _d;
+        var x = day * _d - 10;
         var y = 10 + _h - entry * _h / max;
 
         line += x + ',' + y + ',';
@@ -38458,7 +38458,7 @@ function _build(max, data) {
         pins.push({ x: x, y: y, day: day, value: entry });
     });
 
-    line += '' + _w + ',' + _h;
+    //line += `${_w},${_h}`;
 
     return { line: line, pins: pins };
 }
@@ -38513,7 +38513,11 @@ var Graph = React.createClass({
 
     _onChange: function _onChange() {
         var data = _get(),
-            days = moment().set('month', data.month).daysInMonth();
+
+        //days = moment().set('month', data.month).daysInMonth();
+        days = data.lastDay;
+
+        console.log(data);
 
         _d = _w / days;
 
@@ -38598,7 +38602,7 @@ var Graph = React.createClass({
                     active: false
                 }
             });
-        }).bind(this), 500);
+        }).bind(this), 3000);
     },
 
     pinHover: function pinHover(pin) {
@@ -38669,11 +38673,11 @@ var Tooltip = React.createClass({
         var date = undefined;
         var m = moment().set({ year: this.state.year, month: this.state.month });
         if (props.tooltip.active) {
-            m.set({ date: props.day });
-            date = '' + m.format('MMMM') + ' ' + m.format('D') + ', ' + m.format('YYYY');
+            m.set({ date: props.tooltip.day });
+            date = '' + m.format('MMMM') + ' ' + m.format('D');
         } else {
             var _m = moment().set({ year: this.state.year, month: this.state.month });
-            date = '' + _m.format('MMMM') + ', ' + _m.format('YYYY');
+            date = '' + _m.format('MMMM');
         }
         this.setState({
             date: date,
@@ -39547,12 +39551,14 @@ var Data = assign(EventEmitter.prototype, {
             savings = {},
             month = 0,
             year = 0,
+            lastDay = 1,
             max = 0;
 
         _.each(_expense, function (entry, i) {
             var time = moment(entry.time, 'X').date();
             month = moment(entry.time, 'X').month();
             year = moment(entry.time, 'X').year();
+            lastDay = moment(entry.time, 'X').date() > lastDay ? moment(entry.time, 'X').date() : lastDay;
             expense[time] = expense[time] ? expense[time] : 0;
             expense[time] += entry.value;
 
@@ -39560,6 +39566,7 @@ var Data = assign(EventEmitter.prototype, {
         });
         _.each(_income, function (entry, i) {
             var time = moment(entry.time, 'X').date();
+            lastDay = moment(entry.time, 'X').date() > lastDay ? moment(entry.time, 'X').date() : lastDay;
             month = moment(entry.time, 'X').month();
             year = moment(entry.time, 'X').year();
             income[time] = income[time] ? income[time] : 0;
@@ -39569,6 +39576,7 @@ var Data = assign(EventEmitter.prototype, {
         });
         _.each(_savings, function (entry, i) {
             var time = moment(entry.time, 'X').date();
+            lastDay = moment(entry.time, 'X').date() > lastDay ? moment(entry.time, 'X').date() : lastDay;
             month = moment(entry.time, 'X').month();
             year = moment(entry.time, 'X').year();
             savings[time] = savings[time] ? savings[time] : 0;
@@ -39577,7 +39585,7 @@ var Data = assign(EventEmitter.prototype, {
             max = max > savings[moment(entry.time, 'X').date()] ? max : savings[moment(entry.time, 'X').date()];
         });
 
-        return { month: month, year: year, savings: savings, expense: expense, income: income, max: max };
+        return { lastDay: lastDay, month: month, year: year, savings: savings, expense: expense, income: income, max: max };
     },
 
     dispatcherIndex: Dispatcher.register(function (payload) {

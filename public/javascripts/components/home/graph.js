@@ -30,7 +30,7 @@ function _build(max, data) {
     let pins = [];
 
     _.each(data, function(entry, day) {
-        let x   = day * _d;
+        let x   = day * _d - 10;
         let y = 10 + _h - (entry * _h) / max;
 
         line += x + ',' + y + ',';
@@ -38,7 +38,7 @@ function _build(max, data) {
         pins.push({x:x,y:y,day:day,value:entry});
     });
 
-    line += `${_w},${_h}`;
+    //line += `${_w},${_h}`;
 
     return {line: line, pins: pins}
 }
@@ -91,7 +91,10 @@ const Graph = React.createClass({
 
     _onChange() {
         let data = _get(),
-            days = moment().set('month', data.month).daysInMonth();
+            //days = moment().set('month', data.month).daysInMonth();
+            days = data.lastDay;
+
+        console.log(data);
 
         _d = _w/days;
 
@@ -177,7 +180,7 @@ const Graph = React.createClass({
                     active: false
                 }
             })
-        }.bind(this), 500);
+        }.bind(this), 3000);
     },
 
     pinHover(pin) {
@@ -234,11 +237,11 @@ const Tooltip = React.createClass({
         let date;
         let m = moment().set({year: this.state.year, month: this.state.month})
         if (props.tooltip.active) {
-            m.set({date: props.day});
-            date = `${m.format('MMMM')} ${m.format('D')}, ${m.format('YYYY')}`;
+            m.set({date: props.tooltip.day});
+            date = `${m.format('MMMM')} ${m.format('D')}`;
         } else {
             let m = moment().set({year: this.state.year, month: this.state.month})
-            date = `${m.format('MMMM')}, ${m.format('YYYY')}`;
+            date = `${m.format('MMMM')}`;
         }
         this.setState({
             date: date,
