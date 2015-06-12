@@ -1,28 +1,74 @@
 /*** @jsx React.DOM */
-var React   = require('react');
-var _       = require('underscore');
-var Actions = require('../../actions/app-actions');
+const React   = require('react');
+const _       = require('underscore');
+const Actions = require('../../actions/app-actions');
+const Type    = require('../../stores/types-store');
 
-var AddExpense = React.createClass({
+function _getTypes() {
+    return Type.get();
+}
+
+function _fetchTypes() {
+    return Type.fetch();
+}
+
+const AddExpense = React.createClass({
     getInitialState() {
+        let types = this.getCurrentTypes(this.props.tab);
         return {
-            type: this.props.type
+            tab: this.props.tab,
+            category: false,
+            types: types.all,
+            currentTypes: types.current
         }
+    },
+
+    getCurrentTypes(tab) {
+        let types = _getTypes();
+        return {
+            all: types,
+            current: tab === 'income' ? _.filter(types, (t) => t.type === 'income') : _.filter(types, (t) => t.type === 'expense')
+        }
+    },
+
+    componentWillMount() {
+        Type.addChangeListener(this._onChange);
+    },
+
+    componentDidMount() {
+        _fetchTypes();
+    },
+
+    _onChange() {
+        let types = this.getCurrentTypes(this.state.tab);
+        this.setState({
+            types: types.all,
+            currentTypes: types.current
+        })
+    },
+
+    componentWillUnmount() {
+        Type.removeChangeListener(this._onChange);
     },
 
     add(e) {
         e.preventDefault();
         this.setState({opened: false})
+
+        let category = _.find(this.state.types, (t) => t.code === this.state.category);
+
         var entry = {
-            type: this.state.type,
+            category: category ? {name: category.name, code: category.code} : false,
+            type: this.state.tab,
             value: parseFloat(this.refs.amount.getDOMNode().value)
         }
+
         Actions.entry.add(entry);
     },
 
-    componentWillUpdate(props, state) {
-        if (props.type !== this.props.type) {
-            this.state.type = props.type;
+    componentWillUpdate(props) {
+        if (props.tab !== this.props.tab) {
+            this.state.tab = props.tab;
         }
     },
 
@@ -33,7 +79,14 @@ var AddExpense = React.createClass({
     },
 
     handleTypeChange(event) {
-        this.setState({type: event.target.value})
+        this.setState({
+            tab: event.target.value,
+            currentTypes: event.target.value === 'income' ? _.filter(this.state.types, (t) => t.type === 'income') : _.filter(this.state.types, (t) => t.type === 'expense')
+        })
+    },
+
+    typeClickHandler(code) {
+        this.setState({category: code});
     },
 
     render() {
@@ -47,21 +100,44 @@ var AddExpense = React.createClass({
                             <input autoComplete="off" ref="amount" className="form-control" type="text" name="amount" placeholder="Amount"/>
                         </label>
 
-                        <div className="entry-type">
+                        <div className="entry-tab">
                             <label>
-                                <input checked={this.state.type === 'expense' ? 'checked' : false} onChange={this.handleTypeChange} type="radio" name="type" value="expense"/>
+                                <input checked={this.state.tab === 'expense' ? 'checked' : false} onChange={this.handleTypeChange} type="radio" name="type" value="expense"/>
                                 <span className="name">Expense</span>
                             </label>
-                            <label>
-                                <input checked={this.state.type === 'savings' ? 'checked' : false} onChange={this.handleTypeChange} type="radio" name="type" value="savings"/>
-                                <span className="name">Savings</span>
-                            </label>
                             <label className="income">
-                                <input checked={this.state.type === 'income' ? 'checked' : false} onChange={this.handleTypeChange} type="radio" name="type" value="income"/>
+                                <input checked={this.state.tab === 'income' ? 'checked' : false} onChange={this.handleTypeChange} type="radio" name="type" value="income"/>
                                 <span className="name">Income</span>
                             </label>
                         </div>
+                        <Types typeClickHandler={this.typeClickHandler} tab={this.state.tab} types={this.state.currentTypes} />
                     </form>
+                </div>
+            </div>
+        )
+    }
+});
+
+const Types = React.createClass({
+    getInitialState() {
+        return {
+            type: false
+        }
+    },
+
+    clickHandler(code) {
+        this.setState({type: code});
+        this.props.typeClickHandler(code);
+    },
+
+    render() {
+        return (
+            <div className="entry-type">
+                <div className="types">
+                    <a className={!this.state.type ? 'active' : ''} href="javascript:void(0);" onClick={this.clickHandler.bind(this, false)} >None</a>
+                    {this.props.types.map(function(type, i) {
+                        return <a onClick={this.clickHandler.bind(this, type.code)} className={this.state.type === type.code ? 'active' : ''} href="javascript:void(0);" key={i} >{type.name}</a>
+                    }.bind(this))}
                 </div>
             </div>
         )

@@ -9,6 +9,7 @@ var plumber     = require('gulp-plumber');
 var minifycss   = require('gulp-minify-css');
 var gaze        = require('gaze');
 var babelify    = require('babelify');
+var prefix      = require('gulp-autoprefixer');
 
 gulp.task('browserify', function(){
     var b = browserify();
@@ -29,6 +30,7 @@ gulp.task('less', function() {
     gulp.src(path + "style.less")
         .pipe(plumber({errorHandler: notify.onError("Error: <%= error.message %>")}))
         .pipe(less())
+        .pipe(prefix(['last 2 versions']))
         .pipe(minifycss())
         .pipe(gulp.dest(path))
         .pipe(reload());

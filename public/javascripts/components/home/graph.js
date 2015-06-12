@@ -75,26 +75,20 @@ const Graph = React.createClass({
 
     draw() {
         let exLine = _s.path(`M0,${_h}, L1000,${_h}`);
-        let saLine = _s.path(`M0,${_h}, L1000,${_h}`);
         let inLine = _s.path(`M0,${_h}, L1000,${_h}`);
 
         exLine.attr({stroke: _expenseColor, fill: _expenseColor, 'fill-opacity':'0','stroke-width':'1'});
-        saLine.attr({stroke: _savingsColor, fill: _savingsColor, 'fill-opacity':'0','stroke-width':'1'});
         inLine.attr({stroke: _incomeColor, fill: _incomeColor, 'fill-opacity':'0','stroke-width':'1'});
 
         _lines = {
             expense:    {line: exLine},
-            savings:    {line: saLine},
             income:     {line: inLine}
         };
     },
 
     _onChange() {
         let data = _get(),
-            //days = moment().set('month', data.month).daysInMonth();
             days = data.lastDay;
-
-        console.log(data);
 
         _d = _w/days;
 
@@ -112,16 +106,13 @@ const Graph = React.createClass({
     build(data) {
         let expense = _build(data.max, data.expense);
         let income  = _build(data.max, data.income);
-        let savings = _build(data.max, data.savings);
 
         _lines.expense.line.animate({d: expense.line}, 200);
-        _lines.savings.line.animate({d: savings.line}, 200);
         _lines.income.line.animate({d: income.line}, 200);
 
         if (_.keys(_pins).length) this.removePins();
 
         this.dropPins(expense.pins, 'expense', _expensePinColor);
-        this.dropPins(savings.pins, 'savings', _savingsPinColor);
         this.dropPins(income.pins, 'income', _incomePinColor);
     },
 
@@ -184,8 +175,10 @@ const Graph = React.createClass({
     },
 
     pinHover(pin) {
-        clearTimeout(this.tooltipTimeout);
-        this.tooltipTimeout = false;
+        if (this.tooltipTimeout) {
+            clearTimeout(this.tooltipTimeout);
+            this.tooltipTimeout = false;
+        }
 
         let svg = this.refs.svg.getDOMNode();
         let svgRect = svg.getBoundingClientRect();
@@ -213,7 +206,6 @@ const Graph = React.createClass({
                 <div className="min"></div>
                 <svg ref="svg" style={{height: this.state.height+20}} id="svgGraphWrap"></svg>
                 <a href='javascript:void(0)' onClick={this.toggleHeight}>{this.state.big ? 'Less' : 'More'}</a>
-                <Dash data={this.state.data} />
             </div>
         )
     }
@@ -296,7 +288,6 @@ const Dash = React.createClass({
         return (
             <div className="dash">
                 <div className="value">{this.getSumm(_.values(this.props.data.expense))}</div>
-                <div className="value">{this.getSumm(_.values(this.props.data.savings))}</div>
                 <div className="value">{this.getSumm(_.values(this.props.data.income))}</div>
             </div>
         )

@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var typeSchema = mongoose.Schema({
     name: String,
     type: String,
-    img: String
+    code: String
 });
 
 module.exports = mongoose.model('Type', typeSchema);

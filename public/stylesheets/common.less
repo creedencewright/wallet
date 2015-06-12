@@ -61,7 +61,7 @@ body {
     .add-wrap {
         &.opened {
             .open {
-                .transform(scale(1) translate(282px, 152px));
+                transform: scale(1) translate(282px, 152px);
                 background-color: transparent;
                 border-color: transparent;
                 border-radius: 0;
@@ -81,28 +81,28 @@ body {
                 }
 
                 &:after {
-                    .transform(translate(0.3px, 3px) rotate(48deg));
+                    transform: translate(0.3px, 3px) rotate(48deg);
                     width: 8px;
                 }
 
                 &:before {
                     width: 14px;
-                    .transform(translate(4.5px, 0px) rotate(130deg));
+                    transform: translate(4.5px, 0px) rotate(130deg);
                 }
             }
 
             .add-block {
-                .transform(scale(1,1) translate(0px,0px));
+                transform: scale(1,1) translate(0px,0px);
                 visibility: visible;
                 opacity: 1;
 
-                .entry-type {
-                    .transform(translate(0,0));
+                .entry-tab {
+                    transform: translate(0,0);
                     opacity: 1;
                 }
 
                 .close {
-                    .transform(scale(1) translate(0px,0px));
+                    transform: scale(1) translate(0px,0px);
                     opacity: 1;
                     &:after {
                         .rotate(-45deg);
@@ -114,7 +114,7 @@ body {
                 }
 
                 .form-group {
-                    .transform(translate(0,0px));
+                    transform: translate(0,0px);
                     opacity: 1;
                 }
             }
@@ -122,8 +122,8 @@ body {
 
         .open {
             .size(32px, 32px);
-            .sizing();
             .transition(all, .3s, cubic-bezier(.34,1,.73,.98));
+            box-sizing: border-box;
             border: 1px solid @blue;
             background-color: #fff;
             border-radius: 50%;
@@ -160,11 +160,11 @@ body {
     }
 
     .add-block {
-        .box-shadow(0, 1px, 3px, 0, rgba(0,0,0,.22));
-        .sizing();
-        .transform-origin(center, left);
-        .transition(all,.3s,ease);
-        .transform(scale(.7,.7) translate(-30px,-30px));
+        .transition(all, .3s, ease);
+        transform-origin: left center;
+        transform: scale(.7,.7) translate(-30px,-30px);
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,.22);
+        box-sizing: border-box;
         opacity: 0;
         visibility: hidden;
         text-decoration: none;
@@ -179,8 +179,35 @@ body {
     }
 
     .entry-type {
+        padding-top: 10px;
+
+        .types {
+            a {
+                .transition(all,.2s);
+                opacity: .7;
+                font-size: 12px;
+                margin-right: 10px;
+                color: @blue;
+                text-transform: uppercase;
+                border-bottom: 1px dotted @blue;
+                text-decoration: none;
+
+                &:hover {
+                    opacity: .8;
+                    border-color: transparent;
+                }
+
+                &.active {
+                    border-color: transparent;
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    .entry-tab {
         .transition(all,.6s);
-        .transform(translate(0,-10px));
+        transform: translate(0,-10px);
         opacity: 0;
 
         label {
@@ -216,6 +243,7 @@ body {
                 position: absolute;
                 width: 0;
                 height: 0;
+                outline: none;
                 left: 0;
                 top: 0;
                 visibility: hidden;
@@ -225,7 +253,7 @@ body {
                         color: lighten(@blue, 7%);
 
                         &:before {
-                            .transform(translate(0, -5px));
+                            transform: translate(0, -5px);
                             opacity: 0;
                         }
                     }
@@ -245,8 +273,8 @@ body {
 
     .form-group {
         .transition(all,.5s);
-        .transform-origin(center, top);
-        .transform(translate(0,-20px));
+        transform-origin: center top;
+        transform: translate(0,-20px);
         opacity: 0;
         position: relative;
         width: 100%;
@@ -265,10 +293,12 @@ body {
             .transition(border-color,.2s);
             border: none;
             border-radius: 0;
+            box-shadow: none;
             border-bottom: 1px solid #CFD8DC;
             width: 100%;
 
             &:focus {
+                box-shadow: none;
                 border-color: @blue;
             }
         }
@@ -305,10 +335,10 @@ body {
 
 .close {
     .size(32px, 32px);
-    .sizing();
     .transition(all, .4s, cubic-bezier(.34,1,.73,.98));
-    .transform-origin(bottom,center);
-    .transform(translate(-8px,8px) scale(.9));
+    transform-origin: center bottom;
+    transform: translate(-8px,8px) scale(.9);
+    box-sizing: border-box;
     position: absolute;
     opacity: 0;
     right: 4px;

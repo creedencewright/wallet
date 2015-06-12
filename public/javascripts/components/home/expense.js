@@ -88,7 +88,7 @@ const Expense = React.createClass({
                 <Highlights />
                 <div className="container">
                     <div className="col-sm-9 title-wrap">
-                        <AddExpense type={this.state.tab} addEvent={this.toggleForm} />
+                        <AddExpense tab={this.state.tab} addEvent={this.toggleForm} />
                         <Tabs onClick={this.setTab} tab={this.state.tab} />
                         <TimePicker close={this.togglePicker} opened={this.state.monthPicker} changeHandler={this.monthChange} month={this.state.month} />
                         <a onClick={this.togglePicker} href="javascript:void(0);" className="link current-month">
@@ -110,9 +110,14 @@ const Tabs = React.createClass({
     render() {
         return (
             <div className="tabs">
-                <a href="javascript:void(0);" onClick={this.click.bind(this, 'expense')} className={this.props.tab == 'expense' ? 'expense active' : 'expense'}>Expense</a>
-                <a  href="javascript:void(0);" onClick={this.click.bind(this, 'savings')} className={this.props.tab == 'savings' ? 'savings active' : 'savings'}>Savings</a>
-                <a  href="javascript:void(0);" onClick={this.click.bind(this, 'income')} className={this.props.tab == 'income' ? 'income active' : 'savings'}>Income</a>
+                <a
+                    href="javascript:void(0);"
+                    onClick={this.click.bind(this, 'expense')}
+                    className={this.props.tab == 'expense' ? 'expense active' : 'expense'}>Expense</a>
+                <a
+                    href="javascript:void(0);"
+                    onClick={this.click.bind(this, 'income')}
+                    className={this.props.tab == 'income' ? 'income active' : 'income'}>Income</a>
             </div>
         )
     }
@@ -138,12 +143,12 @@ const Entry = React.createClass({
         let entry   = this.props.entry,
             sign    = entry.type === 'expense' ? '-' : '+',
             time    = entry ? moment(entry.time, 'X') : 0;
-
+        
         return (
             <div className="col-sm-12">
                 <div className={entry.type + ' entry'}>
                     <a href="javascript:void(0);" onClick={this.remove} className="remove"></a>
-                    <div className="type-img"></div>
+                    <div className={entry.category ? `type-img ${entry.category.code}` : 'type-img none'}></div>
                     <div className="value">
                         <span>{sign + entry.value }</span><br/>
                         <span className="time">{moment(time).calendar()}</span>

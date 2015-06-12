@@ -24,7 +24,6 @@ var User            = require('./stores/user-store');
 User.setData({id: id, name: name});
 Data.setBalance(parseFloat(balance));
 Data.setSavings(parseFloat(savings));
-Type.setTypesFromString(types);
 
 var routes = (
     <Route name='app' path='/' handler={App}>

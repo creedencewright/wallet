@@ -7,6 +7,7 @@ module.exports = function(mongoose) {
             unique: true
         },
         time: Number,
+        category: {},
         name: String,
         type: String,
         value: Number,

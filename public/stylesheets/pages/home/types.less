@@ -1,0 +1,25 @@
+@import "../../var";
+@import "../../mixins";
+
+.type-img {
+    &.groceries {
+        &:after {
+            .pseudo();
+            .size(30px, 31px);
+            .sprite(0, 40);
+            position: absolute;
+            left: 13px;
+            top: 15px;
+        }
+    }
+    &.savings {
+        &:after {
+            .pseudo();
+            .size(40px, 24px);
+            .sprite(40, 40);
+            position: absolute;
+            left: 14px;
+            top: 18px;
+        }
+    }
+}

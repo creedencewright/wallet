@@ -3,9 +3,21 @@ var User    = require('../models/user');
 var async   = require('async');
 var moment  = require('moment');
 var _       = require('underscore');
+var passport = require('passport');
+var mongoose = require('mongoose');
+var Entry = require('../models/data')(mongoose);
 
-module.exports = function(app, passport, mongoose) {
-    var Entry = require('../models/data')(mongoose);
+module.exports = function(app) {
+
+    //==== TYPES ====
+    app.post('/types/fetch', function(req, res) {
+        Type.find({}, function(err, types){
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(types));
+        });
+    });
+    //==== TYPES ====
+
     /* GET home page. */
     app.get('/', function(req, res) {
         var data = {
@@ -21,17 +33,14 @@ module.exports = function(app, passport, mongoose) {
 
     /* GET home page. */
     app.get('/home', isLoggedIn, function(req, res) {
-        Type.find().lean().exec(function(err, types){
-            var data = {
-                logged: req.user.id,
-                balance: req.user.balance,
-                savings: req.user.savings,
-                name: req.user.local.email,
-                types: JSON.stringify(types)
-            };
+        var data = {
+            logged: req.user.id,
+            balance: req.user.balance,
+            savings: req.user.savings,
+            name: req.user.local.email
+        };
 
-            res.render('index', data);
-        });
+        res.render('index', data);
     });
 
     //Login / Register
@@ -102,7 +111,6 @@ module.exports = function(app, passport, mongoose) {
             .set('seconds', 59);
 
         var timeFilter = {$gte: timeStart.unix(), $lte: timeEnd.unix()};
-        console.log(timeFilter)
 
         Entry
             .find({
@@ -118,13 +126,15 @@ module.exports = function(app, passport, mongoose) {
     });
 
     app.post('/add-entry', function(req, res) {
+        var data = JSON.parse(req.body.data);
+
         async.parallel({
                 entry: function(cb) {
-                    Entry.create(req.body, cb)
+                    Entry.create(data, cb)
                 },
                 user: function(cb) {
-                    var id = req.body.userId;
-                    User.findOneAndUpdate({"id": id}, {"balance": req.body.balance, "savings": req.body.savings}, {}, function(e, d) {
+                    var id = data.userId;
+                    User.findOneAndUpdate({"id": id}, {"balance": data.balance, "savings": data.savings}, {}, function(e, d) {
                         cb(e, d);
                     });
                 }

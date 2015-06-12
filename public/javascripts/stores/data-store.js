@@ -1,4 +1,4 @@
-const Dispatcher      = require('../dispatchers/app-dispatcher');
+    const Dispatcher      = require('../dispatchers/app-dispatcher');
 const Constants       = require('../constants/app-constants');
 const assign          = require('object-assign');
 const EventEmitter    = require('events').EventEmitter;
@@ -12,7 +12,6 @@ const CHANGE_EVENT = 'change';
 let _balance    = 0;
 let _saved      = 0;
 let _expense    = [];
-let _savings    = [];
 let _income     = [];
 
 function _add(entry) {
@@ -21,8 +20,6 @@ function _add(entry) {
 
     if (entry.type === 'expense') {
         _handleExpense(entry)
-    } else if (entry.type === 'savings') {
-        _handleSavings(entry)
     } else {
         _handleIncome(entry)
     }
@@ -33,7 +30,7 @@ function _add(entry) {
     reqwest({
         url: '/add-entry',
         method: 'post',
-        data: entry,
+        data: {data: JSON.stringify(entry)},
         success(data) {
             _update(data.entry)
         }
@@ -48,12 +45,10 @@ function _handleIncome(entry) {
 function _handleExpense(entry) {
     _expense.unshift(entry);
     _balance -= entry.value;
-}
 
-function _handleSavings(entry) {
-    _savings.unshift(entry);
-    _saved += entry.value;
-    _balance -= entry.value;
+    if (entry.category && entry.category.code === 'savings') {
+        _saved += entry.value;
+    }
 }
 
 function _remove(entry) {
@@ -63,12 +58,9 @@ function _remove(entry) {
         _expense.splice(i, 1);
         _balance += entry.value;
 
-    } else if (entry.type === 'savings') {
-        i = _savings.indexOf(entry);
-        _savings.splice(i ,1);
-        _balance    += entry.value;
-        _saved      -= entry.value;
-
+        if (entry.category && entry.category.code === 'savings') {
+            _saved -= entry.value;
+        }
     } else {
         i = _income.indexOf(entry);
         _income.splice(i, 1);
@@ -76,7 +68,7 @@ function _remove(entry) {
     }
 
     entry.balance = _balance;
-    entry.savings = _savings;
+    entry.savings = _saved;
 
     reqwest({
         url: '/remove-entry/',
@@ -89,15 +81,7 @@ function _remove(entry) {
 }
 
 function _update(entry) {
-    if (entry.type === 'savings') {
-        let toUpdate = _.find(_savings, function(v) {
-            return v.time == entry.time
-        });
-
-        let ind = _savings.indexOf(toUpdate);
-        assign(_savings[ind], entry);
-
-    } else if (entry.type === 'expense') {
+    if (entry.type === 'expense') {
         let toUpdate = _.find(_expense, function(v) {
             return v.time == entry.time
         });
@@ -129,7 +113,6 @@ function _setInitData(data) {
 }
 
 function _setData(data) {
-    _savings    = data.savings ? data.savings : [];
     _income     = data.income ? data.income : [];
     _expense    = data.expense ? data.expense : [];
 
@@ -167,13 +150,7 @@ var Data = assign(EventEmitter.prototype, {
     },
 
     getCurrentData(params) {
-        if (params.type === 'expense') {
-            return _expense
-        } else if (params.type === 'savings') {
-            return _savings
-        } else {
-            return _income
-        }
+        return params.type === 'expense' ? _expense : _income
     },
 
     setBalance(val) {
@@ -195,7 +172,6 @@ var Data = assign(EventEmitter.prototype, {
     getGraphData() {
         let expense = {},
             income = {},
-            savings = {},
             month = 0,
             year = 0,
             lastDay = 1,
@@ -221,18 +197,8 @@ var Data = assign(EventEmitter.prototype, {
 
             max = max > income[moment(entry.time, 'X').date()] ? max : income[moment(entry.time, 'X').date()];
         });
-        _.each(_savings, function(entry, i) {
-            let time = moment(entry.time, 'X').date();
-            lastDay = moment(entry.time, 'X').date() > lastDay ? moment(entry.time, 'X').date() : lastDay;
-            month = moment(entry.time, 'X').month();
-            year = moment(entry.time, 'X').year();
-            savings[time] = savings[time] ? savings[time] : 0;
-            savings[time] += entry.value;
 
-            max = max > savings[moment(entry.time, 'X').date()] ? max : savings[moment(entry.time, 'X').date()];
-        });
-
-        return {lastDay: lastDay, month: month, year: year, savings: savings, expense: expense, income: income, max: max}
+        return {lastDay: lastDay, month: month, year: year, expense: expense, income: income, max: max}
     },
 
     dispatcherIndex: Dispatcher.register(function(payload) {

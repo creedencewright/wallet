@@ -31,7 +31,7 @@
             &:after {
                 .pseudo();
                 .transition(all,.2s);
-                .transform(translate(0,0px));
+                transform: translate(0,0px);
                 opacity: 1;
                 width: 100%;
                 border-bottom: 1px dotted @blue;
@@ -52,7 +52,7 @@
                 color: lighten(@blue, 7%);
                 &:after {
                     .pseudo();
-                    .transform(translate(0,-4px));
+                    transform: translate(0,-4px);
                     opacity: 0;
                 }
             }
@@ -78,8 +78,8 @@
         }
 
         .entry {
-            .sizing();
             .transition();
+            box-sizing: border-box;
             padding: 26px 16px;
             position: relative;
 
@@ -88,14 +88,7 @@
                 color: @red;
 
                 .type-img {
-                    background-color: #ffebee;
-                }
-            }
-            &.savings {
-                color: @green;
-
-                .type-img {
-                    background-color: #C8E6C9;
+                    //background-color: #ffebee;
                 }
             }
             &.income {
@@ -109,7 +102,7 @@
             &:hover {
                 background-color: #fcfcfc;
                 .remove {
-                    .transform(scale(1) translate(0px,0));
+                    transform: scale(1) translate(0px,0);
                     opacity: 1;
                     visibility: visible;
                 }
@@ -119,8 +112,8 @@
                 .size(23px);
                 .sprite(40, 0);
                 .transition(all,.2s);
-                .transform(scale(.9) translate(5px,0));
-                .transform-origin(center, right);
+                transform-origin: right center;
+                transform: scale(.9) translate(5px,0);
                 opacity: 0;
                 visibility: hidden;
                 display: block;
@@ -132,10 +125,11 @@
 
             .type-img {
                 .size(60px);
-                margin-right: 20px;
+                margin-right: 14px;
                 border-radius: 50%;
                 display: inline-block;
                 vertical-align: middle;
+                position: relative;
             }
 
             .value {
@@ -162,11 +156,11 @@
     }
 
     .time-picker-wrap {
-        .sizing();
-        .box-shadow();
         .transition(all,.2s);
-        .transform-origin(right, top);
-        .transform(scale(.8) translate(5px,-5px));
+        transform-origin: right top;
+        transform: scale(.8) translate(5px,-5px);
+        box-shadow: 1px 2px 3px 0 rgba(0,0,0,.2);
+        box-sizing: border-box;
         z-index: 10;
         visibility: hidden;
         opacity: 0;
@@ -178,13 +172,13 @@
         top: 0;
 
         &.active {
-            .transform(scale(1) translate(0,30px));
+            transform: scale(1) translate(0,30px);
             opacity: 1;
             visibility: visible;
 
             .months {
                 > .month {
-                    .transform(translate(0, 0));
+                    transform: translate(0, 0);
                     opacity: 1;
                 }
             }
@@ -196,7 +190,7 @@
 
         .close {
             .transition(all,.4s);
-            .transform(translate(-0px,0px) scale(1));
+            transform: translate(-0px,0px) scale(1);
             right: 0;
             top: 0;
             opacity: 0;
@@ -215,8 +209,9 @@
             position: relative;
             width: 100%;
 
+
             > a {
-                .sizing();
+                box-sizing: border-box;
                 text-align: center;
                 padding: 8px 0;
                 float: left;
@@ -228,25 +223,25 @@
                 &:nth-child(2),
                 &:nth-child(3) {
                     .transition(all,.4s);
-                    .transform(translate(0, -5px));
+                    transform: translate(0, -5px);
                 }
                 &:nth-child(4),
                 &:nth-child(5),
                 &:nth-child(6) {
                     .transition(all,.5s);
-                    .transform(translate(0, -10px));
+                    transform: translate(0, -10px);
                 }
                 &:nth-child(7),
                 &:nth-child(8),
                 &:nth-child(9) {
                     .transition(all,.6s);
-                    .transform(translate(0, -15px));
+                    transform: translate(0, -15px);
                 }
                 &:nth-child(10),
                 &:nth-child(11),
                 &:nth-child(12) {
                     .transition(all,.7s);
-                    .transform(translate(0, -20px));
+                    transform: translate(0, -20px);
                 }
 
                 &.current {
@@ -269,7 +264,7 @@
         .graph-tooltip {
             .size(90px, auto);
             .transition(all,.6s);
-            .transform-origin(center, bottom);
+            transform-origin: center bottom;
             height: 55px;
             opacity: .7;
             border-radius: 5px;
@@ -282,7 +277,7 @@
 
             &.active {
                 .triangle {
-                    .transform(translate(0,0));
+                    transform: translate(0,0)   ;
                     opacity: 1;
                     visibility: visible;
                 }
@@ -290,7 +285,7 @@
 
             .triangle {
                 .transition(all,.2s, ease, .2s);
-                .transform(translate(0,-10px));
+                transform: translate(0,-10px);
                 opacity: 0;
                 visibility: hidden;
                 position: absolute;

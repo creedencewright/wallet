@@ -1,52 +1,57 @@
-var Dispatcher      = require('../dispatchers/app-dispatcher');
-var Constants       = require('../constants/app-constants');
-var assign          = require('object-assign');
-var EventEmitter    = require('events').EventEmitter;
-var _               = require('underscore');
-var reqwest         = require('reqwest');
+const Dispatcher      = require('../dispatchers/app-dispatcher');
+const assign          = require('object-assign');
+const EventEmitter    = require('events').EventEmitter;
+const _               = require('underscore');
+const reqwest         = require('reqwest');
 
-var CHANGE_EVENT = 'change';
+const CHANGE_EVENT = 'change';
 
-var _expenseTypes   = [];
-var _incomeTypes    = [];
+const _expenseTypes   = [];
+const _incomeTypes    = [];
 
-function _populate(types) {
-    _.each(types, function(type) {
-        if (type.type == 'income') {
-            _incomeTypes.push(type);
-        } else if (type.type == 'expense') {
-            _expenseTypes.push(type);
-        } else {
-            _incomeTypes.push(type);
-            _expenseTypes.push(type);
+function _fetch() {
+    reqwest({
+        url: '/types/fetch',
+        method: 'post',
+        success(data) {
+            _.each(data, function(type) {
+                if (type.type === 'expense') {
+                    _expenseTypes.push(type);
+                } else {
+                    _incomeTypes.push(type);
+                }
+            })
         }
     })
 }
 
 var Type = assign(EventEmitter.prototype, {
-    emitChange: function() {
+    emitChange() {
         this.emit(CHANGE_EVENT);
     },
 
-    addChangeListener: function(cb) {
+    addChangeListener(cb) {
         this.on(CHANGE_EVENT, cb);
     },
 
-    removeChangeListener: function(cb) {
+    removeChangeListener(cb) {
         this.removeListener(CHANGE_EVENT, cb);
     },
 
-    getExpenseTypes: function() {
+    getExpenseTypes() {
         return _expenseTypes;
     },
 
-    getIncomeTypes: function() {
+    getIncomeTypes() {
         return _incomeTypes;
     },
 
-    setTypesFromString: function(str) {
-        var types = JSON.parse(str);
-        _populate(types);
+    get() {
+        return _expenseTypes.concat(_incomeTypes)
+    },
+
+    fetch() {
+        _fetch();
     },
 
     dispatcherIndex: Dispatcher.register(function(payload) {
