@@ -128,6 +128,27 @@ function _fetch(params) {
     })
 }
 
+function _getTopCategories() {
+    let grouped = [];
+    _.each(_expense, function(e) {
+        if (!e.category) return;
+
+        var group = _.find(grouped, (el) => el.name === e.category.name);
+
+        if (group) {
+            var i = grouped.indexOf(group);
+            grouped[i].value += e.value;
+        } else {
+            grouped.push({name: e.category.name, value: e.value});
+        }
+    })
+
+    grouped = _.sortBy(grouped, (e) => -e.value);
+
+    //return grouped.slice(0, 4);
+    return grouped;
+}
+
 var Data = assign(EventEmitter.prototype, {
     emitChange() {
         this.emit(CHANGE_EVENT);
@@ -145,7 +166,7 @@ var Data = assign(EventEmitter.prototype, {
         this.removeListener(CHANGE_EVENT, cb);
     },
 
-    fetch(params) {
+    getByFilter(params) {
         _fetch(params)
     },
 
@@ -167,6 +188,19 @@ var Data = assign(EventEmitter.prototype, {
 
     getBalance() {
         return _balance;
+    },
+
+    getHighlights() {
+        let totalExpense    = 0;
+        let totalIncome     = 0;
+        _.each(_expense, function(e) { totalExpense += e.value });
+        _.each(_income, function(e) { totalIncome += e.value });
+
+        return {
+            categories: _getTopCategories(),
+            totalExpense: totalExpense,
+            totalIncome: totalIncome
+        }
     },
 
     getGraphData() {

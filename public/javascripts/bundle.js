@@ -37995,7 +37995,7 @@ var Info = React.createClass({
                     { className: 'text' },
                     'Balance:'
                 ),
-                ' ',
+                ' $',
                 this.props.data.balance
             ),
             React.createElement(
@@ -38006,7 +38006,7 @@ var Info = React.createClass({
                     { className: 'text' },
                     'Savings:'
                 ),
-                ' ',
+                ' $',
                 this.props.data.savings
             )
         );
@@ -38068,6 +38068,7 @@ var AddExpense = React.createClass({
 
     _onChange: function _onChange() {
         var types = this.getCurrentTypes(this.state.tab);
+
         this.setState({
             types: types.all,
             currentTypes: types.current
@@ -38099,7 +38100,10 @@ var AddExpense = React.createClass({
 
     componentWillUpdate: function componentWillUpdate(props) {
         if (props.tab !== this.props.tab) {
+            var _types = this.getCurrentTypes(props.tab);
             this.state.tab = props.tab;
+            this.state.currentTypes = _types.current;
+            this.state.types = _types.all;
         }
     },
 
@@ -38232,7 +38236,7 @@ function _getCurrentData(params) {
     return Data.getCurrentData(params);
 }
 function _fetch(params) {
-    return Data.fetch(params);
+    return Data.getByFilter(params);
 }
 
 var Expense = React.createClass({
@@ -38306,23 +38310,30 @@ var Expense = React.createClass({
         return React.createElement(
             'div',
             null,
-            React.createElement(Highlights, null),
             React.createElement(
                 'div',
                 { className: 'container' },
                 React.createElement(
                     'div',
-                    { className: 'col-sm-9 title-wrap' },
-                    React.createElement(AddExpense, { tab: this.state.tab, addEvent: this.toggleForm }),
-                    React.createElement(Tabs, { onClick: this.setTab, tab: this.state.tab }),
-                    React.createElement(TimePicker, { close: this.togglePicker, opened: this.state.monthPicker, changeHandler: this.monthChange, month: this.state.month }),
+                    { className: 'col-sm-8 table-wrap' },
                     React.createElement(
-                        'a',
-                        { onClick: this.togglePicker, href: 'javascript:void(0);', className: 'link current-month' },
-                        moment().month(this.state.month).format('MMMM')
+                        'div',
+                        { className: 'title-wrap' },
+                        React.createElement(AddExpense, { tab: this.state.tab, addEvent: this.toggleForm }),
+                        React.createElement(Tabs, { onClick: this.setTab, tab: this.state.tab }),
+                        React.createElement(TimePicker, { close: this.togglePicker, opened: this.state.monthPicker, changeHandler: this.monthChange, month: this.state.month }),
+                        React.createElement(
+                            'a',
+                            { onClick: this.togglePicker, href: 'javascript:void(0);', className: 'link current-month' },
+                            moment().month(this.state.month).format('MMMM')
+                        )
                     ),
-                    React.createElement('hr', null),
                     React.createElement(Entries, { loading: this.state.loading, data: this.state.data })
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'col-sm-4 highlights-wrap' },
+                    React.createElement(Highlights, { data: this.state.data })
                 )
             )
         );
@@ -38365,7 +38376,7 @@ var Entries = React.createClass({
     render: function render() {
         return React.createElement(
             'div',
-            { className: this.props.loading ? 'loading entries-wrap expense' : 'entries-wrap expense' },
+            { className: this.props.loading ? 'loading row entries-wrap expense' : 'row entries-wrap expense' },
             this.props.data.map(function (entry, i) {
                 return React.createElement(Entry, { entry: entry, key: i });
             })
@@ -38381,12 +38392,11 @@ var Entry = React.createClass({
     },
     render: function render() {
         var entry = this.props.entry,
-            sign = entry.type === 'expense' ? '-' : '+',
             time = entry ? moment(entry.time, 'X') : 0;
 
         return React.createElement(
             'div',
-            { className: 'col-sm-12' },
+            { className: 'col-sm-12 entry-wrap' },
             React.createElement(
                 'div',
                 { className: entry.type + ' entry' },
@@ -38394,21 +38404,25 @@ var Entry = React.createClass({
                 React.createElement('div', { className: entry.category ? 'type-img ' + entry.category.code : 'type-img none' }),
                 React.createElement(
                     'div',
-                    { className: 'value' },
+                    { className: entry.category ? 'value-wrap w-cat' : 'value-wrap' },
                     React.createElement(
                         'span',
-                        null,
-                        sign + entry.value
+                        { className: 'value' },
+                        '$',
+                        entry.value
                     ),
-                    React.createElement('br', null),
                     React.createElement(
                         'span',
-                        { className: 'time' },
-                        moment(time).calendar()
+                        { className: 'category' },
+                        entry.category ? entry.category.name : ''
                     )
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'time' },
+                    moment(time).calendar()
                 )
-            ),
-            React.createElement('hr', null)
+            )
         );
     }
 });
@@ -38618,19 +38632,26 @@ var Graph = React.createClass({
     },
 
     render: function render() {
+        var day = moment().set({
+            date: this.state.days,
+            month: this.state.month,
+            year: this.state.year
+        }).format('MMMM, D');
+
         return React.createElement(
             'div',
-            { className: 'graph-wrap', style: { height: 'auto' } },
+            { className: 'graph-wrap', style: { height: 'auto', width: _w + 100 } },
             React.createElement(Tooltip, { data: this.state.data, rect: this.state.rect, tooltip: this.state.tooltip }),
             React.createElement(
                 'div',
                 { className: 't-max' },
+                '$',
                 this.state.max
             ),
             React.createElement(
                 'div',
                 { className: 'r-max' },
-                this.state.days
+                day
             ),
             React.createElement('div', { className: 'min' }),
             React.createElement('svg', { ref: 'svg', style: { height: this.state.height + 20 }, id: 'svgGraphWrap' }),
@@ -38719,36 +38740,6 @@ var Tooltip = React.createClass({
     }
 });
 
-var Dash = React.createClass({
-    displayName: 'Dash',
-
-    getSumm: function getSumm(arr) {
-        var sum = 0;
-        _.each(arr, function (v) {
-            return sum += parseInt(v);
-        });
-
-        return sum;
-    },
-
-    render: function render() {
-        return React.createElement(
-            'div',
-            { className: 'dash' },
-            React.createElement(
-                'div',
-                { className: 'value' },
-                this.getSumm(_.values(this.props.data.expense))
-            ),
-            React.createElement(
-                'div',
-                { className: 'value' },
-                this.getSumm(_.values(this.props.data.income))
-            )
-        );
-    }
-});
-
 module.exports = Graph;
 
 
@@ -38761,7 +38752,7 @@ var React = require('react');
 var User = require('../../stores/user-store');
 var Data = require('../../stores/data-store');
 
-function getMonthHighlights() {
+function _get() {
     return Data.getHighlights();
 }
 
@@ -38769,17 +38760,79 @@ var Highlights = React.createClass({
     displayName: 'Highlights',
 
     getInitialState: function getInitialState() {
-        return {};
-        return this.setState(getMonthHighlights());
+        return {
+            data: _get()
+        };
+    },
+
+    componentWillMount: function componentWillMount() {
+        Data.addChangeListener(this._onChange);
+    },
+
+    _onChange: function _onChange() {
+        this.setState({
+            data: _get()
+        });
+    },
+
+    componentWillUnmount: function componentWillUnmount() {
+        Data.removeChangeListener(this._onChange);
     },
 
     render: function render() {
         return React.createElement(
             'div',
-            { className: 'highlights row' },
-            React.createElement('div', { className: 'expense col-sm-4' }),
-            React.createElement('div', { className: 'income col-sm-4' }),
-            React.createElement('div', { className: 'savings col-sm-4' })
+            { className: 'highlights row clearfix' },
+            React.createElement(
+                'div',
+                { className: 'title' },
+                'Highlights'
+            ),
+            React.createElement(
+                'div',
+                { className: 'row total-wrap' },
+                React.createElement(
+                    'div',
+                    { className: 'total expense' },
+                    '$',
+                    this.state.data.totalExpense
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'total income' },
+                    '$',
+                    this.state.data.totalIncome
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'row categories' },
+                this.state.data.categories.map(function (e, i) {
+                    return React.createElement(Category, { key: i, value: e.value, name: e.name });
+                })
+            )
+        );
+    }
+});
+
+var Category = React.createClass({
+    displayName: 'Category',
+
+    render: function render() {
+        return React.createElement(
+            'div',
+            { className: 'category' },
+            React.createElement(
+                'div',
+                { className: 'value' },
+                '$',
+                this.props.value
+            ),
+            React.createElement(
+                'div',
+                { className: 'name' },
+                this.props.name
+            )
         );
     }
 });
@@ -39469,6 +39522,31 @@ function _fetch(params) {
     });
 }
 
+function _getTopCategories() {
+    var grouped = [];
+    _.each(_expense, function (e) {
+        if (!e.category) return;
+
+        var group = _.find(grouped, function (el) {
+            return el.name === e.category.name;
+        });
+
+        if (group) {
+            var i = grouped.indexOf(group);
+            grouped[i].value += e.value;
+        } else {
+            grouped.push({ name: e.category.name, value: e.value });
+        }
+    });
+
+    grouped = _.sortBy(grouped, function (e) {
+        return -e.value;
+    });
+
+    //return grouped.slice(0, 4);
+    return grouped;
+}
+
 var Data = assign(EventEmitter.prototype, {
     emitChange: function emitChange() {
         this.emit(CHANGE_EVENT);
@@ -39486,7 +39564,7 @@ var Data = assign(EventEmitter.prototype, {
         this.removeListener(CHANGE_EVENT, cb);
     },
 
-    fetch: function fetch(params) {
+    getByFilter: function getByFilter(params) {
         _fetch(params);
     },
 
@@ -39508,6 +39586,23 @@ var Data = assign(EventEmitter.prototype, {
 
     getBalance: function getBalance() {
         return _balance;
+    },
+
+    getHighlights: function getHighlights() {
+        var totalExpense = 0;
+        var totalIncome = 0;
+        _.each(_expense, function (e) {
+            totalExpense += e.value;
+        });
+        _.each(_income, function (e) {
+            totalIncome += e.value;
+        });
+
+        return {
+            categories: _getTopCategories(),
+            totalExpense: totalExpense,
+            totalIncome: totalIncome
+        };
     },
 
     getGraphData: function getGraphData() {

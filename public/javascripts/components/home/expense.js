@@ -14,7 +14,7 @@ function _getCurrentData(params) {
     return Data.getCurrentData(params);
 }
 function _fetch(params) {
-    return Data.fetch(params);
+    return Data.getByFilter(params);
 }
 
 const Expense = React.createClass({
@@ -85,17 +85,20 @@ const Expense = React.createClass({
     render() {
         return (
             <div>
-                <Highlights />
                 <div className="container">
-                    <div className="col-sm-9 title-wrap">
-                        <AddExpense tab={this.state.tab} addEvent={this.toggleForm} />
-                        <Tabs onClick={this.setTab} tab={this.state.tab} />
-                        <TimePicker close={this.togglePicker} opened={this.state.monthPicker} changeHandler={this.monthChange} month={this.state.month} />
-                        <a onClick={this.togglePicker} href="javascript:void(0);" className="link current-month">
-                            {moment().month(this.state.month).format('MMMM')}
-                        </a>
-                        <hr/>
+                    <div className="col-sm-8 table-wrap">
+                        <div className="title-wrap">
+                            <AddExpense tab={this.state.tab} addEvent={this.toggleForm} />
+                            <Tabs onClick={this.setTab} tab={this.state.tab} />
+                            <TimePicker close={this.togglePicker} opened={this.state.monthPicker} changeHandler={this.monthChange} month={this.state.month} />
+                            <a onClick={this.togglePicker} href="javascript:void(0);" className="link current-month">
+                                {moment().month(this.state.month).format('MMMM')}
+                            </a>
+                        </div>
                         <Entries loading={this.state.loading} data={this.state.data} />
+                    </div>
+                    <div className="col-sm-4 highlights-wrap">
+                        <Highlights data={this.state.data} />
                     </div>
                 </div>
             </div>
@@ -126,7 +129,7 @@ const Tabs = React.createClass({
 const Entries = React.createClass({
     render: function() {
         return (
-            <div className={this.props.loading ? 'loading entries-wrap expense' : 'entries-wrap expense'}>
+            <div className={this.props.loading ? 'loading row entries-wrap expense' : 'row entries-wrap expense'}>
                 {this.props.data.map((entry, i) =>
                         <Entry entry={entry} key={i} />
                 )}
@@ -141,20 +144,19 @@ const Entry = React.createClass({
     },
     render() {
         let entry   = this.props.entry,
-            sign    = entry.type === 'expense' ? '-' : '+',
             time    = entry ? moment(entry.time, 'X') : 0;
         
         return (
-            <div className="col-sm-12">
+            <div className="col-sm-12 entry-wrap">
                 <div className={entry.type + ' entry'}>
                     <a href="javascript:void(0);" onClick={this.remove} className="remove"></a>
                     <div className={entry.category ? `type-img ${entry.category.code}` : 'type-img none'}></div>
-                    <div className="value">
-                        <span>{sign + entry.value }</span><br/>
-                        <span className="time">{moment(time).calendar()}</span>
+                    <div className={entry.category ? "value-wrap w-cat" : 'value-wrap'}>
+                        <span className="value">${entry.value }</span>
+                        <span className="category">{entry.category ? entry.category.name : '' }</span>
                     </div>
+                    <div className="time">{moment(time).calendar()}</div>
                 </div>
-                <hr/>
             </div>
         )
     }

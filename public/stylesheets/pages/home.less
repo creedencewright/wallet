@@ -2,6 +2,8 @@
 
 .home {
     .title-wrap {
+        margin-bottom: 20px;
+
         hr {
             margin-bottom: 0;
         }
@@ -58,7 +60,21 @@
             }
         }
     }
+
+    .table-wrap {
+        &:before {
+            .pseudo();
+            width: 1px;
+            background-color: #eee;
+            right: -11px;
+            top: 0;
+            height: 100%;
+        }
+    }
+
     .entries-wrap {
+        position: relative;
+
         &.loading {
             position: relative;
 
@@ -77,10 +93,15 @@
             margin: 0;
         }
 
+        .entry-wrap {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
         .entry {
             .transition();
             box-sizing: border-box;
-            padding: 26px 16px;
+            padding: 6px 16px;
             position: relative;
 
 
@@ -90,17 +111,48 @@
                 .type-img {
                     //background-color: #ffebee;
                 }
+
+                .value {
+                    color: @red;
+                }
             }
             &.income {
                 color: @green;
 
+                .value {
+                    color: @green;
+                }
+
                 .type-img {
-                    background-color: #C8E6C9;
+                    //background-color: #C8E6C9;
                 }
             }
 
             &:hover {
                 background-color: #fcfcfc;
+
+                &.expense {
+                    .value-wrap {
+                        .value {
+                            background-color: rgba(244, 67, 54, .4);
+                            color: #fff;
+                        }
+                    }
+                }
+
+                &.income {
+                    .value-wrap {
+                        .value {
+                            background-color: rgba(76,175,80 ,.4);
+                            color: #fff;
+                        }
+                    }
+                }
+
+                .time {
+                    transform: translate(-40px,0);
+                }
+
                 .remove {
                     transform: scale(1) translate(0px,0);
                     opacity: 1;
@@ -125,34 +177,121 @@
 
             .type-img {
                 .size(60px);
-                margin-right: 14px;
+                margin-right: 10px;
                 border-radius: 50%;
                 display: inline-block;
                 vertical-align: middle;
                 position: relative;
             }
 
-            .value {
-                font-size: 18px;
+            .value-wrap {
                 display: inline-block;
                 line-height: 1;
                 vertical-align: middle;
 
-                .time {
+                .value {
+                    .transition(all,.2s);
+                    color: @red;
+                    border-radius: 3px;
+                    display: inline-block;
+                    padding: 5px;
+                    font-size: 18px;
+                }
+
+                .category {
+                    display: block;
                     color: #B0BEC5;
-                    font-size: 11px;
+                    padding-left: 5px;
+                    font-size: 12px;
+                    text-transform: capitalize;
+                }
+            }
+
+            &.income .value-wrap .value {
+                color: @green
+            }
+
+
+            .time {
+                .transition(all,.2s);
+                float: right;
+                padding-left: 20px;
+                margin-top: 21px;
+                display: inline-block;
+                vertical-align: middle;
+                color: #B0BEC5;
+                font-size: 11px;
+            }
+        }
+    }
+
+    .highlights-wrap {
+        padding-left: 50px;
+    }
+
+    .highlights {
+        padding-top: 7px;
+
+        .title {
+            text-align: left;
+            text-transform: uppercase;
+            color: @blue;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .total-wrap {
+            margin-bottom: 30px;
+            font-size: 0;
+        }
+
+        .total {
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 30px;
+            padding-left: 13px;
+            font-size: 32px;
+            font-weight: 300;
+            text-align: right;
+            text-align: left;
+
+            &.expense {
+                color: @red;
+            }
+            &.income {
+                color: @green;
+            }
+        }
+
+        .categories {
+            .category {
+                text-align: right;
+                text-align: left;
+                display: inline-block;
+                vertical-align: top;
+                margin-right: 24px;
+                padding-left: 14px;
+                margin-bottom: 16px;
+
+                .value {
+                    font-size: 18px;
+                    color: @red;
+                    opacity: .6;
+                }
+
+                .name {
+                    white-space: nowrap;
+                    color: #B0BEC5;
+                    font-size: 12px;
+                    text-transform: capitalize;
                 }
             }
         }
     }
 
-    .highlights {
-        margin-bottom: 30px;
-    }
-
     .current-month {
         float: right;
-        top: 7px;
+        top: 10px;
     }
 
     .time-picker-wrap {
@@ -258,7 +397,7 @@
         position: relative;
         padding: 0 50px;
         width: 1200px;
-        margin: 0 auto;
+        margin: 0 auto 50px;
         height: 320px;
 
         .graph-tooltip {
@@ -326,20 +465,6 @@
             }
         }
 
-        .dash {
-            position: absolute;
-            left: 90px;
-            top: 100%;
-            margin-top: 20px;
-
-            .value {
-                font: 12px/1 @font-family-base;
-                text-align: center;
-                width: 65px;
-                display: inline-block;
-            }
-        }
-
         .min {
             position: absolute;
             left: 40px;
@@ -348,14 +473,15 @@
 
         .r-max {
             position: absolute;
-            right: 40px;
+            right: 30px;
             bottom: 0;
         }
 
         .t-max {
             position: absolute;
             top: 0;
-            left: 40px;
+            left: 100%;
+            margin-left: -30px;
         }
 
         svg {

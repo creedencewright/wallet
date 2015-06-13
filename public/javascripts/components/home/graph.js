@@ -198,11 +198,17 @@ const Graph = React.createClass({
     },
 
     render() {
+        let day = moment().set({
+            date: this.state.days,
+            month: this.state.month,
+            year: this.state.year
+        }).format('MMMM, D');
+
         return (
-            <div className="graph-wrap" style={{height: 'auto'}} >
+            <div className="graph-wrap" style={{height: 'auto', width: _w + 100}} >
                 <Tooltip data={this.state.data} rect={this.state.rect} tooltip={this.state.tooltip} />
-                <div className="t-max">{this.state.max}</div>
-                <div className="r-max">{this.state.days}</div>
+                <div className="t-max">${this.state.max}</div>
+                <div className="r-max">{day}</div>
                 <div className="min"></div>
                 <svg ref="svg" style={{height: this.state.height+20}} id="svgGraphWrap"></svg>
                 <a href='javascript:void(0)' onClick={this.toggleHeight}>{this.state.big ? 'Less' : 'More'}</a>
@@ -275,23 +281,5 @@ const Tooltip = React.createClass({
         )
     }
 });
-
-const Dash = React.createClass({
-    getSumm(arr) {
-        let sum = 0;
-        _.each(arr, (v) => sum += parseInt(v));
-
-        return sum;
-    },
-
-    render() {
-        return (
-            <div className="dash">
-                <div className="value">{this.getSumm(_.values(this.props.data.expense))}</div>
-                <div className="value">{this.getSumm(_.values(this.props.data.income))}</div>
-            </div>
-        )
-    }
-})
 
 module.exports = Graph;

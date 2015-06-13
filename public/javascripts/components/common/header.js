@@ -47,9 +47,9 @@ var Info = React.createClass({
         return (
             <div className={"col-sm-6 money-now " + this.props.data.color}>
                 <div className="money-now-val">
-                    <span className="text">Balance:</span> {this.props.data.balance}</div>
+                    <span className="text">Balance:</span> ${this.props.data.balance}</div>
                 <div className="savings">
-                    <span className="text">Savings:</span> {this.props.data.savings}</div>
+                    <span className="text">Savings:</span> ${this.props.data.savings}</div>
             </div>
         )
     }

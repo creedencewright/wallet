@@ -41,6 +41,7 @@ const AddExpense = React.createClass({
 
     _onChange() {
         let types = this.getCurrentTypes(this.state.tab);
+
         this.setState({
             types: types.all,
             currentTypes: types.current
@@ -68,7 +69,10 @@ const AddExpense = React.createClass({
 
     componentWillUpdate(props) {
         if (props.tab !== this.props.tab) {
+            let types = this.getCurrentTypes(props.tab);
             this.state.tab = props.tab;
+            this.state.currentTypes = types.current;
+            this.state.types = types.all;
         }
     },
 
