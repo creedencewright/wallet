@@ -37990,24 +37990,8 @@ var Info = React.createClass({
             React.createElement(
                 'div',
                 { className: 'money-now-val' },
-                React.createElement(
-                    'span',
-                    { className: 'text' },
-                    'Balance:'
-                ),
-                ' $',
+                '$',
                 this.props.data.balance
-            ),
-            React.createElement(
-                'div',
-                { className: 'savings' },
-                React.createElement(
-                    'span',
-                    { className: 'text' },
-                    'Savings:'
-                ),
-                ' $',
-                this.props.data.savings
             )
         );
     }
@@ -38231,6 +38215,7 @@ var _ = require('underscore');
 var moment = require('moment');
 var Highlights = require('./highlights');
 var TimePicker = require('./time-picker');
+var Graph = require('./graph');
 
 function _getCurrentData(params) {
     return Data.getCurrentData(params);
@@ -38315,6 +38300,20 @@ var Expense = React.createClass({
                 { className: 'container' },
                 React.createElement(
                     'div',
+                    { className: 'main-info-wrap' },
+                    React.createElement(
+                        'div',
+                        { className: 'col-sm-12 col-md-8 col-lg-8' },
+                        React.createElement(Graph, null)
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'col-sm-12 col-md-4 col-lg-4' },
+                        React.createElement(Highlights, { data: this.state.data })
+                    )
+                ),
+                React.createElement(
+                    'div',
                     { className: 'col-sm-8 table-wrap' },
                     React.createElement(
                         'div',
@@ -38329,11 +38328,6 @@ var Expense = React.createClass({
                         )
                     ),
                     React.createElement(Entries, { loading: this.state.loading, data: this.state.data })
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'col-sm-4 highlights-wrap' },
-                    React.createElement(Highlights, { data: this.state.data })
                 )
             )
         );
@@ -38430,7 +38424,7 @@ var Entry = React.createClass({
 module.exports = Expense;
 
 
-},{"../../actions/app-actions":204,"../../stores/data-store":220,"../../stores/user-store":222,"./add-expense":208,"./highlights":211,"./time-picker":213,"moment":5,"react":199,"underscore":203}],210:[function(require,module,exports){
+},{"../../actions/app-actions":204,"../../stores/data-store":220,"../../stores/user-store":222,"./add-expense":208,"./graph":210,"./highlights":211,"./time-picker":213,"moment":5,"react":199,"underscore":203}],210:[function(require,module,exports){
 'use strict';
 
 var _savingsColor = '#03A9F4';
@@ -38445,10 +38439,9 @@ var Snap = require('snapsvg');
 var moment = require('moment');
 var Data = require('../../stores/data-store');
 var _ = require('underscore');
-var _w = 1100;
-var _maxH = 300;
 
-var _h = 60;
+var _w = 0;
+var _h = 300;
 var _lines = {};
 var _s = false;
 var _d = 0;
@@ -38471,8 +38464,6 @@ function _build(max, data) {
         pins.push({ x: x, y: y, day: day, value: entry });
     });
 
-    //line += `${_w},${_h}`;
-
     return { line: line, pins: pins };
 }
 
@@ -38490,12 +38481,15 @@ var Graph = React.createClass({
     },
 
     componentDidMount: function componentDidMount() {
-        var svg = this.refs.svg.getDOMNode();
+        var svg = this.refs.svg.getDOMNode(),
+            rect = svg.getBoundingClientRect();
+
+        _w = rect.width;
 
         _s = Snap('#svgGraphWrap');
         this.setState({
             data: _get(),
-            rect: svg.getBoundingClientRect()
+            rect: rect
         });
         this.draw();
     },
@@ -38580,7 +38574,7 @@ var Graph = React.createClass({
 
             pcover.animate({ 'fill-opacity': '1' }, 400);
             p.animate({ fill: '#fff', 'stroke-opacity': '1' }, 400);
-            p.hover(this.pinHover.bind(this, p), this.pinHoverLeave);
+            p.hover(this.pinHover.bind(this, p), this.pinHoverLeave.bind(this, p));
             pcover.hover(this.pinHover.bind(this, p), this.pinHoverLeave);
 
             _pins[line].pin.push(p);
@@ -38598,7 +38592,8 @@ var Graph = React.createClass({
         this._onChange();
     },
 
-    pinHoverLeave: function pinHoverLeave() {
+    pinHoverLeave: function pinHoverLeave(pin) {
+        pin.animate({ r: 2 }, 50);
         this.tooltipTimeout = setTimeout((function () {
             this.setState({
                 tooltip: {
@@ -38616,6 +38611,8 @@ var Graph = React.createClass({
 
         var svg = this.refs.svg.getDOMNode();
         var svgRect = svg.getBoundingClientRect();
+
+        pin.animate({ r: 5 }, 200, mina.easeinout);
 
         this.setState({
             tooltip: {
@@ -38640,7 +38637,7 @@ var Graph = React.createClass({
 
         return React.createElement(
             'div',
-            { className: 'graph-wrap', style: { height: 'auto', width: _w + 100 } },
+            { className: 'graph-wrap' },
             React.createElement(Tooltip, { data: this.state.data, rect: this.state.rect, tooltip: this.state.tooltip }),
             React.createElement(
                 'div',
@@ -38653,13 +38650,7 @@ var Graph = React.createClass({
                 { className: 'r-max' },
                 day
             ),
-            React.createElement('div', { className: 'min' }),
-            React.createElement('svg', { ref: 'svg', style: { height: this.state.height + 20 }, id: 'svgGraphWrap' }),
-            React.createElement(
-                'a',
-                { href: 'javascript:void(0)', onClick: this.toggleHeight },
-                this.state.big ? 'Less' : 'More'
-            )
+            React.createElement('svg', { ref: 'svg', id: 'svgGraphWrap' })
         );
     }
 });
@@ -38782,34 +38773,38 @@ var Highlights = React.createClass({
     render: function render() {
         return React.createElement(
             'div',
-            { className: 'highlights row clearfix' },
+            { className: 'highlights-wrap' },
             React.createElement(
                 'div',
-                { className: 'title' },
-                'Highlights'
-            ),
-            React.createElement(
-                'div',
-                { className: 'row total-wrap' },
+                { className: 'highlights row clearfix' },
                 React.createElement(
                     'div',
-                    { className: 'total expense' },
-                    '$',
-                    this.state.data.totalExpense
+                    { className: 'title' },
+                    'Highlights'
                 ),
                 React.createElement(
                     'div',
-                    { className: 'total income' },
-                    '$',
-                    this.state.data.totalIncome
+                    { className: 'row total-wrap' },
+                    React.createElement(
+                        'div',
+                        { className: 'total expense' },
+                        '$',
+                        this.state.data.totalExpense
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'total income' },
+                        '$',
+                        this.state.data.totalIncome
+                    )
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'row categories' },
+                    this.state.data.categories.map(function (e, i) {
+                        return React.createElement(Category, { key: i, value: e.value, name: e.name });
+                    })
                 )
-            ),
-            React.createElement(
-                'div',
-                { className: 'row categories' },
-                this.state.data.categories.map(function (e, i) {
-                    return React.createElement(Category, { key: i, value: e.value, name: e.name });
-                })
             )
         );
     }
@@ -38848,7 +38843,6 @@ module.exports = Highlights;
 var React = require('react');
 var User = require('../../stores/user-store');
 var Expense = require('./expense');
-var Graph = require('./graph');
 
 var Home = React.createClass({
     displayName: 'Home',
@@ -38862,7 +38856,6 @@ var Home = React.createClass({
         return React.createElement(
             'div',
             { className: 'home clearfix' },
-            React.createElement(Graph, null),
             React.createElement(Expense, null)
         );
     }
@@ -38871,7 +38864,7 @@ var Home = React.createClass({
 module.exports = Home;
 
 
-},{"../../stores/user-store":222,"./expense":209,"./graph":210,"react":199}],213:[function(require,module,exports){
+},{"../../stores/user-store":222,"./expense":209,"react":199}],213:[function(require,module,exports){
 'use strict';
 
 var React = require('react');

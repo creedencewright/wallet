@@ -25,15 +25,17 @@
   "description": "yeap",
   "main": "app.js",
   "devDependencies": {
+    "babelify": "^6.1.2",
+    "browserify": "^10.2.3",
+    "gaze": "^0.5.1",
     "gulp": "^3.8.11",
     "gulp-less": "^3.0.3",
     "gulp-livereload": "^3.8.0",
-    "browserify": "^10.2.3",
-    "babelify": "^6.1.2",
-    "gaze": "^0.5.1",
     "gulp-minify-css": "^1.1.1",
     "gulp-notify": "^2.2.0",
-    "gulp-plumber": "^1.0.1"
+    "gulp-plumber": "^1.0.1",
+    "gulp.spritesmith": "^3.8.2",
+    "merge-stream": "^0.1.7"
   },
   "repository": {
     "type": "git",

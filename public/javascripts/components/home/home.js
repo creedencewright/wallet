@@ -3,7 +3,6 @@
 const React     = require('react');
 const User      = require('../../stores/user-store');
 const Expense   = require('./expense');
-const Graph     = require('./graph');
 
 const Home = React.createClass({
     getInitialState() {
@@ -14,7 +13,6 @@ const Home = React.createClass({
     render() {
         return (
             <div className="home clearfix">
-                <Graph />
                 <Expense />
             </div>
         )

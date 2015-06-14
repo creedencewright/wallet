@@ -6,7 +6,7 @@
         &:after {
             .pseudo();
             .size(30px, 31px);
-            .sprite(0, 40);
+            .sprite(@entry-groceries);
             position: absolute;
             left: 13px;
             top: 15px;
@@ -16,7 +16,7 @@
         &:after {
             .pseudo();
             .size(40px, 24px);
-            .sprite(40, 40);
+            //.sprite(40, 40);
             position: absolute;
             left: 11px;
             top: 18px;
@@ -26,7 +26,7 @@
         &:after {
             .pseudo();
             .size(37px, 31px);
-            .sprite(240, 40);
+            .sprite(@entry-savings);
             opacity: .8;
             position: absolute;
             left: 15px;
@@ -36,8 +36,7 @@
     &.transport {
         &:after {
             .pseudo();
-            .size(41px, 25px);
-            .sprite(140, 40);
+            .sprite(@entry-transport);
             opacity: .8;
             position: absolute;
             left: 11px;
@@ -47,33 +46,82 @@
     &.clothes {
         &:after {
             .pseudo();
-            .size(35px, 25px);
-            .sprite(200, 40);
+            .sprite(@entry-clothes);
             opacity: .8;
             position: absolute;
             left: 14px;
             top: 17px;
         }
     }
+    &.travel {
+        &:after {
+            .pseudo();
+            .sprite(@entry-travel);
+            opacity: .8;
+            position: absolute;
+            left: 15px;
+            top: 15px;
+        }
+    }
+    &.personal {
+        &:after {
+            .pseudo();
+            .sprite(@entry-personal);
+            opacity: .8;
+            position: absolute;
+            left: 19px;
+            top: 12px;
+        }
+    }
+    &.gadgets {
+        &:after {
+            .pseudo();
+            .sprite(@entry-gadgets);
+            opacity: .8;
+            position: absolute;
+            left: 14px;
+            top: 17px;
+        }
+    }
+    &.house {
+        &:after {
+            .pseudo();
+            .sprite(@entry-house);
+            opacity: .8;
+            position: absolute;
+            left: 16px;
+            top: 13px;
+        }
+    }
+    &.gifts {
+        &:after {
+            .pseudo();
+            .sprite(@entry-gifts);
+            opacity: .8;
+            position: absolute;
+            left: 14px;
+            top: 15px;
+        }
+    }
     &.cafes {
         &:after {
             .pseudo();
             .size(29px, 35px);
-            .sprite(280, 40);
+            .sprite(@entry-cafes);
             opacity: .8;
             position: absolute;
             left: 14px;
             top: 10px;
         }
     }
-    &.health {
+    &.cell {
         &:after {
             .pseudo();
             .size(29px, 35px);
-            .sprite(280, 40);
+            .sprite(@entry-cell);
             opacity: .8;
             position: absolute;
-            left: 14px;
+            left: 19px;
             top: 10px;
         }
     }

@@ -9,6 +9,7 @@ const _             = require('underscore');
 const moment        = require('moment');
 const Highlights    = require('./highlights');
 const TimePicker    = require('./time-picker');
+const Graph         = require('./graph');
 
 function _getCurrentData(params) {
     return Data.getCurrentData(params);
@@ -86,6 +87,14 @@ const Expense = React.createClass({
         return (
             <div>
                 <div className="container">
+                    <div className="main-info-wrap">
+                        <div className="col-sm-12 col-md-8 col-lg-8">
+                            <Graph />
+                        </div>
+                        <div className="col-sm-12 col-md-4 col-lg-4">
+                            <Highlights data={this.state.data} />
+                        </div>
+                    </div>
                     <div className="col-sm-8 table-wrap">
                         <div className="title-wrap">
                             <AddExpense tab={this.state.tab} addEvent={this.toggleForm} />
@@ -96,9 +105,6 @@ const Expense = React.createClass({
                             </a>
                         </div>
                         <Entries loading={this.state.loading} data={this.state.data} />
-                    </div>
-                    <div className="col-sm-4 highlights-wrap">
-                        <Highlights data={this.state.data} />
                     </div>
                 </div>
             </div>

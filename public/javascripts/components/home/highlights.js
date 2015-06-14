@@ -31,14 +31,16 @@ const Highlights = React.createClass({
 
     render() {
         return (
-            <div className="highlights row clearfix">
-                <div className="title">Highlights</div>
-                <div className="row total-wrap">
-                    <div className="total expense">${this.state.data.totalExpense}</div>
-                    <div className="total income">${this.state.data.totalIncome}</div>
-                </div>
-                <div className="row categories">
-                    {this.state.data.categories.map((e, i) => <Category key={i} value={e.value} name={e.name} />)}
+            <div className="highlights-wrap">
+                <div className="highlights row clearfix">
+                    <div className="title">Highlights</div>
+                    <div className="row total-wrap">
+                        <div className="total expense">${this.state.data.totalExpense}</div>
+                        <div className="total income">${this.state.data.totalIncome}</div>
+                    </div>
+                    <div className="row categories">
+                        {this.state.data.categories.map((e, i) => <Category key={i} value={e.value} name={e.name} />)}
+                    </div>
                 </div>
             </div>
         )

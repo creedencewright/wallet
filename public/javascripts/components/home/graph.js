@@ -12,10 +12,9 @@ const Snap      = require('snapsvg');
 const moment    = require('moment');
 const Data      = require('../../stores/data-store');
 const _         = require('underscore');
-const _w        = 1100;
-const _maxH     = 300;
 
-let _h      = 60;
+let _w      = 0;
+let _h      = 300;
 let _lines  = {};
 let _s      = false;
 let _d      = 0;
@@ -38,8 +37,6 @@ function _build(max, data) {
         pins.push({x:x,y:y,day:day,value:entry});
     });
 
-    //line += `${_w},${_h}`;
-
     return {line: line, pins: pins}
 }
 
@@ -55,12 +52,15 @@ const Graph = React.createClass({
     },
 
     componentDidMount() {
-        let svg = this.refs.svg.getDOMNode();
+        let svg = this.refs.svg.getDOMNode(),
+            rect = svg.getBoundingClientRect();
+
+        _w = rect.width;
 
         _s = Snap('#svgGraphWrap');
         this.setState({
             data: _get(),
-            rect: svg.getBoundingClientRect()
+            rect: rect
         });
         this.draw();
     },
@@ -146,7 +146,7 @@ const Graph = React.createClass({
 
             pcover.animate({'fill-opacity':'1'}, 400);
             p.animate({fill:'#fff', 'stroke-opacity': '1'}, 400);
-            p.hover(this.pinHover.bind(this, p), this.pinHoverLeave);
+            p.hover(this.pinHover.bind(this, p), this.pinHoverLeave.bind(this, p));
             pcover.hover(this.pinHover.bind(this, p), this.pinHoverLeave);
 
             _pins[line].pin.push(p);
@@ -164,7 +164,8 @@ const Graph = React.createClass({
         this._onChange();
     },
 
-    pinHoverLeave() {
+    pinHoverLeave(pin) {
+        pin.animate({r: 2}, 50);
         this.tooltipTimeout = setTimeout(function() {
             this.setState({
                 tooltip: {
@@ -182,6 +183,8 @@ const Graph = React.createClass({
 
         let svg = this.refs.svg.getDOMNode();
         let svgRect = svg.getBoundingClientRect();
+
+        pin.animate({r: 5}, 200, mina.easeinout);
 
         this.setState({
             tooltip: {
@@ -205,13 +208,11 @@ const Graph = React.createClass({
         }).format('MMMM, D');
 
         return (
-            <div className="graph-wrap" style={{height: 'auto', width: _w + 100}} >
+            <div className="graph-wrap" >
                 <Tooltip data={this.state.data} rect={this.state.rect} tooltip={this.state.tooltip} />
                 <div className="t-max">${this.state.max}</div>
                 <div className="r-max">{day}</div>
-                <div className="min"></div>
-                <svg ref="svg" style={{height: this.state.height+20}} id="svgGraphWrap"></svg>
-                <a href='javascript:void(0)' onClick={this.toggleHeight}>{this.state.big ? 'Less' : 'More'}</a>
+                <svg ref="svg" id="svgGraphWrap"></svg>
             </div>
         )
     }
