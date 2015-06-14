@@ -65,7 +65,12 @@ const LoginWrap = React.createClass({
                                     <input onKeyUp={this.key.bind(this, 'savings')} ref="savings" name="savings" type="text" className={this.state.savings ? "form-control filled" : 'form-control'}/>
                                     <span>Savings</span>
                                 </label>
-                            </div></div>
+                            </div>
+                            <div className="form-group currency">
+                                <label>
+                                </label>
+                            </div>
+                        </div>
                         <div className="form-group btns">
                             <div className="hidden">
                                 <input type="submit"/>

@@ -37991,7 +37991,8 @@ var Info = React.createClass({
                 'div',
                 { className: 'money-now-val' },
                 '$',
-                this.props.data.balance
+                this.props.data.balance,
+                '₽'
             )
         );
     }
@@ -38427,8 +38428,6 @@ module.exports = Expense;
 },{"../../actions/app-actions":204,"../../stores/data-store":220,"../../stores/user-store":222,"./add-expense":208,"./graph":210,"./highlights":211,"./time-picker":213,"moment":5,"react":199,"underscore":203}],210:[function(require,module,exports){
 'use strict';
 
-var _savingsColor = '#03A9F4';
-var _savingsPinColor = '#4FC3F7';
 var _expenseColor = '#f44336';
 var _expensePinColor = '#e57373';
 var _incomeColor = '#4CAF50';
@@ -38575,7 +38574,7 @@ var Graph = React.createClass({
             pcover.animate({ 'fill-opacity': '1' }, 400);
             p.animate({ fill: '#fff', 'stroke-opacity': '1' }, 400);
             p.hover(this.pinHover.bind(this, p), this.pinHoverLeave.bind(this, p));
-            pcover.hover(this.pinHover.bind(this, p), this.pinHoverLeave);
+            pcover.hover(this.pinHover.bind(this, p), this.pinHoverLeave.bind(this, p));
 
             _pins[line].pin.push(p);
             _pins[line].cover.push(pcover);
@@ -38593,6 +38592,7 @@ var Graph = React.createClass({
     },
 
     pinHoverLeave: function pinHoverLeave(pin) {
+        console.log(pin);
         pin.animate({ r: 2 }, 50);
         this.tooltipTimeout = setTimeout((function () {
             this.setState({
@@ -38633,7 +38633,7 @@ var Graph = React.createClass({
             date: this.state.days,
             month: this.state.month,
             year: this.state.year
-        }).format('MMMM, D');
+        });
 
         return React.createElement(
             'div',
@@ -38642,13 +38642,12 @@ var Graph = React.createClass({
             React.createElement(
                 'div',
                 { className: 't-max' },
-                '$',
-                this.state.max
+                day.format('MMMM, D')
             ),
             React.createElement(
                 'div',
-                { className: 'r-max' },
-                day
+                { className: 't-min' },
+                day.set('date', 1).format('MMMM, D')
             ),
             React.createElement('svg', { ref: 'svg', id: 'svgGraphWrap' })
         );
@@ -38681,32 +38680,32 @@ var Tooltip = React.createClass({
             var _m = moment().set({ year: this.state.year, month: this.state.month });
             date = '' + _m.format('MMMM');
         }
+        console.log(props);
         this.setState({
             date: date,
             year: props.tooltip.year ? props.tooltip.year : this.state.year,
             month: props.tooltip.month ? props.tooltip.month : this.state.month,
             active: props.tooltip.active,
+            left: props.tooltip ? props.tooltip.left - 45 : this.state.left,
+            top: props.tooltip ? props.tooltip.top - 67 : this.state.top,
             rect: this.props.rect
         });
     },
 
     render: function render() {
-        var left = undefined,
-            top = undefined;
+        var z = undefined;
 
         if (!this.state.active && this.state.rect) {
-            var pos = this.getDefaultPosition();
-            left = pos.left;
-            top = pos.top;
+            z = -1;
         } else {
-            left = this.props.tooltip.left - 45;
-            top = this.props.tooltip.top - 67;
+            z = 100;
         }
 
         var style = {
             backgroundColor: this.props.tooltip.color,
-            left: left,
-            top: top
+            left: this.state.left,
+            top: this.state.top,
+            zIndex: z
         };
 
         var triangleStyle = {
@@ -39035,6 +39034,11 @@ var LoginWrap = React.createClass({
                                     'Savings'
                                 )
                             )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'form-group currency' },
+                            React.createElement('label', null)
                         )
                     ),
                     React.createElement(

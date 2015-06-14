@@ -1,7 +1,5 @@
 'use strict';
 
-const _savingsColor     = '#03A9F4';
-const _savingsPinColor  = '#4FC3F7';
 const _expenseColor     = '#f44336';
 const _expensePinColor  = '#e57373';
 const _incomeColor      = '#4CAF50';
@@ -147,7 +145,7 @@ const Graph = React.createClass({
             pcover.animate({'fill-opacity':'1'}, 400);
             p.animate({fill:'#fff', 'stroke-opacity': '1'}, 400);
             p.hover(this.pinHover.bind(this, p), this.pinHoverLeave.bind(this, p));
-            pcover.hover(this.pinHover.bind(this, p), this.pinHoverLeave);
+            pcover.hover(this.pinHover.bind(this, p), this.pinHoverLeave.bind(this, p));
 
             _pins[line].pin.push(p);
             _pins[line].cover.push(pcover);
@@ -165,6 +163,7 @@ const Graph = React.createClass({
     },
 
     pinHoverLeave(pin) {
+        console.log(pin);
         pin.animate({r: 2}, 50);
         this.tooltipTimeout = setTimeout(function() {
             this.setState({
@@ -205,13 +204,13 @@ const Graph = React.createClass({
             date: this.state.days,
             month: this.state.month,
             year: this.state.year
-        }).format('MMMM, D');
+        });
 
         return (
             <div className="graph-wrap" >
                 <Tooltip data={this.state.data} rect={this.state.rect} tooltip={this.state.tooltip} />
-                <div className="t-max">${this.state.max}</div>
-                <div className="r-max">{day}</div>
+                <div className="t-max">{day.format('MMMM, D')}</div>
+                <div className="t-min">{day.set('date', 1).format('MMMM, D')}</div>
                 <svg ref="svg" id="svgGraphWrap"></svg>
             </div>
         )
@@ -242,31 +241,32 @@ const Tooltip = React.createClass({
             let m = moment().set({year: this.state.year, month: this.state.month})
             date = `${m.format('MMMM')}`;
         }
+        console.log(props);
         this.setState({
             date: date,
             year: props.tooltip.year ? props.tooltip.year : this.state.year,
             month: props.tooltip.month ? props.tooltip.month : this.state.month,
             active: props.tooltip.active,
+            left: props.tooltip ? props.tooltip.left - 45 : this.state.left,
+            top: props.tooltip ? props.tooltip.top - 67 : this.state.top,
             rect: this.props.rect
         })
     },
 
     render() {
-        let left, top;
+        let z;
 
         if (!this.state.active && this.state.rect) {
-            let pos = this.getDefaultPosition();
-            left = pos.left;
-            top = pos.top;
+            z = -1;
         } else {
-            left = this.props.tooltip.left - 45;
-            top = this.props.tooltip.top - 67;
+            z = 100;
         }
 
         let style = {
             backgroundColor: this.props.tooltip.color,
-            left: left,
-            top: top
+            left: this.state.left,
+            top: this.state.top,
+            zIndex: z
         };
 
         let triangleStyle = {

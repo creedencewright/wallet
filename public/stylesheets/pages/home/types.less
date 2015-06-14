@@ -16,16 +16,33 @@
         &:after {
             .pseudo();
             .size(40px, 24px);
-            //.sprite(40, 40);
+            .sprite(@entry-default);
             position: absolute;
             left: 11px;
             top: 18px;
         }
     }
+    &.salary {
+        &:after {
+            .pseudo();
+            .sprite(@entry-default);
+            position: absolute;
+            left: 11px;
+            top: 18px;
+        }
+    }
+    &.health {
+        &:after {
+            .pseudo();
+            .sprite(@entry-health);
+            position: absolute;
+            left: 14px;
+            top: 16px;
+        }
+    }
     &.savings {
         &:after {
             .pseudo();
-            .size(37px, 31px);
             .sprite(@entry-savings);
             opacity: .8;
             position: absolute;
