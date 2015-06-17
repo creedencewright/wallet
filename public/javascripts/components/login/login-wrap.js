@@ -66,10 +66,6 @@ const LoginWrap = React.createClass({
                                     <span>Savings</span>
                                 </label>
                             </div>
-                            <div className="form-group currency">
-                                <label>
-                                </label>
-                            </div>
                         </div>
                         <div className="form-group btns">
                             <div className="hidden">

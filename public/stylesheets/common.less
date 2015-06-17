@@ -374,3 +374,29 @@ body {
         .rotate(90deg);
     }
 }
+
+.rub {
+    background: no-repeat center bottom;
+    background-size: contain;
+    display: inline-block;
+
+    &.big {
+        .size(24px, 24px);
+        margin-left: 0px;
+        vertical-align: bottom;
+    }
+    &.medium {
+        .size(19px, 19px);
+        margin-left: -10px;
+    }
+    &.small {
+        .size(13px, 13px);
+        margin-left: -5px;
+    }
+    &.green {
+        background-image: url('../images/rub-green-big.png');
+    }
+    &.red {
+        background-image: url('../images/rub-red-big.png');
+    }
+}

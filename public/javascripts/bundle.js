@@ -37990,9 +37990,8 @@ var Info = React.createClass({
             React.createElement(
                 'div',
                 { className: 'money-now-val' },
-                '$',
                 this.props.data.balance,
-                '₽'
+                React.createElement('span', { className: 'rub green big' })
             )
         );
     }
@@ -38403,8 +38402,9 @@ var Entry = React.createClass({
                     React.createElement(
                         'span',
                         { className: 'value' },
-                        '$',
-                        entry.value
+                        entry.value,
+                        ' ',
+                        React.createElement('span', { className: 'rub red small' })
                     ),
                     React.createElement(
                         'span',
@@ -38787,14 +38787,16 @@ var Highlights = React.createClass({
                     React.createElement(
                         'div',
                         { className: 'total expense' },
-                        '$',
-                        this.state.data.totalExpense
+                        this.state.data.totalExpense,
+                        ' ',
+                        React.createElement('span', { className: 'rub red medium' })
                     ),
                     React.createElement(
                         'div',
                         { className: 'total income' },
-                        '$',
-                        this.state.data.totalIncome
+                        this.state.data.totalIncome,
+                        ' ',
+                        React.createElement('span', { className: 'rub green medium' })
                     )
                 ),
                 React.createElement(
@@ -38819,8 +38821,9 @@ var Category = React.createClass({
             React.createElement(
                 'div',
                 { className: 'value' },
-                '$',
-                this.props.value
+                this.props.value,
+                ' ',
+                React.createElement('span', { className: 'rub red small' })
             ),
             React.createElement(
                 'div',
@@ -39034,11 +39037,6 @@ var LoginWrap = React.createClass({
                                     'Savings'
                                 )
                             )
-                        ),
-                        React.createElement(
-                            'div',
-                            { className: 'form-group currency' },
-                            React.createElement('label', null)
                         )
                     ),
                     React.createElement(

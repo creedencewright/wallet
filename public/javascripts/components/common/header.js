@@ -13,25 +13,25 @@ var Header = React.createClass({
             balance: id ? parseFloat(Data.getBalance()) : ''
         }
     },
-    componentWillMount: function() {
+    componentWillMount() {
         Data.addChangeListener(this._onChange);
     },
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         Data.removeChangeListener(this._onChange);
     },
-    _onChange: function() {
+    _onChange() {
         this.setState({
             balance: Data.getBalance(),
             savings: Data.getSavings(),
             color: Data.getBalance() >= 0 ? 'green' : 'red'
         })
     },
-    toggleForm: function() {
+    toggleForm() {
         this.setState({
             opened: this.state.opened ? false : true
         })
     },
-    render: function() {
+    render() {
         return (
             <header className="container">
                 <div className="row">
@@ -43,10 +43,10 @@ var Header = React.createClass({
 });
 
 var Info = React.createClass({
-    render: function() {
+    render() {
         return (
             <div className={"col-sm-6 money-now " + this.props.data.color}>
-                <div className="money-now-val">${this.props.data.balance}</div>
+                <div className="money-now-val">{this.props.data.balance}<span className="rub green big"></span></div>
             </div>
         )
     }

@@ -158,7 +158,7 @@ const Entry = React.createClass({
                     <a href="javascript:void(0);" onClick={this.remove} className="remove"></a>
                     <div className={entry.category ? `type-img ${entry.category.code}` : 'type-img none'}></div>
                     <div className={entry.category ? "value-wrap w-cat" : 'value-wrap'}>
-                        <span className="value">${entry.value }</span>
+                        <span className="value">{entry.value} <span className="rub red small"></span></span>
                         <span className="category">{entry.category ? entry.category.name : '' }</span>
                     </div>
                     <div className="time">{moment(time).calendar()}</div>

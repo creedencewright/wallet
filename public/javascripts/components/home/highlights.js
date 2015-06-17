@@ -35,8 +35,8 @@ const Highlights = React.createClass({
                 <div className="highlights row clearfix">
                     <div className="title">Highlights</div>
                     <div className="row total-wrap">
-                        <div className="total expense">${this.state.data.totalExpense}</div>
-                        <div className="total income">${this.state.data.totalIncome}</div>
+                        <div className="total expense">{this.state.data.totalExpense} <span className="rub red medium"></span></div>
+                        <div className="total income">{this.state.data.totalIncome} <span className="rub green medium"></span></div>
                     </div>
                     <div className="row categories">
                         {this.state.data.categories.map((e, i) => <Category key={i} value={e.value} name={e.name} />)}
@@ -51,7 +51,7 @@ const Category = React.createClass({
     render() {
         return (
             <div className="category">
-                <div className="value">${this.props.value}</div>
+                <div className="value">{this.props.value} <span className="rub red small"></span></div>
                 <div className="name">{this.props.name}</div>
             </div>
         )
