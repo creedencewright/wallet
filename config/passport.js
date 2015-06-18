@@ -29,15 +29,15 @@ module.exports      = function(passport) {
 
     passport.use('local-signup', new LocalStrategy({
             // by default, local strategy uses username and password, we will override with email
-            usernameField : 'email',
+            usernameField : 'username',
             passwordField : 'password',
             passReqToCallback : true // allows us to pass back the entire request to the callback
         },
-        function(req, email, password, done) {
+        function(req, username, password, done) {
             process.nextTick(function() {
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
-                User.findOne({ 'local.email' :  email }, function(err, user) {
+                User.findOne({ 'local.username' :  username }, function(err, user) {
                     if (err)
                         return done(err);
 
@@ -46,9 +46,10 @@ module.exports      = function(passport) {
                         return done(null, false);
                     } else {
                         var newUser            = new User();
-                        newUser.local.email    = email;
+                        newUser.local.username = username;
                         newUser.balance        = parseFloat(req.body.balance);
                         newUser.savings        = parseFloat(req.body.savings);
+                        newUser.lang           = req.body.lang;
                         newUser.local.password = newUser.generateHash(password);
 
                         newUser.save(function(err) {
@@ -65,12 +66,12 @@ module.exports      = function(passport) {
         }));
 
     passport.use('local-login', new LocalStrategy({
-            usernameField : 'email',
+            usernameField : 'username',
             passwordField : 'password',
             passReqToCallback : true
         },
-        function(req, email, password, done) {
-            User.findOne({ 'local.email' :  email }, function(err, user) {
+        function(req, username, password, done) {
+            User.findOne({ 'local.username' :  username }, function(err, user) {
                 if (err)
                     return done(err);
 

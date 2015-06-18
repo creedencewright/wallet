@@ -44,9 +44,12 @@ var Header = React.createClass({
 
 var Info = React.createClass({
     render() {
+        let v       = User.isEn() ? `$${this.props.data.balance}` : this.props.data.balance,
+            sign    = User.isEn() ? '' : (<span className="rub green big"></span>);
+
         return (
             <div className={"col-sm-6 money-now " + this.props.data.color}>
-                <div className="money-now-val">{this.props.data.balance}<span className="rub green big"></span></div>
+                <div className="money-now-val">{[v, sign]}</div>
             </div>
         )
     }

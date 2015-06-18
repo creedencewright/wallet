@@ -1,31 +1,30 @@
 /*** @jsx React.DOM */
 
-var React   = require('react');
-var App     = require('./components/app.js');
-var $app    = document.getElementById('app');
-var id      = $app.getAttribute('data-logged');
-var name    = $app.getAttribute('data-name');
-var types   = $app.getAttribute('data-types');
-var balance = $app.getAttribute('data-balance');
-var savings = $app.getAttribute('data-savings');
-var User    = require('./stores/user-store');
-var Type    = require('./stores/types-store');
-var Data    = require('./stores/data-store');
+const React   = require('react');
+const App     = require('./components/app.js');
+const $app    = document.getElementById('app');
+const id      = $app.getAttribute('data-logged');
+const name    = $app.getAttribute('data-name');
+const lang    = $app.getAttribute('data-lang');
+const types   = $app.getAttribute('data-types');
+const balance = $app.getAttribute('data-balance');
+const savings = $app.getAttribute('data-savings');
+const User    = require('./stores/user-store');
+const Type    = require('./stores/types-store');
+const Data    = require('./stores/data-store');
 
-var React           = require('react');
-var Router          = require('react-router');
-var DefaultRoute    = Router.DefaultRoute;
-var Route           = Router.Route;
-var RouteHandler    = Router.RouteHandler;
-var Home            = require('./components/home/home');
-var LoginWrap       = require('./components/login/login-wrap');
-var User            = require('./stores/user-store');
+const Router          = require('react-router');
+const DefaultRoute    = Router.DefaultRoute;
+const Route           = Router.Route;
+const RouteHandler    = Router.RouteHandler;
+const Home            = require('./components/home/home');
+const LoginWrap       = require('./components/login/login-wrap');
 
-User.setData({id: id, name: name});
+User.setData({id: id, name: name, lang: lang});
 Data.setBalance(parseFloat(balance));
 Data.setSavings(parseFloat(savings));
 
-var routes = (
+const routes = (
     <Route name='app' path='/' handler={App}>
         <Route name='login' handler={LoginWrap} />
         <Route name='home' handler={Home} />

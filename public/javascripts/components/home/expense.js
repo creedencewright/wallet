@@ -17,6 +17,12 @@ function _getCurrentData(params) {
 function _fetch(params) {
     return Data.getByFilter(params);
 }
+function _getValue(v, color) {
+    let value   = User.isEn() ? `$${v}` : v,
+        sign    = User.isEn() ? '' : (<span className={`rub small ${color}`}></span>);
+
+    return {v: value, sign: sign}
+}
 
 const Expense = React.createClass({
     getInitialState() {
@@ -150,6 +156,7 @@ const Entry = React.createClass({
     },
     render() {
         let entry   = this.props.entry,
+            value   = _getValue(entry.value, entry.type === 'expense' ? 'red' : 'green'),
             time    = entry ? moment(entry.time, 'X') : 0;
         
         return (
@@ -158,7 +165,7 @@ const Entry = React.createClass({
                     <a href="javascript:void(0);" onClick={this.remove} className="remove"></a>
                     <div className={entry.category ? `type-img ${entry.category.code}` : 'type-img none'}></div>
                     <div className={entry.category ? "value-wrap w-cat" : 'value-wrap'}>
-                        <span className="value">{entry.value} <span className="rub red small"></span></span>
+                        <span className="value">{[value.v, value.sign]}</span>
                         <span className="category">{entry.category ? entry.category.name : '' }</span>
                     </div>
                     <div className="time">{moment(time).calendar()}</div>

@@ -5,6 +5,7 @@ const _expensePinColor  = '#e57373';
 const _incomeColor      = '#4CAF50';
 const _incomePinColor   = '#81C784';
 
+const User      = require('../../stores/user-store');
 const React     = require('react');
 const Snap      = require('snapsvg');
 const moment    = require('moment');
@@ -20,6 +21,12 @@ let _pins = {};
 
 function _get() {
     return Data.getGraphData()
+}
+function _getValue(v) {
+    let value   = User.isEn() ? `$${v}` : v,
+        sign    = User.isEn() ? '' : (<span className="rub x-small white"></span>);
+
+    return {v: value, sign: sign}
 }
 
 function _build(max, data) {
@@ -163,7 +170,6 @@ const Graph = React.createClass({
     },
 
     pinHoverLeave(pin) {
-        console.log(pin);
         pin.animate({r: 2}, 50);
         this.tooltipTimeout = setTimeout(function() {
             this.setState({
@@ -241,7 +247,7 @@ const Tooltip = React.createClass({
             let m = moment().set({year: this.state.year, month: this.state.month})
             date = `${m.format('MMMM')}`;
         }
-        console.log(props);
+
         this.setState({
             date: date,
             year: props.tooltip.year ? props.tooltip.year : this.state.year,
@@ -273,11 +279,13 @@ const Tooltip = React.createClass({
             borderColor: this.props.tooltip.color + ' transparent transparent transparent'
         };
 
+        let value = _getValue(this.props.tooltip.value);
+
         return (
             <div style={style} className={this.state.active ? 'graph-tooltip active' : 'graph-tooltip'}>
                 <div className="triangle" style={triangleStyle}></div>
                 <div className="date">{this.state.date}</div>
-                <div className="value pin">{this.props.tooltip.value}</div>
+                <div className="value pin">{[value.v, value.sign]}</div>
             </div>
         )
     }

@@ -13,7 +13,7 @@
 
     &.login {
         form {
-            padding-bottom: 200px;
+            padding-bottom: 260px;
             .animation(hideRegisterForm, cubic-bezier(.35,.91,.62,.91), .5s, 1, forwards, .1s);
         }
         .reg-block {
@@ -22,6 +22,12 @@
                     .animation(hideRegisterBlocks, cubic-bezier(.35,.91,.62,.91), .3s, 1, forwards, 0);
                 }
                 &.savings {
+                    .animation(hideRegisterBlocks, cubic-bezier(.35,.91,.62,.91), .4s, 1, forwards, .1s);
+                }
+                &.lang {
+                    .animation(hideRegisterBlocks, cubic-bezier(.35,.91,.62,.91), .4s, 1, forwards, .1s);
+                }
+                &.currency {
                     .animation(hideRegisterBlocks, cubic-bezier(.35,.91,.62,.91), .4s, 1, forwards, .1s);
                 }
             }
@@ -39,6 +45,16 @@
                 visibility: hidden;
 
                 &.balance {
+                    transform: translate(0, -10px);
+                    .animation(showRegisterBlocks, cubic-bezier(.35,.91,.62,.91), .3s, 1, forwards, .2s);
+                }
+
+                &.lang {
+                    transform: translate(0, -10px);
+                    .animation(showRegisterBlocks, cubic-bezier(.35,.91,.62,.91), .3s, 1, forwards, .2s);
+                }
+
+                &.currency {
                     transform: translate(0, -10px);
                     .animation(showRegisterBlocks, cubic-bezier(.35,.91,.62,.91), .3s, 1, forwards, .2s);
                 }
@@ -90,6 +106,47 @@
         z-index: 2;
         background-color: #fff;
 
+        &.lang {
+            label {
+                color: @blue;
+                cursor: pointer;
+                width: 150px;
+                display: inline-block;
+                vertical-align: top;
+            }
+
+            input {
+                display: none;
+                width: auto;
+
+                ~ span {
+                    position: relative;
+                }
+
+                + span.underlined {
+                    border-bottom: 1px solid @blue;
+                }
+                
+                &:checked {
+                    + span.underlined {
+                        font-weight: 400;
+                        border-color: transparent;
+                    }
+                }
+
+                &:focus {
+                    border-color: @blue;
+                    box-shadow: none;
+
+                    + span {
+                        transform: translate(0,0);
+                        color: #000;
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+
         label {
             width: 100%;
         }
@@ -102,7 +159,7 @@
             border-bottom: 1px solid #CFD8DC;
             width: 100%;
 
-            + span {
+            ~ span {
                 .transition(all,.2s);
                 width: 100px;
                 text-align: left;

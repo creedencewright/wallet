@@ -13,8 +13,9 @@ var userSchema = mongoose.Schema({
     },
     balance: Number,
     savings: Number,
+    lang:    String,
     local            : {
-        email        : String,
+        username     : String,
         password     : String
     },
     facebook         : {

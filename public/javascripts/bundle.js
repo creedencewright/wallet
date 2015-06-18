@@ -8,6 +8,7 @@ var App = require('./components/app.js');
 var $app = document.getElementById('app');
 var id = $app.getAttribute('data-logged');
 var name = $app.getAttribute('data-name');
+var lang = $app.getAttribute('data-lang');
 var types = $app.getAttribute('data-types');
 var balance = $app.getAttribute('data-balance');
 var savings = $app.getAttribute('data-savings');
@@ -15,16 +16,14 @@ var User = require('./stores/user-store');
 var Type = require('./stores/types-store');
 var Data = require('./stores/data-store');
 
-var React = require('react');
 var Router = require('react-router');
 var DefaultRoute = Router.DefaultRoute;
 var Route = Router.Route;
 var RouteHandler = Router.RouteHandler;
 var Home = require('./components/home/home');
 var LoginWrap = require('./components/login/login-wrap');
-var User = require('./stores/user-store');
 
-User.setData({ id: id, name: name });
+User.setData({ id: id, name: name, lang: lang });
 Data.setBalance(parseFloat(balance));
 Data.setSavings(parseFloat(savings));
 
@@ -37984,14 +37983,16 @@ var Info = React.createClass({
     displayName: 'Info',
 
     render: function render() {
+        var v = User.isEn() ? '$' + this.props.data.balance : this.props.data.balance,
+            sign = User.isEn() ? '' : React.createElement('span', { className: 'rub green big' });
+
         return React.createElement(
             'div',
             { className: 'col-sm-6 money-now ' + this.props.data.color },
             React.createElement(
                 'div',
                 { className: 'money-now-val' },
-                this.props.data.balance,
-                React.createElement('span', { className: 'rub green big' })
+                [v, sign]
             )
         );
     }
@@ -38223,6 +38224,12 @@ function _getCurrentData(params) {
 function _fetch(params) {
     return Data.getByFilter(params);
 }
+function _getValue(v, color) {
+    var value = User.isEn() ? '$' + v : v,
+        sign = User.isEn() ? '' : React.createElement('span', { className: 'rub small ' + color });
+
+    return { v: value, sign: sign };
+}
 
 var Expense = React.createClass({
     displayName: 'Expense',
@@ -38386,6 +38393,7 @@ var Entry = React.createClass({
     },
     render: function render() {
         var entry = this.props.entry,
+            value = _getValue(entry.value, entry.type === 'expense' ? 'red' : 'green'),
             time = entry ? moment(entry.time, 'X') : 0;
 
         return React.createElement(
@@ -38402,9 +38410,7 @@ var Entry = React.createClass({
                     React.createElement(
                         'span',
                         { className: 'value' },
-                        entry.value,
-                        ' ',
-                        React.createElement('span', { className: 'rub red small' })
+                        [value.v, value.sign]
                     ),
                     React.createElement(
                         'span',
@@ -38433,6 +38439,7 @@ var _expensePinColor = '#e57373';
 var _incomeColor = '#4CAF50';
 var _incomePinColor = '#81C784';
 
+var User = require('../../stores/user-store');
 var React = require('react');
 var Snap = require('snapsvg');
 var moment = require('moment');
@@ -38448,6 +38455,12 @@ var _pins = {};
 
 function _get() {
     return Data.getGraphData();
+}
+function _getValue(v) {
+    var value = User.isEn() ? '$' + v : v,
+        sign = User.isEn() ? '' : React.createElement('span', { className: 'rub x-small white' });
+
+    return { v: value, sign: sign };
 }
 
 function _build(max, data) {
@@ -38592,7 +38605,6 @@ var Graph = React.createClass({
     },
 
     pinHoverLeave: function pinHoverLeave(pin) {
-        console.log(pin);
         pin.animate({ r: 2 }, 50);
         this.tooltipTimeout = setTimeout((function () {
             this.setState({
@@ -38680,7 +38692,7 @@ var Tooltip = React.createClass({
             var _m = moment().set({ year: this.state.year, month: this.state.month });
             date = '' + _m.format('MMMM');
         }
-        console.log(props);
+
         this.setState({
             date: date,
             year: props.tooltip.year ? props.tooltip.year : this.state.year,
@@ -38712,6 +38724,8 @@ var Tooltip = React.createClass({
             borderColor: this.props.tooltip.color + ' transparent transparent transparent'
         };
 
+        var value = _getValue(this.props.tooltip.value);
+
         return React.createElement(
             'div',
             { style: style, className: this.state.active ? 'graph-tooltip active' : 'graph-tooltip' },
@@ -38724,7 +38738,7 @@ var Tooltip = React.createClass({
             React.createElement(
                 'div',
                 { className: 'value pin' },
-                this.props.tooltip.value
+                [value.v, value.sign]
             )
         );
     }
@@ -38733,7 +38747,7 @@ var Tooltip = React.createClass({
 module.exports = Graph;
 
 
-},{"../../stores/data-store":220,"moment":5,"react":199,"snapsvg":201,"underscore":203}],211:[function(require,module,exports){
+},{"../../stores/data-store":220,"../../stores/user-store":222,"moment":5,"react":199,"snapsvg":201,"underscore":203}],211:[function(require,module,exports){
 /*** @jsx React.DOM */
 
 'use strict';
@@ -38744,6 +38758,13 @@ var Data = require('../../stores/data-store');
 
 function _get() {
     return Data.getHighlights();
+}
+
+function _getValue(v, color, size) {
+    var value = User.isEn() ? '$' + v : v,
+        sign = User.isEn() ? '' : React.createElement('span', { className: 'rub ' + size + ' ' + color });
+
+    return { v: value, sign: sign };
 }
 
 var Highlights = React.createClass({
@@ -38770,6 +38791,9 @@ var Highlights = React.createClass({
     },
 
     render: function render() {
+        var expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
+        var income = _getValue(this.state.data.totalIncome, 'medium', 'green');
+
         return React.createElement(
             'div',
             { className: 'highlights-wrap' },
@@ -38787,16 +38811,12 @@ var Highlights = React.createClass({
                     React.createElement(
                         'div',
                         { className: 'total expense' },
-                        this.state.data.totalExpense,
-                        ' ',
-                        React.createElement('span', { className: 'rub red medium' })
+                        [expense.v, expense.sign]
                     ),
                     React.createElement(
                         'div',
                         { className: 'total income' },
-                        this.state.data.totalIncome,
-                        ' ',
-                        React.createElement('span', { className: 'rub green medium' })
+                        [income.v, income.sign]
                     )
                 ),
                 React.createElement(
@@ -38815,15 +38835,15 @@ var Category = React.createClass({
     displayName: 'Category',
 
     render: function render() {
+        var value = _getValue(this.props.value, 'small', 'red');
+
         return React.createElement(
             'div',
             { className: 'category' },
             React.createElement(
                 'div',
                 { className: 'value' },
-                this.props.value,
-                ' ',
-                React.createElement('span', { className: 'rub red small' })
+                [value.v, value.sign]
             ),
             React.createElement(
                 'div',
@@ -38933,7 +38953,7 @@ var LoginWrap = React.createClass({
 
     getInitialState: function getInitialState() {
         return {
-            email: '',
+            username: '',
             password: '',
             balance: '',
             savings: '',
@@ -38985,11 +39005,11 @@ var LoginWrap = React.createClass({
                         React.createElement(
                             'label',
                             null,
-                            React.createElement('input', { onKeyDown: this.key.bind(this, 'email'), autoComplete: 'off', ref: 'email', type: 'text', name: 'email', className: this.state.email ? 'form-control filled' : 'form-control' }),
+                            React.createElement('input', { onKeyDown: this.key.bind(this, 'username'), autoComplete: 'off', ref: 'username', type: 'text', name: 'username', className: this.state.username ? 'form-control filled' : 'form-control' }),
                             React.createElement(
                                 'span',
                                 null,
-                                'Email'
+                                'Username'
                             )
                         )
                     ),
@@ -39010,6 +39030,40 @@ var LoginWrap = React.createClass({
                     React.createElement(
                         'div',
                         { className: 'reg-block' },
+                        React.createElement(
+                            'div',
+                            { className: 'form-group lang' },
+                            React.createElement(
+                                'label',
+                                null,
+                                React.createElement('input', { type: 'radio', name: 'lang', value: 'en' }),
+                                React.createElement(
+                                    'span',
+                                    { className: 'underlined' },
+                                    'English'
+                                ),
+                                React.createElement(
+                                    'span',
+                                    null,
+                                    ' (USD)'
+                                )
+                            ),
+                            React.createElement(
+                                'label',
+                                null,
+                                React.createElement('input', { type: 'radio', name: 'lang', value: 'ru' }),
+                                React.createElement(
+                                    'span',
+                                    { className: 'underlined' },
+                                    'Русский'
+                                ),
+                                React.createElement(
+                                    'span',
+                                    null,
+                                    ' (RUB)'
+                                )
+                            )
+                        ),
                         React.createElement(
                             'div',
                             { className: 'form-group balance' },
@@ -39745,6 +39799,10 @@ var _user = {
     name: ''
 };
 
+function _getLang() {
+    return _user.lang;
+}
+
 var User = assign(EventEmitter.prototype, {
     emitChange: function emitChange() {
         this.emit(CHANGE_EVENT);
@@ -39764,6 +39822,10 @@ var User = assign(EventEmitter.prototype, {
 
     getInfo: function getInfo() {
         return _user;
+    },
+
+    isEn: function isEn() {
+        return _getLang() === 'en';
     },
 
     id: function id() {

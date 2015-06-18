@@ -8,6 +8,13 @@ function _get() {
     return Data.getHighlights();
 }
 
+function _getValue(v, color, size) {
+    let value   = User.isEn() ? `$${v}` : v,
+        sign    = User.isEn() ? '' : (<span className={`rub ${size} ${color}`}></span>);
+
+    return {v: value, sign: sign}
+}
+
 const Highlights = React.createClass({
     getInitialState() {
         return {
@@ -30,13 +37,16 @@ const Highlights = React.createClass({
     },
 
     render() {
+        let expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
+        let income = _getValue(this.state.data.totalIncome, 'medium', 'green');
+
         return (
             <div className="highlights-wrap">
                 <div className="highlights row clearfix">
                     <div className="title">Highlights</div>
                     <div className="row total-wrap">
-                        <div className="total expense">{this.state.data.totalExpense} <span className="rub red medium"></span></div>
-                        <div className="total income">{this.state.data.totalIncome} <span className="rub green medium"></span></div>
+                        <div className="total expense">{[expense.v, expense.sign]}</div>
+                        <div className="total income">{[income.v, income.sign]}</div>
                     </div>
                     <div className="row categories">
                         {this.state.data.categories.map((e, i) => <Category key={i} value={e.value} name={e.name} />)}
@@ -49,9 +59,11 @@ const Highlights = React.createClass({
 
 const Category = React.createClass({
     render() {
+        let value = _getValue(this.props.value, 'small', 'red');
+
         return (
             <div className="category">
-                <div className="value">{this.props.value} <span className="rub red small"></span></div>
+                <div className="value">{[value.v, value.sign]}</div>
                 <div className="name">{this.props.name}</div>
             </div>
         )

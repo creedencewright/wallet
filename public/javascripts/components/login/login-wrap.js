@@ -4,7 +4,7 @@ const React     = require('react');
 const LoginWrap = React.createClass({
     getInitialState() {
         return {
-            email: '',
+            username: '',
             password: '',
             balance: '',
             savings: '',
@@ -43,8 +43,8 @@ const LoginWrap = React.createClass({
                     <form ref="form" action={this.state.action} method="post">
                         <div className="form-group">
                             <label>
-                                <input onKeyDown={this.key.bind(this, 'email')} autoComplete="off" ref="email" type="text" name="email" className={this.state.email ? "form-control filled" : 'form-control'}/>
-                                <span>Email</span>
+                                <input onKeyDown={this.key.bind(this, 'username')} autoComplete="off" ref="username" type="text" name="username" className={this.state.username ? "form-control filled" : 'form-control'}/>
+                                <span>Username</span>
                             </label>
                         </div>
                         <div className="form-group">
@@ -54,6 +54,19 @@ const LoginWrap = React.createClass({
                             </label>
                         </div>
                         <div className="reg-block">
+                            <div className="form-group lang">
+                                <label>
+                                    <input type="radio" name="lang" value="en"/>
+                                    <span className="underlined">English</span>
+                                    <span> (USD)</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="lang" value="ru"/>
+                                    <span className="underlined">Русский</span>
+                                    <span> (RUB)</span>
+                                </label>
+                            </div>
+
                             <div className="form-group balance">
                                 <label>
                                     <input onKeyUp={this.key.bind(this, 'balance')} ref="balance" name="balance" type="text" className={this.state.balance ? "form-control filled" : 'form-control'}/>

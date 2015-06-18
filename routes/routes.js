@@ -37,7 +37,8 @@ module.exports = function(app) {
             logged: req.user.id,
             balance: req.user.balance,
             savings: req.user.savings,
-            name: req.user.local.email
+            lang: req.user.lang,
+            name: req.user.local.username
         };
 
         res.render('index', data);
