@@ -2,6 +2,7 @@
 const React   = require('react');
 const _       = require('underscore');
 const Actions = require('../../actions/app-actions');
+const User    = require('../../stores/user-store');
 const Type    = require('../../stores/types-store');
 
 function _getTypes() {
@@ -101,17 +102,17 @@ const AddExpense = React.createClass({
                     <form onSubmit={this.add} className="add-block expense">
                         <a href="javascript:void(0);" onClick={this.toggleForm} className="close"></a>
                         <label className="form-group">
-                            <input autoComplete="off" ref="amount" className="form-control" type="text" name="amount" placeholder="Amount"/>
+                            <input autoComplete="off" ref="amount" className="form-control" type="text" name="amount" placeholder={User.isEn() ? 'Amount' : 'Сумма'}/>
                         </label>
 
                         <div className="entry-tab">
                             <label>
                                 <input checked={this.state.tab === 'expense' ? 'checked' : false} onChange={this.handleTypeChange} type="radio" name="type" value="expense"/>
-                                <span className="name">Expense</span>
+                                <span className="name">{User.isEn() ? 'Expense' : 'Расходы'}</span>
                             </label>
                             <label className="income">
                                 <input checked={this.state.tab === 'income' ? 'checked' : false} onChange={this.handleTypeChange} type="radio" name="type" value="income"/>
-                                <span className="name">Income</span>
+                                <span className="name">{User.isEn() ? 'Income' : 'Доходы'}</span>
                             </label>
                         </div>
                         <Types typeClickHandler={this.typeClickHandler} tab={this.state.tab} types={this.state.currentTypes} />
@@ -138,7 +139,7 @@ const Types = React.createClass({
         return (
             <div className="entry-type">
                 <div className="types">
-                    <a className={!this.state.type ? 'active' : ''} href="javascript:void(0);" onClick={this.clickHandler.bind(this, false)} >None</a>
+                    <a className={!this.state.type ? 'active' : ''} href="javascript:void(0);" onClick={this.clickHandler.bind(this, false)} >{User.isEn() ? 'None' : 'Нет'}</a>
                     {this.props.types.map(function(type, i) {
                         return <a onClick={this.clickHandler.bind(this, type.code)} className={this.state.type === type.code ? 'active' : ''} href="javascript:void(0);" key={i} >{type.name}</a>
                     }.bind(this))}

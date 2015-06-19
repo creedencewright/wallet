@@ -39,11 +39,13 @@ const Highlights = React.createClass({
     render() {
         let expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
         let income = _getValue(this.state.data.totalIncome, 'medium', 'green');
+        let total = _getValue(Data.getBalance(), 'big', 'green');
 
         return (
             <div className="highlights-wrap">
+                <div className="money-now">{[total.v, total.sign]}</div>
                 <div className="highlights row clearfix">
-                    <div className="title">Highlights</div>
+                    <div className="title">{User.isEn() ? 'Highlights' : 'В этом месяце'}</div>
                     <div className="row total-wrap">
                         <div className="total expense">{[expense.v, expense.sign]}</div>
                         <div className="total income">{[income.v, income.sign]}</div>

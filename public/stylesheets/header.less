@@ -8,20 +8,80 @@ header {
     padding: 10px 0;
     margin-bottom: 30px;
 
-    .name {
-        position: absolute;
-        right: 50px;
-        bottom: 100%;
-        margin-bottom: 5px;
-        font: 700 16px/1 @font-family-base;
-        color: #777;
-
-    }
-
-    .money-now {
-        padding-left: 30px;
+    .user {
+        padding-left: 50px;
+        text-align: right;
         display: inline-block;
-        color: @green;
-        font: 300 48px/33px @font-family-base;
+        text-align: left;
+        position: relative;
+        vertical-align: bottom;
+
+        &:hover {
+            a {
+                transform: translate(0, 0);
+                opacity: 1;
+                visibility: visible;
+
+                &:before {
+                    opacity: 1;
+                    visibility: visible;
+                    transform: translate(0, 0);
+                }
+            }
+        }
+
+        .name {
+            font-weight: 700;
+            color: @gray;
+            font-size: 16px;
+            text-transform: lowercase;
+        }
+
+        a {
+            transform: translate(-5px, 0);
+            position: absolute;
+            left: 100%;
+            font-weight: 700;
+            margin-left: 20px;
+            top: 2px;
+            text-transform: uppercase;
+            visibility: hidden;
+            opacity: 0;
+            text-decoration: none;
+            transition: all .2s ease .3s;
+            color: @red;
+
+            &:after {
+                .pseudo();
+                transition: all .2s ease;
+                top: 100%;
+                width: 100%;
+                height: 1px;
+                background-color: @red;
+                left: 0;
+            }
+
+            &:before {
+                .pseudo();
+                transition: all .4s ease .3s;
+                transform: translate(-8px, 0);
+                opacity: 0;
+                visibility: hidden;
+                left: -10px;
+                top: 5px;
+                height: 10px;
+                background-color: @red;
+                width: 2px;
+            }
+
+            &:hover {
+                border-color: @red;
+
+                &:after {
+                    transform: translate(0, -4px);
+                    opacity: 0;
+                }
+            }
+        }
     }
 }

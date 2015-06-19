@@ -1,15 +1,23 @@
 /*** @jsx React.DOM */
 
+'use strict';
+
 const React         = require('react');
 const User          = require('../../stores/user-store');
 const Data          = require('../../stores/data-store');
 const Actions       = require('../../actions/app-actions');
 const AddExpense    = require('./add-expense');
 const _             = require('underscore');
-const moment        = require('moment');
 const Highlights    = require('./highlights');
 const TimePicker    = require('./time-picker');
 const Graph         = require('./graph');
+const moment        = require('moment');
+
+moment.locale('ru');
+console.log(moment.locale());
+
+if (!User.isEn()) moment.locale('ru');
+
 
 function _getCurrentData(params) {
     return Data.getCurrentData(params);
@@ -94,10 +102,10 @@ const Expense = React.createClass({
             <div>
                 <div className="container">
                     <div className="main-info-wrap">
-                        <div className="col-sm-12 col-md-8 col-lg-8">
+                        <div className="col-md-8 col-lg-8">
                             <Graph />
                         </div>
-                        <div className="col-sm-12 col-md-4 col-lg-4">
+                        <div className="col-md-4 col-lg-4">
                             <Highlights data={this.state.data} />
                         </div>
                     </div>
@@ -128,11 +136,11 @@ const Tabs = React.createClass({
                 <a
                     href="javascript:void(0);"
                     onClick={this.click.bind(this, 'expense')}
-                    className={this.props.tab == 'expense' ? 'expense active' : 'expense'}>Expense</a>
+                    className={this.props.tab == 'expense' ? 'expense active' : 'expense'}>{User.isEn() ? 'Expense' : 'Расходы'}</a>
                 <a
                     href="javascript:void(0);"
                     onClick={this.click.bind(this, 'income')}
-                    className={this.props.tab == 'income' ? 'income active' : 'income'}>Income</a>
+                    className={this.props.tab == 'income' ? 'income active' : 'income'}>{User.isEn() ? 'Income' : 'Доходы'}</a>
             </div>
         )
     }

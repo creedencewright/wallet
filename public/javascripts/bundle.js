@@ -37983,16 +37983,22 @@ var Info = React.createClass({
     displayName: 'Info',
 
     render: function render() {
-        var v = User.isEn() ? '$' + this.props.data.balance : this.props.data.balance,
-            sign = User.isEn() ? '' : React.createElement('span', { className: 'rub green big' });
-
         return React.createElement(
             'div',
-            { className: 'col-sm-6 money-now ' + this.props.data.color },
+            { className: 'row' },
             React.createElement(
                 'div',
-                { className: 'money-now-val' },
-                [v, sign]
+                { className: 'user' },
+                React.createElement(
+                    'span',
+                    { className: 'name' },
+                    User.getInfo().name
+                ),
+                React.createElement(
+                    'a',
+                    { href: '/logout' },
+                    User.isEn() ? 'logout' : 'выйти'
+                )
             )
         );
     }
@@ -38008,6 +38014,7 @@ module.exports = Header;
 var React = require('react');
 var _ = require('underscore');
 var Actions = require('../../actions/app-actions');
+var User = require('../../stores/user-store');
 var Type = require('../../stores/types-store');
 
 function _getTypes() {
@@ -38128,7 +38135,7 @@ var AddExpense = React.createClass({
                     React.createElement(
                         'label',
                         { className: 'form-group' },
-                        React.createElement('input', { autoComplete: 'off', ref: 'amount', className: 'form-control', type: 'text', name: 'amount', placeholder: 'Amount' })
+                        React.createElement('input', { autoComplete: 'off', ref: 'amount', className: 'form-control', type: 'text', name: 'amount', placeholder: User.isEn() ? 'Amount' : 'Сумма' })
                     ),
                     React.createElement(
                         'div',
@@ -38140,7 +38147,7 @@ var AddExpense = React.createClass({
                             React.createElement(
                                 'span',
                                 { className: 'name' },
-                                'Expense'
+                                User.isEn() ? 'Expense' : 'Расходы'
                             )
                         ),
                         React.createElement(
@@ -38150,7 +38157,7 @@ var AddExpense = React.createClass({
                             React.createElement(
                                 'span',
                                 { className: 'name' },
-                                'Income'
+                                User.isEn() ? 'Income' : 'Доходы'
                             )
                         )
                     ),
@@ -38185,7 +38192,7 @@ var Types = React.createClass({
                 React.createElement(
                     'a',
                     { className: !this.state.type ? 'active' : '', href: 'javascript:void(0);', onClick: this.clickHandler.bind(this, false) },
-                    'None'
+                    User.isEn() ? 'None' : 'Нет'
                 ),
                 this.props.types.map((function (type, i) {
                     return React.createElement(
@@ -38202,7 +38209,7 @@ var Types = React.createClass({
 module.exports = AddExpense;
 
 
-},{"../../actions/app-actions":204,"../../stores/types-store":221,"react":199,"underscore":203}],209:[function(require,module,exports){
+},{"../../actions/app-actions":204,"../../stores/types-store":221,"../../stores/user-store":222,"react":199,"underscore":203}],209:[function(require,module,exports){
 /*** @jsx React.DOM */
 
 'use strict';
@@ -38213,10 +38220,15 @@ var Data = require('../../stores/data-store');
 var Actions = require('../../actions/app-actions');
 var AddExpense = require('./add-expense');
 var _ = require('underscore');
-var moment = require('moment');
 var Highlights = require('./highlights');
 var TimePicker = require('./time-picker');
 var Graph = require('./graph');
+var moment = require('moment');
+
+moment.locale('ru');
+console.log(moment.locale());
+
+if (!User.isEn()) moment.locale('ru');
 
 function _getCurrentData(params) {
     return Data.getCurrentData(params);
@@ -38310,12 +38322,12 @@ var Expense = React.createClass({
                     { className: 'main-info-wrap' },
                     React.createElement(
                         'div',
-                        { className: 'col-sm-12 col-md-8 col-lg-8' },
+                        { className: 'col-md-8 col-lg-8' },
                         React.createElement(Graph, null)
                     ),
                     React.createElement(
                         'div',
-                        { className: 'col-sm-12 col-md-4 col-lg-4' },
+                        { className: 'col-md-4 col-lg-4' },
                         React.createElement(Highlights, { data: this.state.data })
                     )
                 ),
@@ -38357,7 +38369,7 @@ var Tabs = React.createClass({
                     href: 'javascript:void(0);',
                     onClick: this.click.bind(this, 'expense'),
                     className: this.props.tab == 'expense' ? 'expense active' : 'expense' },
-                'Expense'
+                User.isEn() ? 'Expense' : 'Расходы'
             ),
             React.createElement(
                 'a',
@@ -38365,7 +38377,7 @@ var Tabs = React.createClass({
                     href: 'javascript:void(0);',
                     onClick: this.click.bind(this, 'income'),
                     className: this.props.tab == 'income' ? 'income active' : 'income' },
-                'Income'
+                User.isEn() ? 'Income' : 'Доходы'
             )
         );
     }
@@ -38793,17 +38805,23 @@ var Highlights = React.createClass({
     render: function render() {
         var expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
         var income = _getValue(this.state.data.totalIncome, 'medium', 'green');
+        var total = _getValue(Data.getBalance(), 'big', 'green');
 
         return React.createElement(
             'div',
             { className: 'highlights-wrap' },
             React.createElement(
                 'div',
+                { className: 'money-now' },
+                [total.v, total.sign]
+            ),
+            React.createElement(
+                'div',
                 { className: 'highlights row clearfix' },
                 React.createElement(
                     'div',
                     { className: 'title' },
-                    'Highlights'
+                    User.isEn() ? 'Highlights' : 'В этом месяце'
                 ),
                 React.createElement(
                     'div',
