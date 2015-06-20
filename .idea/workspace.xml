@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f832d151-d969-4bf6-bee9-164a96b2b093" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/www" afterPath="$PROJECT_DIR$/bin/www" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/routes.js" afterPath="$PROJECT_DIR$/routes/routes.js" />
     </list>
     <ignored path="wallet.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -23,11 +23,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="www" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/bin/www">
+      <file leaf-file-name="routes.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/routes/routes.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6506024">
-              <caret line="27" column="18" selection-start-line="27" selection-start-column="18" selection-end-line="27" selection-end-column="18" />
+            <state vertical-scroll-proportion="0.024096385">
+              <caret line="79" column="13" selection-start-line="79" selection-start-column="13" selection-end-line="79" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -80,7 +80,6 @@
         <option value="$PROJECT_DIR$/models/types.js" />
         <option value="$PROJECT_DIR$/models/data.js" />
         <option value="$PROJECT_DIR$/public/javascripts/components/home/add-expense.js" />
-        <option value="$PROJECT_DIR$/routes/routes.js" />
         <option value="$PROJECT_DIR$/public/javascripts/components/home/expense.js" />
         <option value="$PROJECT_DIR$/public/javascripts/components/home/graph.js" />
         <option value="$PROJECT_DIR$/public/stylesheets/fonts.less" />
@@ -93,6 +92,7 @@
         <option value="$PROJECT_DIR$/public/stylesheets/common.less" />
         <option value="$PROJECT_DIR$/public/stylesheets/pages/home.less" />
         <option value="$PROJECT_DIR$/bin/www" />
+        <option value="$PROJECT_DIR$/routes/routes.js" />
       </list>
     </option>
   </component>
@@ -653,61 +653,6 @@
             <marker date="1434770149346" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
             <marker date="1434770149346" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
             <marker date="1434770149346" expanded="true" signature="-1:-1" placeholder="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/routes.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.48192772">
-          <caret line="149" column="31" selection-start-line="149" selection-start-column="31" selection-end-line="149" selection-end-column="31" />
-          <folding>
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="/*...*/" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="//..." />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="/*...*/" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{&quot;successRedirect&quot;: '/home'...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{&quot;successRedirect&quot;: '/home'...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
-            <marker date="1434770303657" expanded="true" signature="-1:-1" placeholder="{...}" />
           </folding>
         </state>
       </provider>
@@ -1297,8 +1242,31 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/bin/www">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6506024">
-          <caret line="27" column="18" selection-start-line="27" selection-start-column="18" selection-end-line="27" selection-end-column="18" />
+        <state vertical-scroll-proportion="0.43373495">
+          <caret line="18" column="22" selection-start-line="18" selection-start-column="22" selection-end-line="18" selection-end-column="22" />
+          <folding>
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="/** Module dependencies. ...*/" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="/** Get port from environment and store in Express. ...*/" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="/** Create HTTP server. ...*/" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="/** Listen on provided port, on all network interfaces. ...*/" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="/** Normalize a port into a number, string, or false. ...*/" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="/** Event listener for HTTP server &quot;error&quot; event. ...*/" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="/** Event listener for HTTP server &quot;listening&quot; event. ...*/" />
+            <marker date="1434800930403" expanded="true" signature="-1:-1" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/routes.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.024096385">
+          <caret line="79" column="13" selection-start-line="79" selection-start-column="13" selection-end-line="79" selection-end-column="13" />
           <folding />
         </state>
       </provider>
