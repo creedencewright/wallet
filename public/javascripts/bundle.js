@@ -38112,21 +38112,29 @@ var Header = React.createClass({
     render: function render() {
         return React.createElement(
             'header',
-            null,
+            { style: { borderColor: User.id() !== '0' ? 'rgba(0,0,0,.1)' : 'transparent' } },
             React.createElement(
                 'div',
                 { className: 'container' },
-                React.createElement(
-                    'div',
-                    { className: 'logo-wrap' },
-                    React.createElement(
-                        'div',
-                        { className: 'name' },
-                        'w',
-                        React.createElement('span', { className: 'dot' })
-                    )
-                ),
+                User.id() !== '0' ? React.createElement(Logo, null) : '',
                 this.state.user ? React.createElement(Info, { data: this.state }) : ''
+            )
+        );
+    }
+});
+
+var Logo = React.createClass({
+    displayName: 'Logo',
+
+    render: function render() {
+        return React.createElement(
+            'div',
+            { className: 'logo-wrap' },
+            React.createElement(
+                'div',
+                { className: 'name' },
+                'w',
+                React.createElement('span', { className: 'dot' })
             )
         );
     }

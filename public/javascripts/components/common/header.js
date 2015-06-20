@@ -33,11 +33,9 @@ var Header = React.createClass({
     },
     render() {
         return (
-            <header>
+            <header style={{borderColor: User.id() !== '0' ? 'rgba(0,0,0,.1)' : 'transparent'}}>
                 <div className="container">
-                    <div className="logo-wrap">
-                        <div className="name">w<span className="dot"></span></div>
-                    </div>
+                    {User.id() !== '0' ? <Logo /> : ''}
                     {this.state.user ? <Info data={this.state} /> : ''}
                 </div>
             </header>
@@ -45,7 +43,17 @@ var Header = React.createClass({
     }
 });
 
-var Info = React.createClass({
+const Logo = React.createClass({
+    render() {
+        return (
+            <div className="logo-wrap">
+                <div className="name">w<span className="dot"></span></div>
+            </div>
+        )
+    }
+});
+
+const Info = React.createClass({
     render() {
         return (
             <div className="row">
