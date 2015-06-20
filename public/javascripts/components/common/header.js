@@ -33,8 +33,11 @@ var Header = React.createClass({
     },
     render() {
         return (
-            <header className="container">
-                <div className="row">
+            <header>
+                <div className="container">
+                    <div className="logo-wrap">
+                        <div className="name">w<span className="dot"></span></div>
+                    </div>
                     {this.state.user ? <Info data={this.state} /> : ''}
                 </div>
             </header>

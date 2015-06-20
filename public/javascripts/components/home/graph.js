@@ -197,8 +197,8 @@ const Graph = React.createClass({
                 month: this.state.month,
                 day: pin.attr('day'),
                 color: pin.attr('stroke'),
-                left: parseFloat(pin.attr('cx')) + svgRect.left,
-                top: parseFloat(pin.attr('cy')) + svgRect.top,
+                left: parseFloat(pin.attr('cx')),
+                top: parseFloat(pin.attr('cy')),
                 active: true,
                 value: pin.attr('value')
             }
@@ -214,6 +214,11 @@ const Graph = React.createClass({
 
         return (
             <div className="graph-wrap" >
+                <div className="info">
+                    <div className="month">{day.format('MMMM')}</div>
+                    <div className="expense">{User.isEn() ? 'Expense' : 'Расходы'}</div>
+                    <div className="income">{User.isEn() ? 'Income' : 'Доходы'}</div>
+                </div>
                 <Tooltip data={this.state.data} rect={this.state.rect} tooltip={this.state.tooltip} />
                 <div className="t-max">{day.format('MMMM, D')}</div>
                 <div className="t-min">{day.set('date', 1).format('MMMM, D')}</div>
@@ -242,7 +247,7 @@ const Tooltip = React.createClass({
         let m = moment().set({year: this.state.year, month: this.state.month})
         if (props.tooltip.active) {
             m.set({date: props.tooltip.day});
-            date = `${m.format('MMMM')} ${m.format('D')}`;
+            date = m.format('DD/MM');
         } else {
             let m = moment().set({year: this.state.year, month: this.state.month})
             date = `${m.format('MMMM')}`;
@@ -253,8 +258,8 @@ const Tooltip = React.createClass({
             year: props.tooltip.year ? props.tooltip.year : this.state.year,
             month: props.tooltip.month ? props.tooltip.month : this.state.month,
             active: props.tooltip.active,
-            left: props.tooltip ? props.tooltip.left - 45 : this.state.left,
-            top: props.tooltip ? props.tooltip.top - 67 : this.state.top,
+            left: props.tooltip ? props.tooltip.left + 17 : this.state.left,
+            top: props.tooltip ? props.tooltip.top - 15 : this.state.top,
             rect: this.props.rect
         })
     },
@@ -276,7 +281,7 @@ const Tooltip = React.createClass({
         };
 
         let triangleStyle = {
-            borderColor: this.props.tooltip.color + ' transparent transparent transparent'
+            borderColor: `transparent ${this.props.tooltip.color} transparent transparent`
         };
 
         let value = _getValue(this.props.tooltip.value);
@@ -284,8 +289,10 @@ const Tooltip = React.createClass({
         return (
             <div style={style} className={this.state.active ? 'graph-tooltip active' : 'graph-tooltip'}>
                 <div className="triangle" style={triangleStyle}></div>
-                <div className="date">{this.state.date}</div>
-                <div className="value pin">{[value.v, value.sign]}</div>
+                <div className="data">
+                    <div className="date">{this.state.date}</div>
+                    <div className="value pin">{[value.v, value.sign]}</div>
+                </div>
             </div>
         )
     }

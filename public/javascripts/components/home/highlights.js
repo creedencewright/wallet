@@ -1,11 +1,20 @@
 /*** @jsx React.DOM */
 
-const React   = require('react');
-const User    = require('../../stores/user-store');
-const Data    = require('../../stores/data-store');
+const React     = require('react');
+const _         = require('underscore');
+const User      = require('../../stores/user-store');
+const Data      = require('../../stores/data-store');
+const moment    = require('moment');
 
 function _get() {
     return Data.getHighlights();
+}
+
+function _isTop() {
+    let doc = document.documentElement;
+    let top = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+
+    return top < 50
 }
 
 function _getValue(v, color, size) {
@@ -18,8 +27,19 @@ function _getValue(v, color, size) {
 const Highlights = React.createClass({
     getInitialState() {
         return {
+            isTop: _isTop(),
             data: _get()
         };
+    },
+
+    componentDidMount() {
+        window.addEventListener('scroll', _.throttle(this.handleScroll.bind(this), 100));
+    },
+
+    handleScroll() {
+        this.setState({
+            isTop: _isTop()
+        })
     },
 
     componentWillMount() {
@@ -39,13 +59,14 @@ const Highlights = React.createClass({
     render() {
         let expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
         let income = _getValue(this.state.data.totalIncome, 'medium', 'green');
-        let total = _getValue(Data.getBalance(), 'big', 'green');
+        let total = _getValue(Data.getBalance(), 'big', this.state.isTop ? 'white' : 'black');
+        let month = moment().set({date: 1, month: Data.getMonth()});
 
         return (
             <div className="highlights-wrap">
-                <div className="money-now">{[total.v, total.sign]}</div>
+                <div className={this.state.isTop ? "money-now" : "money-now fixed"}>{[total.v, total.sign]}</div>
                 <div className="highlights row clearfix">
-                    <div className="title">{User.isEn() ? 'Highlights' : 'В этом месяце'}</div>
+                    <div className="title">{month.format('MMMM')}</div>
                     <div className="row total-wrap">
                         <div className="total expense">{[expense.v, expense.sign]}</div>
                         <div className="total income">{[income.v, income.sign]}</div>

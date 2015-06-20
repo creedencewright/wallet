@@ -60,7 +60,7 @@ const AddExpense = React.createClass({
         let category = _.find(this.state.types, (t) => t.code === this.state.category);
 
         var entry = {
-            category: category ? {name: category.name, code: category.code} : false,
+            category: category ? {name: User.isEn() ? category.name.en : category.name.ru, code: category.code} : false,
             type: this.state.tab,
             value: parseFloat(this.refs.amount.getDOMNode().value)
         }
@@ -141,7 +141,7 @@ const Types = React.createClass({
                 <div className="types">
                     <a className={!this.state.type ? 'active' : ''} href="javascript:void(0);" onClick={this.clickHandler.bind(this, false)} >{User.isEn() ? 'None' : 'Нет'}</a>
                     {this.props.types.map(function(type, i) {
-                        return <a onClick={this.clickHandler.bind(this, type.code)} className={this.state.type === type.code ? 'active' : ''} href="javascript:void(0);" key={i} >{type.name}</a>
+                        return <a onClick={this.clickHandler.bind(this, type.code)} className={this.state.type === type.code ? 'active' : ''} href="javascript:void(0);" key={i} >{User.isEn() ? type.name.en : type.name.ru}</a>
                     }.bind(this))}
                 </div>
             </div>

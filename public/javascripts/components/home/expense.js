@@ -13,11 +13,9 @@ const TimePicker    = require('./time-picker');
 const Graph         = require('./graph');
 const moment        = require('moment');
 
-moment.locale('ru');
-console.log(moment.locale());
+require('moment/locale/ru');
 
 if (!User.isEn()) moment.locale('ru');
-
 
 function _getCurrentData(params) {
     return Data.getCurrentData(params);
@@ -148,6 +146,7 @@ const Tabs = React.createClass({
 
 const Entries = React.createClass({
     render: function() {
+        console.log(this.props.data);
         return (
             <div className={this.props.loading ? 'loading row entries-wrap expense' : 'row entries-wrap expense'}>
                 {this.props.data.map((entry, i) =>

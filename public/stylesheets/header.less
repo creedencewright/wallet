@@ -1,15 +1,64 @@
 @import "var";
 
 header {
-    z-index: 20;
     position: relative;
     width: 100%;
-    top: 0;
-    padding: 10px 0;
-    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    padding: 20px 0;
+    margin-bottom: 50px;
+
+    .logo-wrap {
+        left: 0;
+        width: 90px;
+        height: 63px;
+        overflow: hidden;
+        position: absolute;
+        cursor: default;
+        top: 0px;
+
+        .name {
+            font: 900 32px/1 "Baron Neue";
+            text-transform: uppercase;
+            display: inline-block;
+            vertical-align: top;
+            padding-left: 28px;
+            padding-top: 11px;
+            color: #444;
+
+            span {
+                position: relative;
+                z-index: 2;
+            }
+
+            .dot {
+                .size(6px);
+                .backface-visibility(hidden);
+
+                z-index: 1;
+                transition: all .2s cubic-bezier(.4,.94,.61,.87);
+                position: absolute;
+                bottom: 26px;
+                left: 58px;
+                border-radius: 50%;
+                background-color: #444;
+                display: inline-block;
+            }
+        }
+
+        &:hover {
+            .name {
+                color: #fff;
+            }
+
+            .dot {
+                transform: scale(25) translate(-2.1px,-0.45px);
+                transform: scale(25) translate(0,0);
+            }
+        }
+    }
 
     .user {
-        padding-left: 50px;
+        padding-left: 40px;
         text-align: right;
         display: inline-block;
         text-align: left;
@@ -32,7 +81,7 @@ header {
 
         .name {
             font-weight: 700;
-            color: @gray;
+            color: @gray-dark;
             font-size: 16px;
             text-transform: lowercase;
         }

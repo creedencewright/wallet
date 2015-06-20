@@ -13,6 +13,7 @@ let _balance    = 0;
 let _saved      = 0;
 let _expense    = [];
 let _income     = [];
+let _month      = moment().month();
 
 function _add(entry) {
     entry.time      = moment().unix();
@@ -120,6 +121,8 @@ function _setData(data) {
 }
 
 function _fetch(params) {
+    _month = params.month ? params.month : _month;
+
     reqwest({
         url: '/fetch/',
         method: 'post',
@@ -167,7 +170,11 @@ var Data = assign(EventEmitter.prototype, {
     },
 
     getByFilter(params) {
-        _fetch(params)
+        _fetch(params);
+    },
+
+    getMonth() {
+        return _month;
     },
 
     getCurrentData(params) {
