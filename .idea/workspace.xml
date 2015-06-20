@@ -2,14 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f832d151-d969-4bf6-bee9-164a96b2b093" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/mongod.lock" afterPath="$PROJECT_DIR$/data/mongod.lock" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/javascripts/bundle.js" afterPath="$PROJECT_DIR$/public/javascripts/bundle.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/stylesheets/common.less" afterPath="$PROJECT_DIR$/public/stylesheets/common.less" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/javascripts/components/common/header.js" afterPath="$PROJECT_DIR$/public/javascripts/components/common/header.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/stylesheets/header.less" afterPath="$PROJECT_DIR$/public/stylesheets/header.less" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/stylesheets/pages/home.less" afterPath="$PROJECT_DIR$/public/stylesheets/pages/home.less" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/stylesheets/style.css" afterPath="$PROJECT_DIR$/public/stylesheets/style.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/www" afterPath="$PROJECT_DIR$/bin/www" />
     </list>
     <ignored path="wallet.iws" />
@@ -35,7 +27,7 @@
         <entry file="file://$PROJECT_DIR$/bin/www">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.6506024">
-              <caret line="27" column="32" selection-start-line="27" selection-start-column="32" selection-end-line="27" selection-end-column="32" />
+              <caret line="27" column="18" selection-start-line="27" selection-start-column="18" selection-end-line="27" selection-end-column="18" />
               <folding />
             </state>
           </provider>
@@ -1306,7 +1298,7 @@
     <entry file="file://$PROJECT_DIR$/bin/www">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.6506024">
-          <caret line="27" column="32" selection-start-line="27" selection-start-column="32" selection-end-line="27" selection-end-column="32" />
+          <caret line="27" column="18" selection-start-line="27" selection-start-column="18" selection-end-line="27" selection-end-column="18" />
           <folding />
         </state>
       </provider>
