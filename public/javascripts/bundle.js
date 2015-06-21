@@ -38194,6 +38194,7 @@ var AddExpense = React.createClass({
         return {
             tab: this.props.tab,
             category: false,
+            sumError: false,
             types: types.all,
             currentTypes: types.current
         };
@@ -38236,6 +38237,12 @@ var AddExpense = React.createClass({
         var _this = this;
 
         e.preventDefault();
+
+        if (this.refs.amount.getDOMNode().value.toString().match(/^[0-9]+$/) === null) {
+            this.setState({ sumError: true });
+            return;
+        }
+
         this.setState({ opened: false });
 
         var category = _.find(this.state.types, function (t) {
@@ -38264,6 +38271,10 @@ var AddExpense = React.createClass({
         this.setState({
             opened: this.state.opened ? false : true
         });
+    },
+
+    clearErrors: function clearErrors() {
+        this.setState({ sumError: false });
     },
 
     handleTypeChange: function handleTypeChange(event) {
@@ -38296,7 +38307,7 @@ var AddExpense = React.createClass({
                     React.createElement(
                         'label',
                         { className: 'form-group' },
-                        React.createElement('input', { autoComplete: 'off', ref: 'amount', className: 'form-control', type: 'text', name: 'amount', placeholder: User.isEn() ? 'Amount' : 'Сумма' })
+                        React.createElement('input', { onKeyUp: this.clearErrors, autoComplete: 'off', ref: 'amount', className: this.state.sumError ? 'error form-control' : 'form-control', type: 'text', name: 'amount', placeholder: User.isEn() ? 'Amount' : 'Сумма' })
                     ),
                     React.createElement(
                         'div',
@@ -38547,10 +38558,16 @@ var Entries = React.createClass({
     displayName: 'Entries',
 
     render: function render() {
-        console.log(this.props.data);
+        var wrapClass = this.props.loading ? 'loading row entries-wrap expense' : 'row entries-wrap expense';
+        if (!this.props.data.length) wrapClass += ' no-data';
         return React.createElement(
             'div',
-            { className: this.props.loading ? 'loading row entries-wrap expense' : 'row entries-wrap expense' },
+            { className: wrapClass },
+            React.createElement(
+                'div',
+                { className: 'no-data-msg' },
+                User.isEn() ? 'No entries.' : 'Нет записей.'
+            ),
             this.props.data.map(function (entry, i) {
                 return React.createElement(Entry, { entry: entry, key: i });
             })
@@ -38659,6 +38676,7 @@ var Graph = React.createClass({
     getInitialState: function getInitialState() {
         return {
             data: {},
+            noData: true,
             big: false,
             tooltip: false,
             height: _h
@@ -38706,9 +38724,12 @@ var Graph = React.createClass({
 
         _d = _w / days;
 
+        var noData = !_.keys(data.expense).length && !_.keys(data.income).length;
+
         this.setState({
             data: data,
-            month: data.month,
+            noData: noData,
+            month: Data.getMonth(),
             year: data.year,
             days: days,
             max: data.max
@@ -38822,7 +38843,12 @@ var Graph = React.createClass({
 
         return React.createElement(
             'div',
-            { className: 'graph-wrap' },
+            { className: this.state.noData ? 'graph-wrap no-data' : 'graph-wrap' },
+            React.createElement(
+                'div',
+                { className: 'no-data-msg' },
+                User.isEn() ? 'No data yet.' : 'Пока недостаточно данных.'
+            ),
             React.createElement(
                 'div',
                 { className: 'info' },
@@ -38977,6 +39003,7 @@ var Highlights = React.createClass({
 
     getInitialState: function getInitialState() {
         return {
+            isSavings: false,
             isTop: _isTop(),
             data: _get()
         };
@@ -39006,19 +39033,52 @@ var Highlights = React.createClass({
         Data.removeChangeListener(this._onChange);
     },
 
+    toggleSavings: function toggleSavings() {
+        this.setState({
+            isSavings: this.state.isSavings ? false : true
+        });
+    },
+
     render: function render() {
         var expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
         var income = _getValue(this.state.data.totalIncome, 'medium', 'green');
         var total = _getValue(Data.getBalance(), 'big', this.state.isTop ? 'white' : 'black');
+        var savings = _getValue(Data.getSavings(), 'big', this.state.isTop ? 'white' : 'black');
         var month = moment().set({ date: 1, month: Data.getMonth() });
+        var wrapClass = this.state.isTop ? 'balance-wrap' : 'fixed balance-wrap';
+        if (this.state.isSavings) wrapClass += ' savings';
+        var title = this.state.isSavings ? User.isEn() ? 'savings' : 'сбережения' : User.isEn() ? 'balance' : 'баланс';
 
         return React.createElement(
             'div',
             { className: 'highlights-wrap' },
             React.createElement(
                 'div',
-                { className: this.state.isTop ? 'money-now' : 'money-now fixed' },
-                [total.v, total.sign]
+                { className: wrapClass },
+                React.createElement(
+                    'div',
+                    { className: 'now-title' },
+                    title
+                ),
+                React.createElement(
+                    'div',
+                    { onClick: this.toggleSavings, className: 'money-now' },
+                    [total.v, total.sign]
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'savings-wrap', onClick: this.toggleSavings },
+                    React.createElement(
+                        'div',
+                        { className: 'savings-text' },
+                        'Savings'
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'savings-value' },
+                        [savings.v, savings.sign]
+                    )
+                )
             ),
             React.createElement(
                 'div',
@@ -39062,7 +39122,7 @@ var Category = React.createClass({
 
         return React.createElement(
             'div',
-            { className: 'category' },
+            { key: this.props.key, className: 'category' },
             React.createElement(
                 'div',
                 { className: 'value' },
@@ -39170,6 +39230,7 @@ module.exports = TimePicker;
 'use strict';
 
 var React = require('react');
+var reqwest = require('reqwest');
 
 var LoginWrap = React.createClass({
     displayName: 'LoginWrap',
@@ -39178,36 +39239,102 @@ var LoginWrap = React.createClass({
         return {
             username: '',
             password: '',
-            balance: '',
-            savings: '',
+            balance: 0,
+            savings: 0,
+            lang: 'en',
             form: 'login',
-            action: '/login/'
+            action: '/login/',
+            errors: {}
         };
     },
+
     key: function key(el, e) {
-        var state = {},
+        var state = { errors: {} },
             val = e.target.value;
 
-        if (el === 'balance' || el === 'savings') {
-            var reg = /^[0-9]+$/;
-            if (val.match(reg) === null) {
-                e.stopPropagation();
-                e.preventDefault();
-                return;
-            }
-        }
-
         state[el] = val;
+        state.errors[el] = false;
         this.setState(state);
     },
-    submit: function submit() {
-        this.refs.form.getDOMNode().submit();
+
+    submit: function submit(e) {
+        e.preventDefault();
+        if (this.validate()) {
+            reqwest({
+                method: 'post',
+                url: this.state.action,
+                data: this.state,
+                success: this.success
+            });
+        }
     },
+
+    success: function success(data) {
+        if (data.success) {
+            window.location.href = '/';
+            return;
+        }
+
+        if (data.error === 'user') {
+            this.setState({
+                errors: { username: true, password: true }
+            });
+        }
+    },
+
+    validate: function validate() {
+        var res = true;
+        var errors = {};
+        var reg = /^[0-9]+$/;
+
+        if (!this.state.username.length) {
+            res = false;
+            errors.username = true;
+        }
+
+        if (!this.state.password.length) {
+            res = false;
+            errors.password = true;
+        }
+
+        if (this.state.form === 'register' && (!this.state.balance.toString().length || this.state.balance.toString().match(reg) === null)) {
+            res = false;
+            errors.balance = true;
+        }
+
+        if (this.state.form === 'register' && (!this.state.savings.toString().length || this.state.savings.toString().match(reg) === null)) {
+            res = false;
+            errors.savings = true;
+        }
+
+        this.setState({ errors: errors });
+
+        return res;
+    },
+
+    setLang: function setLang(lang) {
+        this.setState({ lang: lang });
+    },
+
     switchForm: function switchForm(form) {
         this.setState({ form: form, action: '/' + form + '/' });
     },
+
     render: function render() {
-        var switchTo = this.state.form === 'login' ? 'register' : 'login';
+        var reg = this.state.lang === 'en' ? 'register' : 'Создать';
+        var log = this.state.lang === 'en' ? 'login' : 'Войти';
+        var switchTo = this.state.form === 'login' ? reg : log;
+
+        var username = this.state.username ? 'form-control filled' : 'form-control';
+        var password = this.state.password ? 'form-control filled' : 'form-control';
+        var balance = this.state.balance !== '' ? 'form-control filled' : 'form-control';
+        var savings = this.state.savings !== '' ? 'form-control filled' : 'form-control';
+
+        if (this.state.errors.username) username += ' error';
+        if (this.state.errors.password) password += ' error';
+        if (this.state.errors.balance) balance += ' error';
+        if (this.state.errors.savings) savings += ' error';
+
         return React.createElement(
             'div',
             { className: 'form-wrap ' + this.state.form },
@@ -39217,22 +39344,22 @@ var LoginWrap = React.createClass({
                 React.createElement(
                     'h1',
                     null,
-                    'Hello there.'
+                    this.state.lang === 'en' ? 'Hello there.' : 'Привет.'
                 ),
                 React.createElement(
                     'form',
-                    { ref: 'form', action: this.state.action, method: 'post' },
+                    { onSubmit: this.submit, ref: 'form', action: this.state.action, method: 'post' },
                     React.createElement(
                         'div',
                         { className: 'form-group' },
                         React.createElement(
                             'label',
                             null,
-                            React.createElement('input', { onKeyDown: this.key.bind(this, 'username'), autoComplete: 'off', ref: 'username', type: 'text', name: 'username', className: this.state.username ? 'form-control filled' : 'form-control' }),
+                            React.createElement('input', { onChange: this.key.bind(this, 'username'), autoComplete: 'off', ref: 'username', type: 'text', name: 'username', className: username }),
                             React.createElement(
                                 'span',
                                 null,
-                                'Username'
+                                this.state.lang === 'en' ? 'Username' : 'Логин'
                             )
                         )
                     ),
@@ -39242,11 +39369,11 @@ var LoginWrap = React.createClass({
                         React.createElement(
                             'label',
                             null,
-                            React.createElement('input', { onKeyUp: this.key.bind(this, 'password'), autoComplete: 'off', ref: 'password', name: 'password', type: 'text', className: this.state.password ? 'form-control filled' : 'form-control' }),
+                            React.createElement('input', { onChange: this.key.bind(this, 'password'), autoComplete: 'off', ref: 'password', name: 'password', type: 'text', className: password }),
                             React.createElement(
                                 'span',
                                 null,
-                                'Password'
+                                this.state.lang === 'en' ? 'Password' : 'Пароль'
                             )
                         )
                     ),
@@ -39259,7 +39386,7 @@ var LoginWrap = React.createClass({
                             React.createElement(
                                 'label',
                                 null,
-                                React.createElement('input', { type: 'radio', name: 'lang', value: 'en' }),
+                                React.createElement('input', { checked: this.state.lang === 'en' ? 'checked' : false, onChange: this.setLang.bind(this, 'en'), type: 'radio', name: 'lang', value: 'en' }),
                                 React.createElement(
                                     'span',
                                     { className: 'underlined' },
@@ -39274,7 +39401,7 @@ var LoginWrap = React.createClass({
                             React.createElement(
                                 'label',
                                 null,
-                                React.createElement('input', { type: 'radio', name: 'lang', value: 'ru' }),
+                                React.createElement('input', { checked: this.state.lang === 'ru' ? 'checked' : false, onChange: this.setLang.bind(this, 'ru'), type: 'radio', name: 'lang', value: 'ru' }),
                                 React.createElement(
                                     'span',
                                     { className: 'underlined' },
@@ -39293,11 +39420,11 @@ var LoginWrap = React.createClass({
                             React.createElement(
                                 'label',
                                 null,
-                                React.createElement('input', { onKeyUp: this.key.bind(this, 'balance'), ref: 'balance', name: 'balance', type: 'text', className: this.state.balance ? 'form-control filled' : 'form-control' }),
+                                React.createElement('input', { value: this.state.balance, onChange: this.key.bind(this, 'balance'), ref: 'balance', name: 'balance', type: 'text', className: balance }),
                                 React.createElement(
                                     'span',
                                     null,
-                                    'Balance'
+                                    this.state.lang === 'en' ? 'Balance' : 'Баланс'
                                 )
                             )
                         ),
@@ -39307,11 +39434,11 @@ var LoginWrap = React.createClass({
                             React.createElement(
                                 'label',
                                 null,
-                                React.createElement('input', { onKeyUp: this.key.bind(this, 'savings'), ref: 'savings', name: 'savings', type: 'text', className: this.state.savings ? 'form-control filled' : 'form-control' }),
+                                React.createElement('input', { value: this.state.savings, onChange: this.key.bind(this, 'savings'), ref: 'savings', name: 'savings', type: 'text', className: savings }),
                                 React.createElement(
                                     'span',
                                     null,
-                                    'Savings'
+                                    this.state.lang === 'en' ? 'Savings' : 'Сбережения'
                                 )
                             )
                         )
@@ -39345,7 +39472,7 @@ var LoginWrap = React.createClass({
 module.exports = LoginWrap;
 
 
-},{"react":200}],216:[function(require,module,exports){
+},{"react":200,"reqwest":201}],216:[function(require,module,exports){
 /*** @jsx React.DOM */
 'use strict';
 
@@ -39709,6 +39836,12 @@ function _add(entry) {
 
 function _handleIncome(entry) {
     _income.unshift(entry);
+
+    if (entry.category && entry.category.code === 'savings') {
+        _saved -= entry.value;
+        _saved = _saved >= 0 ? _saved : 0;
+    }
+
     _balance += entry.value;
 }
 
@@ -39730,11 +39863,16 @@ function _remove(entry) {
 
         if (entry.category && entry.category.code === 'savings') {
             _saved -= entry.value;
+            _saved = _saved >= 0 ? _saved : 0;
         }
     } else {
         i = _income.indexOf(entry);
         _income.splice(i, 1);
         _balance -= entry.value;
+
+        if (entry.category && entry.category.code === 'savings') {
+            _saved += entry.value;
+        }
     }
 
     entry.balance = _balance;

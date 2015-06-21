@@ -19,6 +19,7 @@ const AddExpense = React.createClass({
         return {
             tab: this.props.tab,
             category: false,
+            sumError: false,
             types: types.all,
             currentTypes: types.current
         }
@@ -55,6 +56,12 @@ const AddExpense = React.createClass({
 
     add(e) {
         e.preventDefault();
+
+        if (this.refs.amount.getDOMNode().value.toString().match(/^[0-9]+$/) === null) {
+            this.setState({sumError: true});
+            return;
+        }
+
         this.setState({opened: false})
 
         let category = _.find(this.state.types, (t) => t.code === this.state.category);
@@ -83,6 +90,10 @@ const AddExpense = React.createClass({
         })
     },
 
+    clearErrors() {
+        this.setState({sumError: false});
+    },
+
     handleTypeChange(event) {
         this.setState({
             tab: event.target.value,
@@ -102,7 +113,7 @@ const AddExpense = React.createClass({
                     <form onSubmit={this.add} className="add-block expense">
                         <a href="javascript:void(0);" onClick={this.toggleForm} className="close"></a>
                         <label className="form-group">
-                            <input autoComplete="off" ref="amount" className="form-control" type="text" name="amount" placeholder={User.isEn() ? 'Amount' : 'Сумма'}/>
+                            <input onKeyUp={this.clearErrors} autoComplete="off" ref="amount" className={this.state.sumError ? "error form-control" : 'form-control'} type="text" name="amount" placeholder={User.isEn() ? 'Amount' : 'Сумма'}/>
                         </label>
 
                         <div className="entry-tab">

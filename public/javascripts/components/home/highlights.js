@@ -27,6 +27,7 @@ function _getValue(v, color, size) {
 const Highlights = React.createClass({
     getInitialState() {
         return {
+            isSavings: false,
             isTop: _isTop(),
             data: _get()
         };
@@ -56,15 +57,32 @@ const Highlights = React.createClass({
         Data.removeChangeListener(this._onChange);
     },
 
+    toggleSavings() {
+        this.setState({
+            isSavings: this.state.isSavings ? false : true
+        });
+    },
+
     render() {
         let expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
         let income = _getValue(this.state.data.totalIncome, 'medium', 'green');
         let total = _getValue(Data.getBalance(), 'big', this.state.isTop ? 'white' : 'black');
+        let savings = _getValue(Data.getSavings(), 'big', this.state.isTop ? 'white' : 'black');
         let month = moment().set({date: 1, month: Data.getMonth()});
+        let wrapClass = this.state.isTop ? "balance-wrap" : "fixed balance-wrap";
+        if (this.state.isSavings) wrapClass += ' savings'
+        let title = this.state.isSavings ? User.isEn() ? 'savings' : 'сбережения' : User.isEn() ? 'balance' : 'баланс';
 
         return (
             <div className="highlights-wrap">
-                <div className={this.state.isTop ? "money-now" : "money-now fixed"}>{[total.v, total.sign]}</div>
+                <div className={wrapClass}>
+                    <div className="now-title">{title}</div>
+                    <div onClick={this.toggleSavings} className="money-now">{[total.v, total.sign]}</div>
+                    <div className="savings-wrap" onClick={this.toggleSavings}>
+                        <div className="savings-text">Savings</div>
+                        <div className="savings-value">{[savings.v, savings.sign]}</div>
+                    </div>
+                </div>
                 <div className="highlights row clearfix">
                     <div className="title">{month.format('MMMM')}</div>
                     <div className="row total-wrap">
@@ -85,7 +103,7 @@ const Category = React.createClass({
         let value = _getValue(this.props.value, 'small', 'red');
 
         return (
-            <div className="category">
+            <div key={this.props.key} className="category">
                 <div className="value">{[value.v, value.sign]}</div>
                 <div className="name">{this.props.name}</div>
             </div>

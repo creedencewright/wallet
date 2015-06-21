@@ -50,6 +50,7 @@ const Graph = React.createClass({
     getInitialState() {
         return {
             data: {},
+            noData: true,
             big: false,
             tooltip: false,
             height: _h
@@ -97,9 +98,12 @@ const Graph = React.createClass({
 
         _d = _w/days;
 
+        let noData = !_.keys(data.expense).length && !_.keys(data.income).length;
+
         this.setState({
             data: data,
-            month: data.month,
+            noData: noData,
+            month: Data.getMonth(),
             year: data.year,
             days: days,
             max: data.max
@@ -213,7 +217,8 @@ const Graph = React.createClass({
         });
 
         return (
-            <div className="graph-wrap" >
+            <div className={this.state.noData ? "graph-wrap no-data" : "graph-wrap"}>
+                <div className="no-data-msg">{User.isEn() ? 'No data yet.' : 'Пока недостаточно данных.'}</div>
                 <div className="info">
                     <div className="month">{day.format('MMMM')}</div>
                     <div className="expense">{User.isEn() ? 'Expense' : 'Расходы'}</div>

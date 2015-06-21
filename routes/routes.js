@@ -189,18 +189,35 @@ module.exports = function(app) {
         res.redirect('/');
     });
 
-    app.post('/register', passport.authenticate('local-signup', {
-        successRedirect: '/home', // redirect to the secure profile section
-        failureRedirect: '/', // redirect back to the signup page if there is an error
-        failureFlash: true // allow flash messages
-    }));
+    app.post('/register', function(req, res, next) {
+        passport.authenticate('local-signup', function(err, user, info) {
+            if (err) { return next(err); }
+            if (!user) {
+                return res.json({success: false, error: 'user'});
+            }
 
-    // process the login form
-    app.post('/login', passport.authenticate('local-login', {
-        successRedirect : '/home', // redirect to the secure profile section
-        failureRedirect : '/', // redirect back to the signup page if there is an error
-        failureFlash : true // allow flash messages
-    }));
+            req.login(user, function(err) {
+                if (err) return next(err);
+                return res.json({success: true});
+            });
+
+        })(req, res, next);
+    });
+
+    app.post('/login', function(req, res, next) {
+        passport.authenticate('local-login', function(err, user, info) {
+            if (err) { return next(err); }
+            if (!user) {
+                return res.json({success: false, error: 'user'});
+            }
+
+            req.login(user, function(err) {
+                if (err) return next(err);
+                return res.json({success: true});
+            });
+
+        })(req, res, next);
+    });
 
     app.post('/fetch-entries/', function(req, res) {
         Entry.find({"type": req.body.type, "time": {$gt: req.body.start, $lt: req.body.end}}).limit(req.body.limit).sort({"time":-1}).exec(function(err,data) {

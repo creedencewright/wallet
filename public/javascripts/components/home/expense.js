@@ -146,9 +146,11 @@ const Tabs = React.createClass({
 
 const Entries = React.createClass({
     render: function() {
-        console.log(this.props.data);
+        let wrapClass = this.props.loading ? 'loading row entries-wrap expense' : 'row entries-wrap expense';
+        if (!this.props.data.length) wrapClass += ' no-data'
         return (
-            <div className={this.props.loading ? 'loading row entries-wrap expense' : 'row entries-wrap expense'}>
+            <div className={wrapClass}>
+                <div className="no-data-msg">{User.isEn() ? 'No entries yet.' : 'Нет записей.'}</div>
                 {this.props.data.map((entry, i) =>
                         <Entry entry={entry} key={i} />
                 )}

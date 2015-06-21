@@ -40,6 +40,12 @@ function _add(entry) {
 
 function _handleIncome(entry) {
     _income.unshift(entry);
+
+    if (entry.category && entry.category.code === 'savings') {
+        _saved -= entry.value;
+        _saved = _saved >= 0 ? _saved : 0;
+    }
+
     _balance += entry.value;
 }
 
@@ -61,11 +67,17 @@ function _remove(entry) {
 
         if (entry.category && entry.category.code === 'savings') {
             _saved -= entry.value;
+            _saved = _saved >= 0 ? _saved : 0;
         }
+
     } else {
         i = _income.indexOf(entry);
         _income.splice(i, 1);
         _balance -= entry.value;
+
+        if (entry.category && entry.category.code === 'savings') {
+            _saved += entry.value;
+        }
     }
 
     entry.balance = _balance;
