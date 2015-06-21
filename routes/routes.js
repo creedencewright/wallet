@@ -20,147 +20,147 @@ module.exports = function(app) {
 
     /* GET home page. */
     app.get('/', function(req, res) {
-        var types = [
-            {
-                name: {
-                    ru: "Транспорт",
-                    en: "Transport"
-                },
-                code: 'transport',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "Одежда и обувь",
-                    en: "Clothes"
-                },
-                code: 'clothes',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "кафе и рестораны",
-                    en: "cafes & restaurants"
-                },
-                code: 'cafes',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "здоровье",
-                    en: "health"
-                },
-                code: 'health',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "развлечения",
-                    en: "entertainment"
-                },
-                code: 'entertainment',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "подарки",
-                    en: "gifts"
-                },
-                code: 'gifts',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "подарки",
-                    en: "gifts"
-                },
-                code: 'gifts',
-                type: 'income'
-            },
-            {
-                name: {
-                    ru: "дом и семья",
-                    en: "house & family"
-                },
-                code: 'house',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "путешествия",
-                    en: "travel"
-                },
-                code: 'travel',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "связь",
-                    en: "cell"
-                },
-                code: 'cell',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "техника",
-                    en: "gadgets"
-                },
-                code: 'gadgets',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "личное",
-                    en: "personal"
-                },
-                code: 'personal',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "сбережения",
-                    en: "savings"
-                },
-                code: 'savings',
-                type: 'income'
-            },
-            {
-                name: {
-                    ru: "сбережения",
-                    en: "savings"
-                },
-                code: 'savings',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "продукты",
-                    en: "groceries"
-                },
-                code: 'groceries',
-                type: 'expense'
-            },
-            {
-                name: {
-                    ru: "зарплата",
-                    en: "salary"
-                },
-                code: 'salary',
-                type: 'income'
-            },
-            {
-                name: {
-                    ru: "хобби",
-                    en: "hobby"
-                },
-                code: 'hobby',
-                type: 'expense'
-            },
-        ];
-        _.each(types, function(type) {
-            Type.create(type);
-        })
+        //var types = [
+        //    {
+        //        name: {
+        //            ru: "Транспорт",
+        //            en: "Transport"
+        //        },
+        //        code: 'transport',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "Одежда и обувь",
+        //            en: "Clothes"
+        //        },
+        //        code: 'clothes',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "кафе и рестораны",
+        //            en: "cafes & restaurants"
+        //        },
+        //        code: 'cafes',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "здоровье",
+        //            en: "health"
+        //        },
+        //        code: 'health',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "развлечения",
+        //            en: "entertainment"
+        //        },
+        //        code: 'entertainment',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "подарки",
+        //            en: "gifts"
+        //        },
+        //        code: 'gifts',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "подарки",
+        //            en: "gifts"
+        //        },
+        //        code: 'gifts',
+        //        type: 'income'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "дом и семья",
+        //            en: "house & family"
+        //        },
+        //        code: 'house',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "путешествия",
+        //            en: "travel"
+        //        },
+        //        code: 'travel',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "связь",
+        //            en: "cell"
+        //        },
+        //        code: 'cell',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "техника",
+        //            en: "gadgets"
+        //        },
+        //        code: 'gadgets',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "личное",
+        //            en: "personal"
+        //        },
+        //        code: 'personal',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "сбережения",
+        //            en: "savings"
+        //        },
+        //        code: 'savings',
+        //        type: 'income'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "сбережения",
+        //            en: "savings"
+        //        },
+        //        code: 'savings',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "продукты",
+        //            en: "groceries"
+        //        },
+        //        code: 'groceries',
+        //        type: 'expense'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "зарплата",
+        //            en: "salary"
+        //        },
+        //        code: 'salary',
+        //        type: 'income'
+        //    },
+        //    {
+        //        name: {
+        //            ru: "хобби",
+        //            en: "hobby"
+        //        },
+        //        code: 'hobby',
+        //        type: 'expense'
+        //    },
+        //];
+        //_.each(types, function(type) {
+        //    Type.create(type);
+        //})
         var data = {
             logged: req.isAuthenticated() ? 1 : 0
         }
