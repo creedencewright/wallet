@@ -38566,7 +38566,7 @@ var Entries = React.createClass({
             React.createElement(
                 'div',
                 { className: 'no-data-msg' },
-                User.isEn() ? 'No entries.' : 'Нет записей.'
+                User.isEn() ? 'No entries yet.' : 'Нет записей.'
             ),
             this.props.data.map(function (entry, i) {
                 return React.createElement(Entry, { entry: entry, key: i });
