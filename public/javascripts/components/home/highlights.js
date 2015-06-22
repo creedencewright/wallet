@@ -66,8 +66,8 @@ const Highlights = React.createClass({
     render() {
         let expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
         let income = _getValue(this.state.data.totalIncome, 'medium', 'green');
-        let total = _getValue(Data.getBalance(), 'big', this.state.isTop ? 'white' : 'black');
-        let savings = _getValue(Data.getSavings(), 'big', this.state.isTop ? 'white' : 'black');
+        let total = _getValue(Data.getBalance(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
+        let savings = _getValue(Data.getSavings(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
         let month = moment().set({date: 1, month: Data.getMonth()});
         let wrapClass = this.state.isTop ? "balance-wrap" : "fixed balance-wrap";
         if (this.state.isSavings) wrapClass += ' savings'

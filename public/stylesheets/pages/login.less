@@ -5,6 +5,71 @@
     position: relative;
     width: 600px;
     margin: 0 auto;
+    padding-top: 30px;
+
+    .logo-wrap {
+        width: 100%;
+        position: absolute;
+        bottom: 100%;
+        margin-bottom: 10px;
+        left: 0;
+        text-align: center;
+    }
+
+    .logo-white {
+        backface-visibility: hidden;
+        transition: all .2s ease;
+        display: inline-block;
+        position: relative;
+        font: 900 50px/1 'Baron Neue';
+        color: #fff;
+        width: 50px;
+        height: 50px;
+
+        .short {
+            transition: all .2s ease;
+            left: 0;
+            top: 0;
+            position: absolute;
+        }
+        .long {
+            transition: all .2s ease;
+            transform: translate(0, 0);
+            opacity: 0;
+            font-size: 40px;
+            left: 45px;
+            top: 10px;
+            position: absolute;
+        }
+
+        &:after {
+            .pseudo();
+            .size(8px);
+            transition: all .2s ease;
+            position: absolute;
+            left: 47px;
+            bottom: 11px;
+            border-radius: 50%;
+            background-color: #fff;
+        }
+
+        &:hover {
+            &:after {
+                opacity: 0;
+                visibility: hidden;
+                transform: translate(0, -5px);
+            }
+            
+            .short {
+                transform: translate(-30px, 0);
+            }
+            
+            .long {
+                opacity: 1;
+                transform: translate(-30px, 0);
+            }
+        }
+    }
 
     h1 {
         margin-bottom: 40px;

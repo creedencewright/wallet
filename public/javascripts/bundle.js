@@ -39042,8 +39042,8 @@ var Highlights = React.createClass({
     render: function render() {
         var expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
         var income = _getValue(this.state.data.totalIncome, 'medium', 'green');
-        var total = _getValue(Data.getBalance(), 'big', this.state.isTop ? 'white' : 'black');
-        var savings = _getValue(Data.getSavings(), 'big', this.state.isTop ? 'white' : 'black');
+        var total = _getValue(Data.getBalance(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
+        var savings = _getValue(Data.getSavings(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
         var month = moment().set({ date: 1, month: Data.getMonth() });
         var wrapClass = this.state.isTop ? 'balance-wrap' : 'fixed balance-wrap';
         if (this.state.isSavings) wrapClass += ' savings';
@@ -39462,6 +39462,24 @@ var LoginWrap = React.createClass({
                             this.state.form === 'login' ? 'New here?' : 'Login'
                         ),
                         React.createElement('br', null)
+                    )
+                )
+            ),
+            React.createElement(
+                'div',
+                { className: 'logo-wrap' },
+                React.createElement(
+                    'div',
+                    { className: 'logo-white' },
+                    React.createElement(
+                        'span',
+                        { className: 'short' },
+                        'W'
+                    ),
+                    React.createElement(
+                        'span',
+                        { className: 'long' },
+                        'allt'
                     )
                 )
             )

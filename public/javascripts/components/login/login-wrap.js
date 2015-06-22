@@ -157,6 +157,9 @@ const LoginWrap = React.createClass({
                         </div>
                     </form>
                 </div>
+                <div className="logo-wrap">
+                    <div className="logo-white"><span className="short">W</span><span className="long">allt</span></div>
+                </div>
             </div>
         )
     }

@@ -281,6 +281,7 @@
                 .money-now {
                     transform: translate(-30px, 30px);
                     color: @gray-darker;
+                    font-size: 50px;
 
                     &:before {
                         transform: translate(0, -5px);
@@ -298,6 +299,7 @@
                     visibility: hidden;
                     transform: translate(0px, 30px);
                     color: @gray-darker;
+                    font-size: 50px;
 
                     .savings-value {
                         color: @gray-darker;
@@ -337,11 +339,6 @@
                     overflow: visible;
                     z-index: 2;
                     transform: translate(20px, 0);
-
-
-                    &:before {
-                        box-shadow: 0 2px 9px 0 rgba(0,0,0,.25);
-                    }
                 }
 
             }
@@ -357,17 +354,16 @@
             white-space: nowrap;
             vertical-align: bottom;
             margin-left: -17px;
-            padding: 15px 30px 23px;
+            padding: 13px 30px 17px;
             color: #fff;
             position: relative;
-            font: 300 50px/33px @font-family-base;
+            font: 300 36px/33px @font-family-base;
 
             &:before {
                 .pseudo();
                 .size(100%);
                 transition: all .2s ease;
                 background-color: lighten(@green, 20%);
-                box-shadow: 0 2px 9px 0 rgba(0,0,0,.25);
                 left: 0;
                 z-index: -1;
                 top: 0;
@@ -384,12 +380,12 @@
             display: inline-block;
             vertical-align: bottom;
             margin-left: -17px;
-            padding: 15px 30px 23px;
+            padding: 13px 30px 17px;
             color: #fff;
             position: absolute;
             left: 0;
             top: 0;
-            font: 300 50px/33px @font-family-base;
+            font: 300 36px/33px @font-family-base;
 
             .savings-text {
                 display: none;
@@ -404,7 +400,7 @@
                 .size(100%);
                 transition: all .2s ease;
                 background-color: lighten(@blue, 25%);
-                box-shadow: 0 2px 9px 0 rgba(0,0,0,.0);
+                //box-shadow: 0 2px 9px 0 rgba(0,0,0,.0);
                 left: 0;
                 z-index: -1;
                 top: 0;
@@ -420,7 +416,6 @@
             text-transform: uppercase;
             color: @gray-darker;
             font-weight: 500;
-            margin-bottom: 10px;
         }
 
         .total-wrap {

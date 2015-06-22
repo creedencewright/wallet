@@ -9,9 +9,13 @@ html
   body
     block content
 
-    footer
+    footer(class=logged ? 'logged' : 'not-logged')
       .container
         .copy
-          .text Made by me
+          .text
+            span Wallt, 2015. Made by&nbsp;
+            a(target="_blank" href="https://github.com/creedencewright/")
+              span me
+            span .
           .github
       script(src="/javascripts/bundle.js")

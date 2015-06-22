@@ -9,12 +9,12 @@ body {
 }
 
 .app {
-    padding: 0 0 200px;
+    padding: 0 0 50px;
     position: relative;
     min-height: 100%;
     overflow: hidden;
-    margin-bottom: 70px;
-    height: auto;
+    margin-bottom: -70px;
+    height: auto !important;
 
     &.not-logged {
         background-image: url('@{imgPath}back-6.jpg');
@@ -305,10 +305,6 @@ body {
             &:focus {
                 box-shadow: none;
                 border-color: @blue;
-            }
-
-            &.error {
-                border-color: @red;
             }
         }
     }

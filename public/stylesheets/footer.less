@@ -1,0 +1,48 @@
+@import "var";
+
+footer {
+    position: relative;
+    z-index: 1;
+    height: 70px;
+    text-align: right;
+    text-align: center;
+    padding-top: 30px;
+    font: 400 12px/1 @font-family-base;
+
+    &.not-logged {
+        color: #fff;
+
+        a {
+            color: #fff !important;
+            
+            span {
+                border-color: #fff;
+            }
+
+            &:hover {
+                span {
+                    color: #fff;
+                    opacity: .8;
+                }
+            }
+        }
+    }
+
+    a {
+        text-decoration: none !important;
+        font-weight: 700;
+        color: @blue !important;
+
+        span {
+            transition: all .2s;
+            border-bottom: 1px solid @blue;
+        }
+
+        &:hover {
+            span {
+                color: @green;
+                border-color: transparent;
+            }
+        }
+    }
+}
