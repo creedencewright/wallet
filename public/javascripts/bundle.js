@@ -38495,11 +38495,6 @@ var Expense = React.createClass({
                         'div',
                         { className: 'col-md-8 col-lg-8' },
                         React.createElement(Graph, null)
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'col-md-4 col-lg-4' },
-                        React.createElement(Highlights, { data: this.state.data })
                     )
                 ),
                 React.createElement(
@@ -38518,6 +38513,11 @@ var Expense = React.createClass({
                         )
                     ),
                     React.createElement(Entries, { loading: this.state.loading, data: this.state.data })
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'col-sm-4 col-md-4 col-lg-4' },
+                    React.createElement(Highlights, { data: this.state.data })
                 )
             )
         );

@@ -103,9 +103,7 @@ const Expense = React.createClass({
                         <div className="col-md-8 col-lg-8">
                             <Graph />
                         </div>
-                        <div className="col-md-4 col-lg-4">
-                            <Highlights data={this.state.data} />
-                        </div>
+
                     </div>
                     <div className="col-sm-8 table-wrap">
                         <div className="title-wrap">
@@ -117,6 +115,9 @@ const Expense = React.createClass({
                             </a>
                         </div>
                         <Entries loading={this.state.loading} data={this.state.data} />
+                    </div>
+                    <div className="col-sm-4 col-md-4 col-lg-4">
+                        <Highlights data={this.state.data} />
                     </div>
                 </div>
             </div>

@@ -772,3 +772,61 @@
         }
     }
 }
+
+@media (max-width:990px) {
+    .home {
+        .highlights-wrap {
+            position: relative;
+
+            .balance-wrap {
+                .money-now {
+                    transform: translate(-30px, 30px);
+                    color: @gray-darker;
+                    font-size: 50px;
+
+                    &:before {
+                        transform: translate(0, -5px);
+                        opacity: 0;
+                        visibility: hidden;
+                    }
+                }
+
+                .now-title {
+                    transform: translate(0, -50px);
+                }
+
+                .savings-wrap {
+                    opacity: 0;
+                    visibility: hidden;
+                    transform: translate(0px, 30px);
+                    color: @gray-darker;
+                    font-size: 50px;
+
+                    .savings-value {
+                        color: @gray-darker;
+                    }
+
+                    &:before {
+                        opacity: 0;
+                        visibility: hidden;
+                    }
+                }
+
+                &.savings {
+                    .savings-wrap {
+                        transform: translate(20px, 30px);
+                        opacity: 1;
+                        visibility: visible;
+                    }
+
+                    .money-now {
+                        transform: translate(-30px, 30px);
+                        opacity: 0;
+                        visibility: hidden;
+                    }
+                }
+
+            }
+        }
+    }
+}
