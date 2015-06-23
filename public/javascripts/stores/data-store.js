@@ -144,27 +144,30 @@ function _fetch(params) {
 }
 
 function _getTopCategories() {
+    return {expense: _getGrouped(_expense), income: _getGrouped(_income)};
+}
+
+function _getGrouped(arr) {
     let grouped = [];
-    _.each(_expense, function(e) {
+    _.each(arr, function(e) {
         if (!e.category) return;
 
-        var group = _.find(grouped, (el) => el.name === e.category.name);
+        let group = _.find(grouped, (el) => el.name === e.category.name);
 
         if (group) {
-            var i = grouped.indexOf(group);
+            let i = grouped.indexOf(group);
             grouped[i].value += e.value;
         } else {
             grouped.push({name: e.category.name, value: e.value});
         }
-    })
+    });
 
     grouped = _.sortBy(grouped, (e) => -e.value);
 
-    //return grouped.slice(0, 4);
     return grouped;
 }
 
-var Data = assign(EventEmitter.prototype, {
+const Data = assign(EventEmitter.prototype, {
     emitChange() {
         this.emit(CHANGE_EVENT);
     },

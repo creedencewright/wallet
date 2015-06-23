@@ -39105,8 +39105,15 @@ var Highlights = React.createClass({
                 React.createElement(
                     'div',
                     { className: 'row categories' },
-                    this.state.data.categories.map(function (e, i) {
-                        return React.createElement(Category, { key: i, value: e.value, name: e.name });
+                    this.state.data.categories.expense.map(function (e, i) {
+                        return React.createElement(Category, { key: i, type: 'expense', value: e.value, name: e.name });
+                    })
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'row categories' },
+                    this.state.data.categories.income.map(function (e, i) {
+                        return React.createElement(Category, { key: i, type: 'income', value: e.value, name: e.name });
                     })
                 )
             )
@@ -39118,11 +39125,12 @@ var Category = React.createClass({
     displayName: 'Category',
 
     render: function render() {
-        var value = _getValue(this.props.value, 'small', 'red');
+        var isIncome = this.props.type === 'income';
+        var value = _getValue(this.props.value, 'small', isIncome ? 'green' : 'red');
 
         return React.createElement(
             'div',
-            { key: this.props.key, className: 'category' },
+            { key: this.props.key, className: isIncome ? 'income category' : 'category' },
             React.createElement(
                 'div',
                 { className: 'value' },
@@ -39954,8 +39962,12 @@ function _fetch(params) {
 }
 
 function _getTopCategories() {
+    return { expense: _getGrouped(_expense), income: _getGrouped(_income) };
+}
+
+function _getGrouped(arr) {
     var grouped = [];
-    _.each(_expense, function (e) {
+    _.each(arr, function (e) {
         if (!e.category) return;
 
         var group = _.find(grouped, function (el) {
@@ -39974,7 +39986,6 @@ function _getTopCategories() {
         return -e.value;
     });
 
-    //return grouped.slice(0, 4);
     return grouped;
 }
 

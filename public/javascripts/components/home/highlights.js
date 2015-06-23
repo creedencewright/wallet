@@ -90,7 +90,10 @@ const Highlights = React.createClass({
                         <div className="total income">{[income.v, income.sign]}</div>
                     </div>
                     <div className="row categories">
-                        {this.state.data.categories.map((e, i) => <Category key={i} value={e.value} name={e.name} />)}
+                        {this.state.data.categories.expense.map((e, i) => <Category key={i} type="expense" value={e.value} name={e.name} />)}
+                    </div>
+                    <div className="row categories">
+                        {this.state.data.categories.income.map((e, i) => <Category key={i} type="income" value={e.value} name={e.name} />)}
                     </div>
                 </div>
             </div>
@@ -100,10 +103,11 @@ const Highlights = React.createClass({
 
 const Category = React.createClass({
     render() {
-        let value = _getValue(this.props.value, 'small', 'red');
+        let isIncome = this.props.type === 'income';
+        let value = _getValue(this.props.value, 'small', isIncome ? 'green' : 'red');
 
         return (
-            <div key={this.props.key} className="category">
+            <div key={this.props.key} className={isIncome ? "income category" : 'category'}>
                 <div className="value">{[value.v, value.sign]}</div>
                 <div className="name">{this.props.name}</div>
             </div>
