@@ -38280,6 +38280,7 @@ var AddExpense = React.createClass({
     handleTypeChange: function handleTypeChange(event) {
         this.setState({
             tab: event.target.value,
+            category: false,
             currentTypes: event.target.value === 'income' ? _.filter(this.state.types, function (t) {
                 return t.type === 'income';
             }) : _.filter(this.state.types, function (t) {
@@ -38293,12 +38294,15 @@ var AddExpense = React.createClass({
     },
 
     render: function render() {
+        var wrapClass = this.state.opened ? 'opened add-wrap' : 'add-wrap';
+        if (this.state.tab === 'income') wrapClass += ' income';
+
         return React.createElement(
             'div',
             { className: 'add-entry' },
             React.createElement(
                 'div',
-                { className: this.state.opened ? 'opened add-wrap' : 'add-wrap' },
+                { className: wrapClass },
                 React.createElement('a', { className: 'open', onClick: this.state.opened ? this.add : this.toggleForm, href: 'javascript:void(0)' }),
                 React.createElement(
                     'form',
@@ -38333,7 +38337,7 @@ var AddExpense = React.createClass({
                             )
                         )
                     ),
-                    React.createElement(Types, { typeClickHandler: this.typeClickHandler, tab: this.state.tab, types: this.state.currentTypes })
+                    React.createElement(Types, { typeClickHandler: this.typeClickHandler, type: this.state.category, tab: this.state.tab, types: this.state.currentTypes })
                 )
             )
         );
@@ -38363,13 +38367,13 @@ var Types = React.createClass({
                 { className: 'types' },
                 React.createElement(
                     'a',
-                    { className: !this.state.type ? 'active' : '', href: 'javascript:void(0);', onClick: this.clickHandler.bind(this, false) },
+                    { className: !this.props.type ? 'active' : '', href: 'javascript:void(0);', onClick: this.clickHandler.bind(this, false) },
                     User.isEn() ? 'None' : 'Нет'
                 ),
                 this.props.types.map((function (type, i) {
                     return React.createElement(
                         'a',
-                        { onClick: this.clickHandler.bind(this, type.code), className: this.state.type === type.code ? 'active' : '', href: 'javascript:void(0);', key: i },
+                        { onClick: this.clickHandler.bind(this, type.code), className: this.props.type === type.code ? 'active' : '', href: 'javascript:void(0);', key: i },
                         User.isEn() ? type.name.en : type.name.ru
                     );
                 }).bind(this))

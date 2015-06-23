@@ -97,6 +97,7 @@ const AddExpense = React.createClass({
     handleTypeChange(event) {
         this.setState({
             tab: event.target.value,
+            category: false,
             currentTypes: event.target.value === 'income' ? _.filter(this.state.types, (t) => t.type === 'income') : _.filter(this.state.types, (t) => t.type === 'expense')
         })
     },
@@ -106,9 +107,12 @@ const AddExpense = React.createClass({
     },
 
     render() {
+        let wrapClass = this.state.opened ? 'opened add-wrap' : 'add-wrap';
+        if (this.state.tab === 'income') wrapClass += ' income';
+
         return (
             <div className="add-entry">
-                <div className={this.state.opened ? 'opened add-wrap' : 'add-wrap'}>
+                <div className={wrapClass}>
                     <a className="open" onClick={this.state.opened ? this.add : this.toggleForm} href="javascript:void(0)"></a>
                     <form onSubmit={this.add} className="add-block expense">
                         <a href="javascript:void(0);" onClick={this.toggleForm} className="close"></a>
@@ -126,7 +130,7 @@ const AddExpense = React.createClass({
                                 <span className="name">{User.isEn() ? 'Income' : 'Доходы'}</span>
                             </label>
                         </div>
-                        <Types typeClickHandler={this.typeClickHandler} tab={this.state.tab} types={this.state.currentTypes} />
+                        <Types typeClickHandler={this.typeClickHandler} type={this.state.category} tab={this.state.tab} types={this.state.currentTypes} />
                     </form>
                 </div>
             </div>
@@ -150,9 +154,9 @@ const Types = React.createClass({
         return (
             <div className="entry-type">
                 <div className="types">
-                    <a className={!this.state.type ? 'active' : ''} href="javascript:void(0);" onClick={this.clickHandler.bind(this, false)} >{User.isEn() ? 'None' : 'Нет'}</a>
+                    <a className={!this.props.type ? 'active' : ''} href="javascript:void(0);" onClick={this.clickHandler.bind(this, false)} >{User.isEn() ? 'None' : 'Нет'}</a>
                     {this.props.types.map(function(type, i) {
-                        return <a onClick={this.clickHandler.bind(this, type.code)} className={this.state.type === type.code ? 'active' : ''} href="javascript:void(0);" key={i} >{User.isEn() ? type.name.en : type.name.ru}</a>
+                        return <a onClick={this.clickHandler.bind(this, type.code)} className={this.props.type === type.code ? 'active' : ''} href="javascript:void(0);" key={i} >{User.isEn() ? type.name.en : type.name.ru}</a>
                     }.bind(this))}
                 </div>
             </div>
