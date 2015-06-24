@@ -10,6 +10,9 @@ const Home = React.createClass({
             user: User.getInfo()
         };
     },
+    componentDidMount() {
+        document.title = 'Dashboard | Wallt.';
+    },
     render() {
         return (
             <div className="home clearfix">

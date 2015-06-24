@@ -90,10 +90,14 @@ const Highlights = React.createClass({
                         <div className="total income">{[income.v, income.sign]}</div>
                     </div>
                     <div className="row categories">
-                        {this.state.data.categories.expense.map((e, i) => <Category key={i} type="expense" value={e.value} name={e.name} />)}
+                        {this.state.data.categories.expense.map((e, i) =>
+                            <Category categorySelect={this.props.categorySelect} key={i} type="expense" code={e.code} value={e.value} name={e.name} />
+                        )}
                     </div>
                     <div className="row categories">
-                        {this.state.data.categories.income.map((e, i) => <Category key={i} type="income" value={e.value} name={e.name} />)}
+                        {this.state.data.categories.income.map((e, i) =>
+                            <Category categorySelect={this.props.categorySelect} key={i} type="income" code={e.code} value={e.value} name={e.name} />
+                        )}
                     </div>
                 </div>
             </div>
@@ -105,9 +109,10 @@ const Category = React.createClass({
     render() {
         let isIncome = this.props.type === 'income';
         let value = _getValue(this.props.value, 'small', isIncome ? 'green' : 'red');
+        let category = {name: this.props.name, code: this.props.code, tab: this.props.type};
 
         return (
-            <div key={this.props.key} className={isIncome ? "income category" : 'category'}>
+            <div onClick={this.props.categorySelect.bind(true, category)} key={this.props.key} className={isIncome ? "income category" : 'category'}>
                 <div className="value">{[value.v, value.sign]}</div>
                 <div className="name">{this.props.name}</div>
             </div>

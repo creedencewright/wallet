@@ -158,12 +158,11 @@ function _getGrouped(arr) {
             let i = grouped.indexOf(group);
             grouped[i].value += e.value;
         } else {
-            grouped.push({name: e.category.name, value: e.value});
+            grouped.push({code: e.category.code, name: e.category.name, value: e.value});
         }
     });
 
     grouped = _.sortBy(grouped, (e) => -e.value);
-
     return grouped;
 }
 
@@ -193,7 +192,9 @@ const Data = assign(EventEmitter.prototype, {
     },
 
     getCurrentData(params) {
-        return params.type === 'expense' ? _expense : _income
+        let data = params.type === 'expense' ? _expense : _income;
+        console.log(params);
+        return params.category ? _.filter(data, (entry) => entry.category.code === params.category) : data;
     },
 
     setBalance(val) {

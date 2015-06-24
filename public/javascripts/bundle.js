@@ -38466,6 +38466,7 @@ var Expense = React.createClass({
     setTab: function setTab(tab) {
         this.setState({
             tab: tab,
+            category: false,
             loading: true,
             data: _getCurrentData({ type: tab })
         });
@@ -38482,6 +38483,18 @@ var Expense = React.createClass({
     togglePicker: function togglePicker() {
         this.setState({
             monthPicker: this.state.monthPicker ? false : true
+        });
+    },
+
+    categorySelect: function categorySelect(data) {
+        console.log(data);
+        this.setState({
+            data: _getCurrentData({
+                type: data.tab ? data.tab : this.state.tab,
+                category: data.code
+            }),
+            category: data.code ? data.name : false,
+            tab: data.tab ? data.tab : this.state.tab
         });
     },
 
@@ -38508,7 +38521,7 @@ var Expense = React.createClass({
                         'div',
                         { className: 'title-wrap' },
                         React.createElement(AddExpense, { tab: this.state.tab, addEvent: this.toggleForm }),
-                        React.createElement(Tabs, { onClick: this.setTab, tab: this.state.tab }),
+                        React.createElement(Tabs, { categoryClick: this.categorySelect, category: this.state.category, onClick: this.setTab, tab: this.state.tab }),
                         React.createElement(TimePicker, { close: this.togglePicker, opened: this.state.monthPicker, changeHandler: this.monthChange, month: this.state.month }),
                         React.createElement(
                             'a',
@@ -38516,12 +38529,12 @@ var Expense = React.createClass({
                             moment().month(this.state.month).format('MMMM')
                         )
                     ),
-                    React.createElement(Entries, { loading: this.state.loading, data: this.state.data })
+                    React.createElement(Entries, { categoryClick: this.categorySelect, loading: this.state.loading, data: this.state.data })
                 ),
                 React.createElement(
                     'div',
                     { className: 'col-sm-4 col-md-4 col-lg-4' },
-                    React.createElement(Highlights, { data: this.state.data })
+                    React.createElement(Highlights, { data: this.state.data, categorySelect: this.categorySelect })
                 )
             )
         );
@@ -38531,10 +38544,26 @@ var Expense = React.createClass({
 var Tabs = React.createClass({
     displayName: 'Tabs',
 
+    getInitialState: function getInitialState() {
+        return { category: '' };
+    },
+
     click: function click(tab) {
         this.props.onClick(tab);
     },
+
+    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+        this.setState({
+            category: nextProps.category ? nextProps.category : this.state.category
+        });
+    },
+
+    categoryClose: function categoryClose() {
+        this.props.categoryClick({ tab: this.props.tab, code: false });
+    },
+
     render: function render() {
+        var categoryClass = this.props.category ? '' + this.props.tab + ' category active' : '' + this.props.tab + ' category';
         return React.createElement(
             'div',
             { className: 'tabs' },
@@ -38553,6 +38582,11 @@ var Tabs = React.createClass({
                     onClick: this.click.bind(this, 'income'),
                     className: this.props.tab == 'income' ? 'income active' : 'income' },
                 User.isEn() ? 'Income' : 'Доходы'
+            ),
+            React.createElement(
+                'a',
+                { onClick: this.categoryClose, href: 'javascript:void(0);', className: categoryClass },
+                this.props.category ? this.props.category : this.state.category
             )
         );
     }
@@ -38562,6 +38596,8 @@ var Entries = React.createClass({
     displayName: 'Entries',
 
     render: function render() {
+        var _this = this;
+
         var wrapClass = this.props.loading ? 'loading row entries-wrap expense' : 'row entries-wrap expense';
         if (!this.props.data.length) wrapClass += ' no-data';
         return React.createElement(
@@ -38573,7 +38609,7 @@ var Entries = React.createClass({
                 User.isEn() ? 'No entries yet.' : 'Нет записей.'
             ),
             this.props.data.map(function (entry, i) {
-                return React.createElement(Entry, { entry: entry, key: i });
+                return React.createElement(Entry, { categoryClick: _this.props.categoryClick, entry: entry, key: i });
             })
         );
     }
@@ -38582,9 +38618,18 @@ var Entries = React.createClass({
 var Entry = React.createClass({
     displayName: 'Entry',
 
+    categoryClick: function categoryClick(category) {
+        this.props.categoryClick({
+            tab: false,
+            name: category.name,
+            code: category.code
+        });
+    },
+
     remove: function remove() {
         Actions.entry.remove(this.props.entry);
     },
+
     render: function render() {
         var entry = this.props.entry,
             value = _getValue(entry.value, entry.type === 'expense' ? 'red' : 'green'),
@@ -38608,7 +38653,7 @@ var Entry = React.createClass({
                     ),
                     React.createElement(
                         'span',
-                        { className: 'category' },
+                        { onClick: this.categoryClick.bind(this, entry.category), className: 'category' },
                         entry.category ? entry.category.name : ''
                     )
                 ),
@@ -39044,6 +39089,8 @@ var Highlights = React.createClass({
     },
 
     render: function render() {
+        var _this = this;
+
         var expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
         var income = _getValue(this.state.data.totalIncome, 'medium', 'green');
         var total = _getValue(Data.getBalance(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
@@ -39110,14 +39157,14 @@ var Highlights = React.createClass({
                     'div',
                     { className: 'row categories' },
                     this.state.data.categories.expense.map(function (e, i) {
-                        return React.createElement(Category, { key: i, type: 'expense', value: e.value, name: e.name });
+                        return React.createElement(Category, { categorySelect: _this.props.categorySelect, key: i, type: 'expense', code: e.code, value: e.value, name: e.name });
                     })
                 ),
                 React.createElement(
                     'div',
                     { className: 'row categories' },
                     this.state.data.categories.income.map(function (e, i) {
-                        return React.createElement(Category, { key: i, type: 'income', value: e.value, name: e.name });
+                        return React.createElement(Category, { categorySelect: _this.props.categorySelect, key: i, type: 'income', code: e.code, value: e.value, name: e.name });
                     })
                 )
             )
@@ -39131,10 +39178,11 @@ var Category = React.createClass({
     render: function render() {
         var isIncome = this.props.type === 'income';
         var value = _getValue(this.props.value, 'small', isIncome ? 'green' : 'red');
+        var category = { name: this.props.name, code: this.props.code, tab: this.props.type };
 
         return React.createElement(
             'div',
-            { key: this.props.key, className: isIncome ? 'income category' : 'category' },
+            { onClick: this.props.categorySelect.bind(true, category), key: this.props.key, className: isIncome ? 'income category' : 'category' },
             React.createElement(
                 'div',
                 { className: 'value' },
@@ -39168,6 +39216,9 @@ var Home = React.createClass({
         return {
             user: User.getInfo()
         };
+    },
+    componentDidMount: function componentDidMount() {
+        document.title = 'Dashboard | Wallt.';
     },
     render: function render() {
         return React.createElement(
@@ -39982,14 +40033,13 @@ function _getGrouped(arr) {
             var i = grouped.indexOf(group);
             grouped[i].value += e.value;
         } else {
-            grouped.push({ name: e.category.name, value: e.value });
+            grouped.push({ code: e.category.code, name: e.category.name, value: e.value });
         }
     });
 
     grouped = _.sortBy(grouped, function (e) {
         return -e.value;
     });
-
     return grouped;
 }
 
@@ -40019,7 +40069,11 @@ var Data = assign(EventEmitter.prototype, {
     },
 
     getCurrentData: function getCurrentData(params) {
-        return params.type === 'expense' ? _expense : _income;
+        var data = params.type === 'expense' ? _expense : _income;
+        console.log(params);
+        return params.category ? _.filter(data, function (entry) {
+            return entry.category.code === params.category;
+        }) : data;
     },
 
     setBalance: function setBalance(val) {
