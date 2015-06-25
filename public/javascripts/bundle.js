@@ -37988,6 +37988,12 @@ module.exports = {
                 entry: entry
             });
         },
+        update: function update(entry) {
+            Dispatcher.handleViewAction({
+                actionType: Constants.entry.update,
+                entry: entry
+            });
+        },
         remove: function remove(entry) {
             Dispatcher.handleViewAction({
                 actionType: Constants.entry.remove,
@@ -38415,7 +38421,11 @@ function _getValue(v, color) {
     var value = User.isEn() ? '$' + v : v,
         sign = User.isEn() ? '' : React.createElement('span', { className: 'rub small ' + color });
 
-    return { v: value, sign: sign };
+    return { v: React.createElement(
+            'span',
+            { className: 'val' },
+            value
+        ), sign: sign };
 }
 
 var Expense = React.createClass({
@@ -38487,7 +38497,6 @@ var Expense = React.createClass({
     },
 
     categorySelect: function categorySelect(data) {
-        console.log(data);
         this.setState({
             data: _getCurrentData({
                 type: data.tab ? data.tab : this.state.tab,
@@ -38618,6 +38627,29 @@ var Entries = React.createClass({
 var Entry = React.createClass({
     displayName: 'Entry',
 
+    getInitialState: function getInitialState() {
+        return {
+            edit: false
+        };
+    },
+
+    edit: function edit() {
+        this.setState({ edit: true });
+    },
+
+    closeEdit: function closeEdit() {
+        this.update();
+        this.setState({ edit: false });
+    },
+
+    update: function update() {
+        var value = parseInt(this.refs.value.getDOMNode().value),
+            entry = this.props.entry;
+        entry.oldValue = entry.value;
+        entry.value = value;
+        Actions.entry.update(entry);
+    },
+
     categoryClick: function categoryClick(category) {
         this.props.categoryClick({
             tab: false,
@@ -38646,9 +38678,12 @@ var Entry = React.createClass({
                 React.createElement(
                     'div',
                     { className: entry.category ? 'value-wrap w-cat' : 'value-wrap' },
+                    React.createElement('input', { ref: 'value', placeholder: entry.value, className: this.state.edit ? 'val active' : 'val', type: 'text' }),
+                    React.createElement('a', { href: 'javascript:void(0);', className: 'edit-accept' }),
+                    React.createElement('a', { href: 'javascript:void(0);', className: 'edit-cancel' }),
                     React.createElement(
                         'span',
-                        { className: 'value' },
+                        { onClick: this.edit, className: 'value' },
                         [value.v, value.sign]
                     ),
                     React.createElement(
@@ -39794,6 +39829,7 @@ module.exports = {
     user: {},
     entry: {
         add: 'ADD_ENTRY',
+        update: 'UPDATE_ENTRY',
         remove: 'REMOVE_ENTRY'
     },
     savings: {
@@ -39910,8 +39946,38 @@ function _add(entry) {
         method: 'post',
         data: { data: JSON.stringify(entry) },
         success: function success(data) {
-            _update(data.entry);
+            _updateEntry(data.entry);
         }
+    });
+}
+
+function _update(entry) {
+    if (entry.type === 'expense') {
+        _balance -= entry.oldValue;
+        _balance += entry.value;
+
+        if (entry.category && entry.category.code === 'savings') {
+            _saved -= entry.oldValue;
+            _saved += entry.value;
+        }
+    } else {
+        _balance += entry.oldValue;
+        _balance -= entry.value;
+
+        if (entry.category && entry.category.code === 'savings') {
+            _saved += entry.value;
+            _saved -= entry.value;
+            _saved = _saved >= 0 ? _saved : 0;
+        }
+    }
+
+    entry.balance = _balance;
+    entry.savings = _saved;
+
+    reqwest({
+        url: '/update-entry',
+        method: 'post',
+        data: { data: JSON.stringify(entry) }
     });
 }
 
@@ -39967,7 +40033,7 @@ function _remove(entry) {
     });
 }
 
-function _update(entry) {
+function _updateEntry(entry) {
     if (entry.type === 'expense') {
         var toUpdate = _.find(_expense, function (v) {
             return v.time == entry.time;
@@ -40149,6 +40215,9 @@ var Data = assign(EventEmitter.prototype, {
                 break;
             case Constants.entry.remove:
                 _remove(payload.action.entry);
+                break;
+            case Constants.entry.update:
+                _update(payload.action.entry);
                 break;
         }
 

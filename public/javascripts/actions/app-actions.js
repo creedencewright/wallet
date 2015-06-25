@@ -12,6 +12,12 @@ module.exports = {
                 entry: entry
             })
         },
+        update: function(entry) {
+            Dispatcher.handleViewAction({
+                actionType: Constants.entry.update,
+                entry: entry
+            })
+        },
         remove: function(entry) {
             Dispatcher.handleViewAction({
                 actionType: Constants.entry.remove,

@@ -304,14 +304,20 @@ module.exports = function(app) {
             }
         );
     });
-    app.post('/add-savings', function(req, res) {
+
+    app.post('/update-entry', function(req, res) {
+        var data = JSON.parse(req.body.data);
+
+        console.log(data);
+        return;
+
         async.parallel({
                 entry: function(cb) {
-                    Entry.create(req.body, cb)
+                    Entry.create(data, cb)
                 },
                 user: function(cb) {
-                    var id = req.body.userId;
-                    User.findOneAndUpdate({"id": id}, {"balance": req.body.balance, "savings": req.body.savings}, {}, function(e, d) {
+                    var id = data.userId;
+                    User.findOneAndUpdate({"id": id}, {"balance": data.balance, "savings": data.savings}, {}, function(e, d) {
                         cb(e, d);
                     });
                 }

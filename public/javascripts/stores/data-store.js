@@ -33,8 +33,39 @@ function _add(entry) {
         method: 'post',
         data: {data: JSON.stringify(entry)},
         success(data) {
-            _update(data.entry)
+            _updateEntry(data.entry)
         }
+    })
+}
+
+function _update(entry) {
+    if (entry.type === 'expense') {
+        _balance -= entry.oldValue;
+        _balance += entry.value;
+
+        if (entry.category && entry.category.code === 'savings') {
+            _saved -= entry.oldValue;
+            _saved += entry.value;
+        }
+    } else {
+        _balance += entry.oldValue;
+        _balance -= entry.value;
+
+        if (entry.category && entry.category.code === 'savings') {
+            _saved += entry.value;
+            _saved -= entry.value;
+            _saved = _saved >= 0 ? _saved : 0;
+        }
+
+    }
+
+    entry.balance = _balance;
+    entry.savings = _saved;
+
+    reqwest({
+        url: '/update-entry',
+        method: 'post',
+        data: {data: JSON.stringify(entry)}
     })
 }
 
@@ -93,7 +124,7 @@ function _remove(entry) {
     })
 }
 
-function _update(entry) {
+function _updateEntry(entry) {
     if (entry.type === 'expense') {
         let toUpdate = _.find(_expense, function(v) {
             return v.time == entry.time
@@ -266,6 +297,9 @@ const Data = assign(EventEmitter.prototype, {
                 break;
             case Constants.entry.remove:
                 _remove(payload.action.entry);
+                break;
+            case Constants.entry.update:
+                _update(payload.action.entry);
                 break;
         }
 

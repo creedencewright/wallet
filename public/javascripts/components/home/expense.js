@@ -27,7 +27,7 @@ function _getValue(v, color) {
     let value   = User.isEn() ? `$${v}` : v,
         sign    = User.isEn() ? '' : (<span className={`rub small ${color}`}></span>);
 
-    return {v: value, sign: sign}
+    return {v: (<span className="val">{value}</span>), sign: sign}
 }
 
 const Expense = React.createClass({
@@ -189,6 +189,29 @@ const Entries = React.createClass({
 });
 
 const Entry = React.createClass({
+    getInitialState() {
+        return {
+            edit: false
+        }
+    },
+
+    edit() {
+        this.setState({edit: true});
+    },
+
+    closeEdit() {
+        this.update();
+        this.setState({edit: false});
+    },
+
+    update() {
+        let value = parseInt(this.refs.value.getDOMNode().value),
+            entry = this.props.entry;
+        entry.oldValue = entry.value;
+        entry.value = value;
+        Actions.entry.update(entry);
+    },
+
     categoryClick(category) {
         this.props.categoryClick({
             tab: false,
@@ -212,7 +235,10 @@ const Entry = React.createClass({
                     <a href="javascript:void(0);" onClick={this.remove} className="remove"></a>
                     <div className={entry.category ? `type-img ${entry.category.code}` : 'type-img none'}></div>
                     <div className={entry.category ? "value-wrap w-cat" : 'value-wrap'}>
-                        <span className="value">{[value.v, value.sign]}</span>
+                        <input ref="value" placeholder={entry.value} className={this.state.edit ? 'val active' : 'val'} type="text"/>
+                        <a href="javascript:void(0);" className="edit-accept"></a>
+                        <a href="javascript:void(0);" className="edit-cancel"></a>
+                        <span onClick={this.edit} className="value">{[value.v, value.sign]}</span>
                         <span onClick={this.categoryClick.bind(this, entry.category)} className="category">{entry.category ? entry.category.name : '' }</span>
                     </div>
                     <div className="time">{moment(time).calendar()}</div>
