@@ -308,12 +308,9 @@ module.exports = function(app) {
     app.post('/update-entry', function(req, res) {
         var data = JSON.parse(req.body.data);
 
-        console.log(data);
-        return;
-
         async.parallel({
                 entry: function(cb) {
-                    Entry.create(data, cb)
+                    Entry.update({"id": data.id}, data, {}, cb)
                 },
                 user: function(cb) {
                     var id = data.userId;

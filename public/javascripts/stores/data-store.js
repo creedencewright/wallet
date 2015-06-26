@@ -40,19 +40,19 @@ function _add(entry) {
 
 function _update(entry) {
     if (entry.type === 'expense') {
-        _balance -= entry.oldValue;
-        _balance += entry.value;
+        _balance += entry.oldValue;
+        _balance -= entry.value;
 
         if (entry.category && entry.category.code === 'savings') {
             _saved -= entry.oldValue;
             _saved += entry.value;
         }
     } else {
-        _balance += entry.oldValue;
-        _balance -= entry.value;
+        _balance -= entry.oldValue;
+        _balance += entry.value;
 
         if (entry.category && entry.category.code === 'savings') {
-            _saved += entry.value;
+            _saved += entry.oldValue;
             _saved -= entry.value;
             _saved = _saved >= 0 ? _saved : 0;
         }

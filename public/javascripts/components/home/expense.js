@@ -199,16 +199,27 @@ const Entry = React.createClass({
         this.setState({edit: true});
     },
 
-    closeEdit() {
+    closeEdit(e) {
+        let classes = e.target.className.split(' ');
+        if (classes.indexOf('val') != -1 || classes.indexOf('rub') != -1) return;
         this.update();
-        this.setState({edit: false});
+    },
+
+    keydown(e) {
+        if (e.keyCode === 13) this.update();
+        if (e.keyCode === 27) this.setState({edit: false});
     },
 
     update() {
-        let value = parseInt(this.refs.value.getDOMNode().value),
-            entry = this.props.entry;
+        this.setState({edit: false});
+
+        let value = this.refs.value.getDOMNode().value;
+        if (!value) return;
+
+        let entry = this.props.entry;
+
         entry.oldValue = entry.value;
-        entry.value = value;
+        entry.value = parseInt(value);
         Actions.entry.update(entry);
     },
 
@@ -230,14 +241,12 @@ const Entry = React.createClass({
             time    = entry ? moment(entry.time, 'X') : 0;
 
         return (
-            <div className="col-sm-12 entry-wrap">
+            <div onClick={this.closeEdit} className="col-sm-12 entry-wrap">
                 <div className={entry.type + ' entry'}>
                     <a href="javascript:void(0);" onClick={this.remove} className="remove"></a>
                     <div className={entry.category ? `type-img ${entry.category.code}` : 'type-img none'}></div>
                     <div className={entry.category ? "value-wrap w-cat" : 'value-wrap'}>
-                        <input ref="value" placeholder={entry.value} className={this.state.edit ? 'val active' : 'val'} type="text"/>
-                        <a href="javascript:void(0);" className="edit-accept"></a>
-                        <a href="javascript:void(0);" className="edit-cancel"></a>
+                        <input onKeyDown={this.keydown} ref="value" defaultValue={entry.value} className={this.state.edit ? 'val active' : 'val'} type="text"/>
                         <span onClick={this.edit} className="value">{[value.v, value.sign]}</span>
                         <span onClick={this.categoryClick.bind(this, entry.category)} className="category">{entry.category ? entry.category.name : '' }</span>
                     </div>

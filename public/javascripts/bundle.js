@@ -38637,16 +38637,28 @@ var Entry = React.createClass({
         this.setState({ edit: true });
     },
 
-    closeEdit: function closeEdit() {
-        this.update();
-        this.setState({ edit: false });
+    closeEdit: function closeEdit(e) {
+        var classes = e.target.className.split(' ');
+        if (classes.indexOf('val') != -1 || classes.indexOf('rub') != -1) {
+            return;
+        }this.update();
+    },
+
+    keydown: function keydown(e) {
+        if (e.keyCode === 13) this.update();
+        if (e.keyCode === 27) this.setState({ edit: false });
     },
 
     update: function update() {
-        var value = parseInt(this.refs.value.getDOMNode().value),
-            entry = this.props.entry;
+        this.setState({ edit: false });
+
+        var value = this.refs.value.getDOMNode().value;
+        if (!value) {
+            return;
+        }var entry = this.props.entry;
+
         entry.oldValue = entry.value;
-        entry.value = value;
+        entry.value = parseInt(value);
         Actions.entry.update(entry);
     },
 
@@ -38669,7 +38681,7 @@ var Entry = React.createClass({
 
         return React.createElement(
             'div',
-            { className: 'col-sm-12 entry-wrap' },
+            { onClick: this.closeEdit, className: 'col-sm-12 entry-wrap' },
             React.createElement(
                 'div',
                 { className: entry.type + ' entry' },
@@ -38678,9 +38690,7 @@ var Entry = React.createClass({
                 React.createElement(
                     'div',
                     { className: entry.category ? 'value-wrap w-cat' : 'value-wrap' },
-                    React.createElement('input', { ref: 'value', placeholder: entry.value, className: this.state.edit ? 'val active' : 'val', type: 'text' }),
-                    React.createElement('a', { href: 'javascript:void(0);', className: 'edit-accept' }),
-                    React.createElement('a', { href: 'javascript:void(0);', className: 'edit-cancel' }),
+                    React.createElement('input', { onKeyDown: this.keydown, ref: 'value', defaultValue: entry.value, className: this.state.edit ? 'val active' : 'val', type: 'text' }),
                     React.createElement(
                         'span',
                         { onClick: this.edit, className: 'value' },
@@ -39953,19 +39963,19 @@ function _add(entry) {
 
 function _update(entry) {
     if (entry.type === 'expense') {
-        _balance -= entry.oldValue;
-        _balance += entry.value;
+        _balance += entry.oldValue;
+        _balance -= entry.value;
 
         if (entry.category && entry.category.code === 'savings') {
             _saved -= entry.oldValue;
             _saved += entry.value;
         }
     } else {
-        _balance += entry.oldValue;
-        _balance -= entry.value;
+        _balance -= entry.oldValue;
+        _balance += entry.value;
 
         if (entry.category && entry.category.code === 'savings') {
-            _saved += entry.value;
+            _saved += entry.oldValue;
             _saved -= entry.value;
             _saved = _saved >= 0 ? _saved : 0;
         }
