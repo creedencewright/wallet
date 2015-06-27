@@ -586,9 +586,14 @@
         }
 
         .categories {
+            transition: border-color .3s ease;
             max-width: 360px;
             border-top: 1px solid #eee;
             padding-top: 10px;
+
+            &.no-data {
+                border-color: transparent;
+            }
 
             .category {
                 transition: all .2s ease;
@@ -948,6 +953,13 @@
                     .value-wrap {
                         color: #444;
                         font: 300 50px/33px @font-family-base;
+                    }
+
+                    .rub {
+                        .size(24px, 24px);
+                        margin-left: 0px;
+                        vertical-align: bottom;
+                        background-image: url('../../images/rub-black-big.png');
                     }
 
                     input {

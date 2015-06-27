@@ -1,4 +1,5 @@
 /*** @jsx React.DOM */
+'use strict';
 
 const React     = require('react');
 const _         = require('underscore');
@@ -49,6 +50,9 @@ const Highlights = React.createClass({
         let income = _getValue(this.state.data.totalIncome, 'medium', 'green');
         let month = moment().set({date: 1, month: Data.getMonth()});
 
+        let incomeClass = this.state.data.categories.income.length ? 'row categories' : 'row categories no-data';
+        let expenseClass = this.state.data.categories.expense.length ? 'row categories' : 'row categories no-data';
+
         return (
             <div className="highlights-wrap">
                 <Current />
@@ -58,12 +62,12 @@ const Highlights = React.createClass({
                         <div className="total expense">{[expense.v, expense.sign]}</div>
                         <div className="total income">{[income.v, income.sign]}</div>
                     </div>
-                    <div className="row categories">
+                    <div className={incomeClass}>
                         {this.state.data.categories.expense.map((e, i) =>
                             <Category categorySelect={this.props.categorySelect} key={i} type="expense" code={e.code} value={e.value} name={e.name} />
                         )}
                     </div>
-                    <div className="row categories">
+                    <div className={expenseClass}>
                         {this.state.data.categories.income.map((e, i) =>
                             <Category categorySelect={this.props.categorySelect} key={i} type="income" code={e.code} value={e.value} name={e.name} />
                         )}
@@ -84,8 +88,13 @@ const Current = React.createClass({
     },
 
     componentDidMount() {
-        window.addEventListener('scroll', _.throttle(this.handleScroll.bind(this), 200));
+        window.addEventListener('scroll', _.throttle(_.bind(this.handleScroll, this), 200));
         window.addEventListener('click', this.closeEdit);
+    },
+
+    componentDidUnmount() {
+        window.removeEventListener('scroll', _.throttle(_.bind(this.handleScroll, this), 200));
+        window.removeEventListener('click', this.closeEdit);
     },
 
     handleScroll() {

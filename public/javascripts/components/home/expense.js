@@ -38,13 +38,14 @@ const Expense = React.createClass({
             loading: true,
             monthPicker: false,
             month: moment().month(),
-            year: moment().year()
+            year: moment().year(),
+            categoryCode: false
         };
     },
 
     _onChange() {
         this.setState({
-            data: _getCurrentData({type: this.state.tab}),
+            data: _getCurrentData({type: this.state.tab, category: this.state.categoryCode}),
             loading: false
         })
     },
@@ -102,6 +103,7 @@ const Expense = React.createClass({
                 type: data.tab ? data.tab : this.state.tab,
                 category: data.code
             }),
+            categoryCode: data.code ? data.code : false,
             category: data.code ? data.name : false,
             tab: data.tab ? data.tab : this.state.tab
         })
@@ -161,11 +163,11 @@ const Tabs = React.createClass({
             <div className="tabs">
                 <a
                     href="javascript:void(0);"
-                    onClick={this.click.bind(this, 'expense')}
+                    onClick={this.click.bind(null, 'expense')}
                     className={this.props.tab == 'expense' ? 'expense active' : 'expense'}>{User.isEn() ? 'Expense' : 'Расходы'}</a>
                 <a
                     href="javascript:void(0);"
-                    onClick={this.click.bind(this, 'income')}
+                    onClick={this.click.bind(null, 'income')}
                     className={this.props.tab == 'income' ? 'income active' : 'income'}>{User.isEn() ? 'Income' : 'Доходы'}</a>
                 <a onClick={this.categoryClose} href="javascript:void(0);" className={categoryClass}>{this.props.category ? this.props.category : this.state.category}</a>
             </div>
@@ -181,7 +183,7 @@ const Entries = React.createClass({
             <div className={wrapClass}>
                 <div className="no-data-msg">{User.isEn() ? 'No entries yet.' : 'Нет записей.'}</div>
                 {this.props.data.map((entry, i) =>
-                        <Entry categoryClick={this.props.categoryClick} entry={entry} key={i} />
+                    <Entry categoryClick={this.props.categoryClick} entry={entry} key={entry.id} />
                 )}
             </div>
         )
@@ -249,7 +251,7 @@ const Entry = React.createClass({
                     <div className={entry.category ? "value-wrap w-cat" : 'value-wrap'}>
                         <input onKeyDown={this.keydown} ref="value" className={this.state.edit ? 'val active' : 'val'} type="text"/>
                         <span onClick={this.edit} className="value">{[value.v, value.sign]}</span>
-                        <span onClick={this.categoryClick.bind(this, entry.category)} className="category">{entry.category ? entry.category.name : '' }</span>
+                        <span onClick={this.categoryClick.bind(null, entry.category)} className="category">{entry.category ? entry.category.name : '' }</span>
                     </div>
                     <div className="time">{moment(time).calendar()}</div>
                 </div>

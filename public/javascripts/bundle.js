@@ -38444,13 +38444,14 @@ var Expense = React.createClass({
             loading: true,
             monthPicker: false,
             month: moment().month(),
-            year: moment().year()
+            year: moment().year(),
+            categoryCode: false
         };
     },
 
     _onChange: function _onChange() {
         this.setState({
-            data: _getCurrentData({ type: this.state.tab }),
+            data: _getCurrentData({ type: this.state.tab, category: this.state.categoryCode }),
             loading: false
         });
     },
@@ -38508,6 +38509,7 @@ var Expense = React.createClass({
                 type: data.tab ? data.tab : this.state.tab,
                 category: data.code
             }),
+            categoryCode: data.code ? data.code : false,
             category: data.code ? data.name : false,
             tab: data.tab ? data.tab : this.state.tab
         });
@@ -38586,7 +38588,7 @@ var Tabs = React.createClass({
                 'a',
                 {
                     href: 'javascript:void(0);',
-                    onClick: this.click.bind(this, 'expense'),
+                    onClick: this.click.bind(null, 'expense'),
                     className: this.props.tab == 'expense' ? 'expense active' : 'expense' },
                 User.isEn() ? 'Expense' : 'Расходы'
             ),
@@ -38594,7 +38596,7 @@ var Tabs = React.createClass({
                 'a',
                 {
                     href: 'javascript:void(0);',
-                    onClick: this.click.bind(this, 'income'),
+                    onClick: this.click.bind(null, 'income'),
                     className: this.props.tab == 'income' ? 'income active' : 'income' },
                 User.isEn() ? 'Income' : 'Доходы'
             ),
@@ -38624,7 +38626,7 @@ var Entries = React.createClass({
                 User.isEn() ? 'No entries yet.' : 'Нет записей.'
             ),
             this.props.data.map(function (entry, i) {
-                return React.createElement(Entry, { categoryClick: _this.props.categoryClick, entry: entry, key: i });
+                return React.createElement(Entry, { categoryClick: _this.props.categoryClick, entry: entry, key: entry.id });
             })
         );
     }
@@ -38705,7 +38707,7 @@ var Entry = React.createClass({
                     ),
                     React.createElement(
                         'span',
-                        { onClick: this.categoryClick.bind(this, entry.category), className: 'category' },
+                        { onClick: this.categoryClick.bind(null, entry.category), className: 'category' },
                         entry.category ? entry.category.name : ''
                     )
                 ),
@@ -39072,7 +39074,6 @@ module.exports = Graph;
 
 },{"../../stores/data-store":221,"../../stores/user-store":223,"moment":6,"react":200,"snapsvg":202,"underscore":204}],212:[function(require,module,exports){
 /*** @jsx React.DOM */
-
 'use strict';
 
 var React = require('react');
@@ -39132,6 +39133,9 @@ var Highlights = React.createClass({
         var income = _getValue(this.state.data.totalIncome, 'medium', 'green');
         var month = moment().set({ date: 1, month: Data.getMonth() });
 
+        var incomeClass = this.state.data.categories.income.length ? 'row categories' : 'row categories no-data';
+        var expenseClass = this.state.data.categories.expense.length ? 'row categories' : 'row categories no-data';
+
         return React.createElement(
             'div',
             { className: 'highlights-wrap' },
@@ -39160,14 +39164,14 @@ var Highlights = React.createClass({
                 ),
                 React.createElement(
                     'div',
-                    { className: 'row categories' },
+                    { className: incomeClass },
                     this.state.data.categories.expense.map(function (e, i) {
                         return React.createElement(Category, { categorySelect: _this.props.categorySelect, key: i, type: 'expense', code: e.code, value: e.value, name: e.name });
                     })
                 ),
                 React.createElement(
                     'div',
-                    { className: 'row categories' },
+                    { className: expenseClass },
                     this.state.data.categories.income.map(function (e, i) {
                         return React.createElement(Category, { categorySelect: _this.props.categorySelect, key: i, type: 'income', code: e.code, value: e.value, name: e.name });
                     })
@@ -39189,8 +39193,13 @@ var Current = React.createClass({
     },
 
     componentDidMount: function componentDidMount() {
-        window.addEventListener('scroll', _.throttle(this.handleScroll.bind(this), 200));
+        window.addEventListener('scroll', _.throttle(_.bind(this.handleScroll, this), 200));
         window.addEventListener('click', this.closeEdit);
+    },
+
+    componentDidUnmount: function componentDidUnmount() {
+        window.removeEventListener('scroll', _.throttle(_.bind(this.handleScroll, this), 200));
+        window.removeEventListener('click', this.closeEdit);
     },
 
     handleScroll: function handleScroll() {
