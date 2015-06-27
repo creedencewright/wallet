@@ -38007,6 +38007,12 @@ module.exports = {
                 actionType: Constants.balance.updateBalance,
                 value: value
             });
+        },
+        updateSavings: function updateSavings(value) {
+            Dispatcher.handleViewAction({
+                actionType: Constants.balance.updateSavings,
+                value: value
+            });
         }
     }
 };
@@ -39886,7 +39892,8 @@ module.exports = {
         remove: 'REMOVE_ENTRY'
     },
     balance: {
-        updateBalance: 'UPDATE_BALANCE'
+        updateBalance: 'UPDATE_BALANCE',
+        updateSavings: 'UPDATE_SAVINGS'
     }
 };
 
