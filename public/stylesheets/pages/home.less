@@ -407,141 +407,147 @@
         .now-title {
             transition: all .2s ease;
             position: absolute;
-            left: 36px;
-            top: 72px;
+            left: 41px;
+            left: 0;
+            top: 67px;
             text-transform: uppercase;
             font-size: 12px;
             font-weight: 700;
+
+            a {
+                transition: all .2s ease;
+                color: #333;
+                opacity: .3;
+                z-index: 2;
+                margin-right: 10px;
+                text-decoration: none;
+
+                &:hover {
+                    opacity: .7;
+                }
+
+                &.active {
+                    opacity: 1;
+                }
+            }
         }
 
         .balance-wrap {
+            position: relative;
+            height: 63px;
+            margin-left: -15px;
+            margin-bottom: 40px;
+
             &.fixed {
-                .money-now {
-                    transform: translate(-30px, 30px);
-                    color: @gray-darker;
-                    font-size: 50px;
-
-                    &:before {
-                        transform: translate(0, -5px);
-                        opacity: 0;
-                        visibility: hidden;
-                    }
-                }
-
                 .now-title {
                     transform: translate(0, -50px);
                 }
 
-                .savings-wrap {
-                    opacity: 0;
-                    visibility: hidden;
-                    transform: translate(0px, 30px);
-                    color: @gray-darker;
-                    font-size: 50px;
-
-                    .savings-value {
-                        color: @gray-darker;
-                    }
+                .money-now {
+                    transform: translate(-30px, 45px);
+                    padding: 0 25px;
+                    line-height: 33px;
 
                     &:before {
+                        transform: translate(0, -61px);
                         opacity: 0;
-                        visibility: hidden;
-                    }
-                }
-
-                &.savings {
-                    .savings-wrap {
-                        transform: translate(20px, 30px);
-                        opacity: 1;
-                        visibility: visible;
                     }
 
-                    .money-now {
-                        transform: translate(-30px, 30px);
-                        opacity: 0;
-                        visibility: hidden;
+                    .value-wrap {
+                        color: #444;
+                        font: 300 50px/33px @font-family-base;
+                    }
+
+                    input {
+                        background-color: transparent;
+                        transform: translate(10px, 20px);
+                    }
+
+                    &.edit {
+                        input {
+                            transform: translate(10px, -10px);
+                            border-color: transparent;
+                        }
                     }
                 }
             }
 
-            &.savings {
-                .money-now {
-                    transform: translate(-50px, 0);
-                    z-index: 1;
-                    width: 0;
-                    overflow: hidden;
-                }
-
-                .savings-wrap {
-                    width: auto;
-                    overflow: visible;
-                    z-index: 2;
-                    transform: translate(20px, 0);
-                }
-
-            }
-        }
-
-        .money-now {
-            transition: all .2s ease;
-            transform: translate(-30px, 0);
-            margin-bottom: 40px;
-            transition: all .3s ease;
-            z-index: 2;
-            display: inline-block;
-            white-space: nowrap;
-            vertical-align: bottom;
-            margin-left: -17px;
-            padding: 13px 30px 17px;
-            color: #fff;
-            position: relative;
-            font: 300 36px/33px @font-family-base;
-
-            &:before {
-                .pseudo();
-                .size(100%);
-                transition: all .2s ease;
-                background-color: lighten(@green, 20%);
-                left: 0;
-                z-index: -1;
-                top: 0;
-            }
-        }
-        .savings-wrap {
-            transition: all .2s ease;
-            z-index: 1;
-            transform: translate(0px, 0);
-            white-space: nowrap;
-            width: 0px;
-            overflow: hidden;
-            transition: all .3s ease;
-            display: inline-block;
-            vertical-align: bottom;
-            margin-left: -17px;
-            padding: 13px 30px 17px;
-            color: #fff;
-            position: absolute;
-            left: 0;
-            top: 0;
-            font: 300 36px/33px @font-family-base;
-
-            .savings-text {
-                display: none;
-                font-size: 16px;
+            .money-now {
+                cursor: pointer;
+                padding: 13px 30px 14px;
+                white-space: nowrap;
                 position: absolute;
                 left: 0;
                 top: 0;
-            }
-
-            &:before {
-                .pseudo();
-                .size(100%);
                 transition: all .2s ease;
-                background-color: lighten(@blue, 25%);
-                //box-shadow: 0 2px 9px 0 rgba(0,0,0,.0);
-                left: 0;
-                z-index: -1;
-                top: 0;
+
+                &:before {
+                    .pseudo();
+                    .size(100%);
+                    transition: all .3s ease;
+                    background-color: rgba(76,175,80 ,.6);
+                    top: 0;
+                    left: 0;
+                }
+
+                &:hover {
+                    opacity: .75;
+                }
+
+                &.savings {
+                    &:before {
+                        background-color: rgba(3,169,244, .6);
+                    }
+                }
+
+                &.edit {
+                    &:before {
+                        transition: all .1s ease;
+                        transform: translate(0, -61px);
+                    }
+                    
+                    .value-wrap {
+                        transform: translate(0, -10px);
+                        opacity: 0;
+                        visibility: hidden;
+                    }
+
+                    input {
+                        transform: translate(0, 0);
+                        opacity: 1;
+                        visibility: visible;
+                    }
+                }
+
+                .value-wrap {
+                    position: relative;
+                    color: #fff;
+                    font: 300 36px/1 @font-family-base;
+                }
+
+                .value-wrap,
+                input {
+                    transition: all .2s ease;
+                }
+
+                input {
+                    .size(100%, 63px);
+                    opacity: 0;
+                    visibility: hidden;
+                    transform: translate(0, 10px);
+                    outline: none;
+                    padding: 0 20px;
+                    border: 1px solid #eee;
+                    //border-right: none;
+                    border-top: none;
+                    //border-left: none;
+                    font: 300 24px/1 @font-family-base;
+                    background-color: rgba(255,255,255, .9);
+                    color: #000;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                }
             }
         }
     }

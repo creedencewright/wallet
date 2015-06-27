@@ -4,6 +4,7 @@ const React     = require('react');
 const _         = require('underscore');
 const User      = require('../../stores/user-store');
 const Data      = require('../../stores/data-store');
+const Actions   = require('../../actions/app-actions');
 const moment    = require('moment');
 
 function _get() {
@@ -21,26 +22,12 @@ function _getValue(v, color, size) {
     let value   = User.isEn() ? `$${v}` : v,
         sign    = User.isEn() ? '' : (<span className={`rub ${size} ${color}`}></span>);
 
-    return {v: value, sign: sign}
+    return {v: (<span className="value-num">{value}</span>), sign: sign}
 }
 
 const Highlights = React.createClass({
     getInitialState() {
-        return {
-            isSavings: false,
-            isTop: _isTop(),
-            data: _get()
-        };
-    },
-
-    componentDidMount() {
-        window.addEventListener('scroll', _.throttle(this.handleScroll.bind(this), 100));
-    },
-
-    handleScroll() {
-        this.setState({
-            isTop: _isTop()
-        })
+        return { data: _get() };
     },
 
     componentWillMount() {
@@ -57,32 +44,14 @@ const Highlights = React.createClass({
         Data.removeChangeListener(this._onChange);
     },
 
-    toggleSavings() {
-        this.setState({
-            isSavings: this.state.isSavings ? false : true
-        });
-    },
-
     render() {
         let expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
         let income = _getValue(this.state.data.totalIncome, 'medium', 'green');
-        let total = _getValue(Data.getBalance(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
-        let savings = _getValue(Data.getSavings(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
         let month = moment().set({date: 1, month: Data.getMonth()});
-        let wrapClass = this.state.isTop ? "balance-wrap" : "fixed balance-wrap";
-        if (this.state.isSavings) wrapClass += ' savings'
-        let title = this.state.isSavings ? User.isEn() ? 'savings' : 'сбережения' : User.isEn() ? 'balance' : 'баланс';
 
         return (
             <div className="highlights-wrap">
-                <div className={wrapClass}>
-                    <div className="now-title">{title}</div>
-                    <div onClick={this.toggleSavings} className="money-now">{[total.v, total.sign]}</div>
-                    <div className="savings-wrap" onClick={this.toggleSavings}>
-                        <div className="savings-text">Savings</div>
-                        <div className="savings-value">{[savings.v, savings.sign]}</div>
-                    </div>
-                </div>
+                <Current />
                 <div className="highlights row clearfix">
                     <div className="title">{month.format('MMMM')}</div>
                     <div className="row total-wrap">
@@ -99,6 +68,82 @@ const Highlights = React.createClass({
                             <Category categorySelect={this.props.categorySelect} key={i} type="income" code={e.code} value={e.value} name={e.name} />
                         )}
                     </div>
+                </div>
+            </div>
+        )
+    }
+});
+
+const Current = React.createClass({
+    getInitialState() {
+        return {
+            isTop: _isTop(),
+            edit: false,
+            isSavings: false
+        }
+    },
+
+    componentDidMount() {
+        window.addEventListener('scroll', _.throttle(this.handleScroll.bind(this), 200));
+        window.addEventListener('click', this.closeEdit);
+    },
+
+    handleScroll() {
+        this.setState({
+            isTop: _isTop()
+        })
+    },
+
+    toggleSavings(e) {
+        let classes = e.target.className.split(' ');
+
+        if (this.state.edit || classes.indexOf('active') != -1) return;
+
+        this.setState({
+            isSavings: this.state.isSavings ? false : true
+        });
+    },
+
+    edit() {
+        this.setState({edit: true});
+    },
+
+    closeEdit(e) {
+        let classes = e.target.className.split(' '),
+            edit = classes.indexOf('value-num') != -1 || classes.indexOf('rub') != -1 || classes.indexOf('value-edit') != -1
+
+        if (edit || !this.state.edit) return;
+
+        this.setState({
+            edit: false
+        });
+
+        if (this.state.isSavings) {
+            Actions.balance.updateSavings(this.refs.edit.getDOMNode().value);
+        } else {
+            Actions.balance.updateBalance(this.refs.edit.getDOMNode().value);
+        }
+
+    },
+
+    render() {
+        let total = _getValue(Data.getBalance(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
+        let savings = _getValue(Data.getSavings(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
+
+        let wrapClass = this.state.isSavings ? "savings money-now" : 'money-now';
+        if (this.state.edit) wrapClass += ' edit';
+
+        return (
+            <div className={this.state.isTop ? "balance-wrap" : "fixed balance-wrap"}>
+                <div className="now-title">
+                    <a className={!this.state.isSavings ? "active" : ''} onClick={this.toggleSavings} href="javascript:void(0);">баланс</a>
+                    <a className={this.state.isSavings ? "active" : ''} onClick={this.toggleSavings} href="javascript:void(0);">сбережения</a>
+                </div>
+                <div onClick={this.edit} className={wrapClass}>
+                    <div className="value-wrap">
+                        {!this.state.isSavings ? [total.v, total.sign] : [savings.v, savings.sign]}
+                    </div>
+                    <input ref="edit" className="value-edit" type="text" defaultValue={this.state.isSavings ? Data.getSavings() : Data.getBalance()}/>
                 </div>
             </div>
         )

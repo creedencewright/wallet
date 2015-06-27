@@ -25,11 +25,11 @@ module.exports = {
             })
         }
     },
-    savings: {
-        add: function(savings) {
+    balance: {
+        updateBalance: function(value) {
             Dispatcher.handleViewAction({
-                actionType: Constants.savings.add,
-                savings: savings
+                actionType: Constants.balance.updateBalance,
+                value: value
             })
         }
     }

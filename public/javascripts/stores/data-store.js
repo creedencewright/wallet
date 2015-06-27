@@ -38,6 +38,26 @@ function _add(entry) {
     })
 }
 
+function _updateBalance(value) {
+    _balance = parseInt(value);
+
+    reqwest({
+        method: 'post',
+        url: '/balance/update/',
+        data: {value: _balance, userId: User.id()}
+    })
+}
+
+function _updateSavings(value) {
+    _saved = parseInt(value);
+
+    reqwest({
+        method: 'post',
+        url: '/savings/update/',
+        data: {value: _saved, userId: User.id()}
+    })
+}
+
 function _update(entry) {
     if (entry.type === 'expense') {
         _balance += entry.oldValue;
@@ -300,6 +320,12 @@ const Data = assign(EventEmitter.prototype, {
                 break;
             case Constants.entry.update:
                 _update(payload.action.entry);
+                break;
+            case Constants.balance.updateBalance:
+                _updateBalance(payload.action.value);
+                break;
+            case Constants.balance.updateSavings:
+                _updateSavings(payload.action.value);
                 break;
         }
 

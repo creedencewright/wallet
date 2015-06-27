@@ -305,6 +305,22 @@ module.exports = function(app) {
         );
     });
 
+    app.post('/balance/update', function(req, res) {
+        var id = req.body.userId;
+        User.findOneAndUpdate({"id": id}, {"balance": req.body.value}, {}, function(err, data) {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(data));
+        });
+    });
+
+    app.post('/savings/update', function(req, res) {
+        var id = req.body.userId;
+        User.findOneAndUpdate({"id": id}, {"savings": req.body.value}, {}, function(err, data) {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(data));
+        });
+    })
+
     app.post('/update-entry', function(req, res) {
         var data = JSON.parse(req.body.data);
 

@@ -38001,11 +38001,11 @@ module.exports = {
             });
         }
     },
-    savings: {
-        add: function add(savings) {
+    balance: {
+        updateBalance: function updateBalance(value) {
             Dispatcher.handleViewAction({
-                actionType: Constants.savings.add,
-                savings: savings
+                actionType: Constants.balance.updateBalance,
+                value: value
             });
         }
     }
@@ -39072,6 +39072,7 @@ var React = require('react');
 var _ = require('underscore');
 var User = require('../../stores/user-store');
 var Data = require('../../stores/data-store');
+var Actions = require('../../actions/app-actions');
 var moment = require('moment');
 
 function _get() {
@@ -39089,28 +39090,18 @@ function _getValue(v, color, size) {
     var value = User.isEn() ? '$' + v : v,
         sign = User.isEn() ? '' : React.createElement('span', { className: 'rub ' + size + ' ' + color });
 
-    return { v: value, sign: sign };
+    return { v: React.createElement(
+            'span',
+            { className: 'value-num' },
+            value
+        ), sign: sign };
 }
 
 var Highlights = React.createClass({
     displayName: 'Highlights',
 
     getInitialState: function getInitialState() {
-        return {
-            isSavings: false,
-            isTop: _isTop(),
-            data: _get()
-        };
-    },
-
-    componentDidMount: function componentDidMount() {
-        window.addEventListener('scroll', _.throttle(this.handleScroll.bind(this), 100));
-    },
-
-    handleScroll: function handleScroll() {
-        this.setState({
-            isTop: _isTop()
-        });
+        return { data: _get() };
     },
 
     componentWillMount: function componentWillMount() {
@@ -39127,55 +39118,17 @@ var Highlights = React.createClass({
         Data.removeChangeListener(this._onChange);
     },
 
-    toggleSavings: function toggleSavings() {
-        this.setState({
-            isSavings: this.state.isSavings ? false : true
-        });
-    },
-
     render: function render() {
         var _this = this;
 
         var expense = _getValue(this.state.data.totalExpense, 'medium', 'red');
         var income = _getValue(this.state.data.totalIncome, 'medium', 'green');
-        var total = _getValue(Data.getBalance(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
-        var savings = _getValue(Data.getSavings(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
         var month = moment().set({ date: 1, month: Data.getMonth() });
-        var wrapClass = this.state.isTop ? 'balance-wrap' : 'fixed balance-wrap';
-        if (this.state.isSavings) wrapClass += ' savings';
-        var title = this.state.isSavings ? User.isEn() ? 'savings' : 'сбережения' : User.isEn() ? 'balance' : 'баланс';
 
         return React.createElement(
             'div',
             { className: 'highlights-wrap' },
-            React.createElement(
-                'div',
-                { className: wrapClass },
-                React.createElement(
-                    'div',
-                    { className: 'now-title' },
-                    title
-                ),
-                React.createElement(
-                    'div',
-                    { onClick: this.toggleSavings, className: 'money-now' },
-                    [total.v, total.sign]
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'savings-wrap', onClick: this.toggleSavings },
-                    React.createElement(
-                        'div',
-                        { className: 'savings-text' },
-                        'Savings'
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'savings-value' },
-                        [savings.v, savings.sign]
-                    )
-                )
-            ),
+            React.createElement(Current, null),
             React.createElement(
                 'div',
                 { className: 'highlights row clearfix' },
@@ -39217,6 +39170,97 @@ var Highlights = React.createClass({
     }
 });
 
+var Current = React.createClass({
+    displayName: 'Current',
+
+    getInitialState: function getInitialState() {
+        return {
+            isTop: _isTop(),
+            edit: false,
+            isSavings: false
+        };
+    },
+
+    componentDidMount: function componentDidMount() {
+        window.addEventListener('scroll', _.throttle(this.handleScroll.bind(this), 200));
+        window.addEventListener('click', this.closeEdit);
+    },
+
+    handleScroll: function handleScroll() {
+        this.setState({
+            isTop: _isTop()
+        });
+    },
+
+    toggleSavings: function toggleSavings(e) {
+        var classes = e.target.className.split(' ');
+
+        if (this.state.edit || classes.indexOf('active') != -1) {
+            return;
+        }this.setState({
+            isSavings: this.state.isSavings ? false : true
+        });
+    },
+
+    edit: function edit() {
+        this.setState({ edit: true });
+    },
+
+    closeEdit: function closeEdit(e) {
+        var classes = e.target.className.split(' '),
+            edit = classes.indexOf('value-num') != -1 || classes.indexOf('rub') != -1 || classes.indexOf('value-edit') != -1;
+
+        if (edit || !this.state.edit) {
+            return;
+        }this.setState({
+            edit: false
+        });
+
+        if (this.state.isSavings) {
+            Actions.balance.updateSavings(this.refs.edit.getDOMNode().value);
+        } else {
+            Actions.balance.updateBalance(this.refs.edit.getDOMNode().value);
+        }
+    },
+
+    render: function render() {
+        var total = _getValue(Data.getBalance(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
+        var savings = _getValue(Data.getSavings(), this.state.isTop ? 'medium' : 'big', this.state.isTop ? 'white' : 'black');
+
+        var wrapClass = this.state.isSavings ? 'savings money-now' : 'money-now';
+        if (this.state.edit) wrapClass += ' edit';
+
+        return React.createElement(
+            'div',
+            { className: this.state.isTop ? 'balance-wrap' : 'fixed balance-wrap' },
+            React.createElement(
+                'div',
+                { className: 'now-title' },
+                React.createElement(
+                    'a',
+                    { className: !this.state.isSavings ? 'active' : '', onClick: this.toggleSavings, href: 'javascript:void(0);' },
+                    'баланс'
+                ),
+                React.createElement(
+                    'a',
+                    { className: this.state.isSavings ? 'active' : '', onClick: this.toggleSavings, href: 'javascript:void(0);' },
+                    'сбережения'
+                )
+            ),
+            React.createElement(
+                'div',
+                { onClick: this.edit, className: wrapClass },
+                React.createElement(
+                    'div',
+                    { className: 'value-wrap' },
+                    !this.state.isSavings ? [total.v, total.sign] : [savings.v, savings.sign]
+                ),
+                React.createElement('input', { ref: 'edit', className: 'value-edit', type: 'text', defaultValue: this.state.isSavings ? Data.getSavings() : Data.getBalance() })
+            )
+        );
+    }
+});
+
 var Category = React.createClass({
     displayName: 'Category',
 
@@ -39245,7 +39289,7 @@ var Category = React.createClass({
 module.exports = Highlights;
 
 
-},{"../../stores/data-store":221,"../../stores/user-store":223,"moment":6,"react":200,"underscore":204}],213:[function(require,module,exports){
+},{"../../actions/app-actions":205,"../../stores/data-store":221,"../../stores/user-store":223,"moment":6,"react":200,"underscore":204}],213:[function(require,module,exports){
 /*** @jsx React.DOM */
 
 'use strict';
@@ -39836,14 +39880,13 @@ module.exports = Register;
 'use strict';
 
 module.exports = {
-    user: {},
     entry: {
         add: 'ADD_ENTRY',
         update: 'UPDATE_ENTRY',
         remove: 'REMOVE_ENTRY'
     },
-    savings: {
-        add: 'ADD_SAVINGS'
+    balance: {
+        updateBalance: 'UPDATE_BALANCE'
     }
 };
 
@@ -39958,6 +40001,26 @@ function _add(entry) {
         success: function success(data) {
             _updateEntry(data.entry);
         }
+    });
+}
+
+function _updateBalance(value) {
+    _balance = parseInt(value);
+
+    reqwest({
+        method: 'post',
+        url: '/balance/update/',
+        data: { value: _balance, userId: User.id() }
+    });
+}
+
+function _updateSavings(value) {
+    _saved = parseInt(value);
+
+    reqwest({
+        method: 'post',
+        url: '/savings/update/',
+        data: { value: _saved, userId: User.id() }
     });
 }
 
@@ -40228,6 +40291,12 @@ var Data = assign(EventEmitter.prototype, {
                 break;
             case Constants.entry.update:
                 _update(payload.action.entry);
+                break;
+            case Constants.balance.updateBalance:
+                _updateBalance(payload.action.value);
+                break;
+            case Constants.balance.updateSavings:
+                _updateSavings(payload.action.value);
                 break;
         }
 
