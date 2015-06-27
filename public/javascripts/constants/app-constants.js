@@ -5,6 +5,7 @@ module.exports = {
         remove: 'REMOVE_ENTRY'
     },
     balance: {
-        updateBalance: 'UPDATE_BALANCE'
+        updateBalance: 'UPDATE_BALANCE',
+        updateSavings: 'UPDATE_SAVINGS'
     }
 }

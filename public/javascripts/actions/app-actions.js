@@ -31,6 +31,12 @@ module.exports = {
                 actionType: Constants.balance.updateBalance,
                 value: value
             })
+        },
+        updateSavings: function(value) {
+            Dispatcher.handleViewAction({
+                actionType: Constants.balance.updateSavings,
+                value: value
+            })
         }
     }
 }
