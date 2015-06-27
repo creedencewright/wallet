@@ -244,7 +244,6 @@ const Data = assign(EventEmitter.prototype, {
 
     getCurrentData(params) {
         let data = params.type === 'expense' ? _expense : _income;
-        console.log(params);
         return params.category ? _.filter(data, (entry) => entry.category.code === params.category) : data;
     },
 

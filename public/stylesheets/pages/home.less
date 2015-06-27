@@ -931,53 +931,37 @@
             position: relative;
 
             .balance-wrap {
-                .money-now {
-                    transform: translate(-30px, 30px);
-                    color: @gray-darker;
-                    font-size: 50px;
-
-                    &:before {
-                        transform: translate(0, -5px);
-                        opacity: 0;
-                        visibility: hidden;
-                    }
-                }
-
                 .now-title {
                     transform: translate(0, -50px);
                 }
 
-                .savings-wrap {
-                    opacity: 0;
-                    visibility: hidden;
-                    transform: translate(0px, 30px);
-                    color: @gray-darker;
-                    font-size: 50px;
-
-                    .savings-value {
-                        color: @gray-darker;
-                    }
+                .money-now {
+                    transform: translate(-30px, 45px);
+                    padding: 0 25px;
+                    line-height: 33px;
 
                     &:before {
+                        transform: translate(0, -61px);
                         opacity: 0;
-                        visibility: hidden;
+                    }
+
+                    .value-wrap {
+                        color: #444;
+                        font: 300 50px/33px @font-family-base;
+                    }
+
+                    input {
+                        background-color: transparent;
+                        transform: translate(10px, 20px);
+                    }
+
+                    &.edit {
+                        input {
+                            transform: translate(10px, -10px);
+                            border-color: transparent;
+                        }
                     }
                 }
-
-                &.savings {
-                    .savings-wrap {
-                        transform: translate(20px, 30px);
-                        opacity: 1;
-                        visibility: visible;
-                    }
-
-                    .money-now {
-                        transform: translate(-30px, 30px);
-                        opacity: 0;
-                        visibility: hidden;
-                    }
-                }
-
             }
         }
     }

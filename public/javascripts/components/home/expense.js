@@ -197,11 +197,12 @@ const Entry = React.createClass({
 
     edit() {
         this.setState({edit: true});
+        this.refs.value.getDOMNode().value = this.props.entry.value;
     },
 
     closeEdit(e) {
         let classes = e.target.className.split(' ');
-        if (classes.indexOf('val') != -1 || classes.indexOf('rub') != -1) return;
+        if (!this.state.edit || classes.indexOf('val') != -1 || classes.indexOf('rub') != -1) return;
         this.update();
     },
 
@@ -246,7 +247,7 @@ const Entry = React.createClass({
                     <a href="javascript:void(0);" onClick={this.remove} className="remove"></a>
                     <div className={entry.category ? `type-img ${entry.category.code}` : 'type-img none'}></div>
                     <div className={entry.category ? "value-wrap w-cat" : 'value-wrap'}>
-                        <input onKeyDown={this.keydown} ref="value" defaultValue={entry.value} className={this.state.edit ? 'val active' : 'val'} type="text"/>
+                        <input onKeyDown={this.keydown} ref="value" className={this.state.edit ? 'val active' : 'val'} type="text"/>
                         <span onClick={this.edit} className="value">{[value.v, value.sign]}</span>
                         <span onClick={this.categoryClick.bind(this, entry.category)} className="category">{entry.category ? entry.category.name : '' }</span>
                     </div>

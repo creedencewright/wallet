@@ -38641,11 +38641,12 @@ var Entry = React.createClass({
 
     edit: function edit() {
         this.setState({ edit: true });
+        this.refs.value.getDOMNode().value = this.props.entry.value;
     },
 
     closeEdit: function closeEdit(e) {
         var classes = e.target.className.split(' ');
-        if (classes.indexOf('val') != -1 || classes.indexOf('rub') != -1) {
+        if (!this.state.edit || classes.indexOf('val') != -1 || classes.indexOf('rub') != -1) {
             return;
         }this.update();
     },
@@ -38696,7 +38697,7 @@ var Entry = React.createClass({
                 React.createElement(
                     'div',
                     { className: entry.category ? 'value-wrap w-cat' : 'value-wrap' },
-                    React.createElement('input', { onKeyDown: this.keydown, ref: 'value', defaultValue: entry.value, className: this.state.edit ? 'val active' : 'val', type: 'text' }),
+                    React.createElement('input', { onKeyDown: this.keydown, ref: 'value', className: this.state.edit ? 'val active' : 'val', type: 'text' }),
                     React.createElement(
                         'span',
                         { onClick: this.edit, className: 'value' },
@@ -39210,6 +39211,13 @@ var Current = React.createClass({
 
     edit: function edit() {
         this.setState({ edit: true });
+        var val = this.state.isSavings ? Data.getSavings() : Data.getBalance();
+        this.refs.edit.getDOMNode().value = val;
+    },
+
+    keyup: function keyup(e) {
+        if (e.keyCode === 13) this.update();
+        if (e.keyCode === 27) this.setState({ edit: false });
     },
 
     closeEdit: function closeEdit(e) {
@@ -39218,9 +39226,11 @@ var Current = React.createClass({
 
         if (edit || !this.state.edit) {
             return;
-        }this.setState({
-            edit: false
-        });
+        }this.update();
+    },
+
+    update: function update() {
+        this.setState({ edit: false });
 
         if (this.state.isSavings) {
             Actions.balance.updateSavings(this.refs.edit.getDOMNode().value);
@@ -39245,12 +39255,12 @@ var Current = React.createClass({
                 React.createElement(
                     'a',
                     { className: !this.state.isSavings ? 'active' : '', onClick: this.toggleSavings, href: 'javascript:void(0);' },
-                    'баланс'
+                    User.isEn() ? 'balance' : 'баланс'
                 ),
                 React.createElement(
                     'a',
                     { className: this.state.isSavings ? 'active' : '', onClick: this.toggleSavings, href: 'javascript:void(0);' },
-                    'сбережения'
+                    User.isEn() ? 'savings' : 'сбережения'
                 )
             ),
             React.createElement(
@@ -39261,7 +39271,7 @@ var Current = React.createClass({
                     { className: 'value-wrap' },
                     !this.state.isSavings ? [total.v, total.sign] : [savings.v, savings.sign]
                 ),
-                React.createElement('input', { ref: 'edit', className: 'value-edit', type: 'text', defaultValue: this.state.isSavings ? Data.getSavings() : Data.getBalance() })
+                React.createElement('input', { onKeyUp: this.keyup, ref: 'edit', className: 'value-edit', type: 'text' })
             )
         );
     }
@@ -39277,7 +39287,7 @@ var Category = React.createClass({
 
         return React.createElement(
             'div',
-            { onClick: this.props.categorySelect.bind(true, category), key: this.props.key, className: isIncome ? 'income category' : 'category' },
+            { onClick: this.props.categorySelect.bind(true, category), className: isIncome ? 'income category' : 'category' },
             React.createElement(
                 'div',
                 { className: 'value' },
@@ -40216,7 +40226,6 @@ var Data = assign(EventEmitter.prototype, {
 
     getCurrentData: function getCurrentData(params) {
         var data = params.type === 'expense' ? _expense : _income;
-        console.log(params);
         return params.category ? _.filter(data, function (entry) {
             return entry.category.code === params.category;
         }) : data;

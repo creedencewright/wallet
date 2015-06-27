@@ -106,6 +106,13 @@ const Current = React.createClass({
 
     edit() {
         this.setState({edit: true});
+        let val = this.state.isSavings ? Data.getSavings() : Data.getBalance();
+        this.refs.edit.getDOMNode().value = val;
+    },
+
+    keyup(e) {
+        if (e.keyCode === 13) this.update();
+        if (e.keyCode === 27) this.setState({edit: false});
     },
 
     closeEdit(e) {
@@ -114,16 +121,17 @@ const Current = React.createClass({
 
         if (edit || !this.state.edit) return;
 
-        this.setState({
-            edit: false
-        });
+        this.update();
+    },
+
+    update() {
+        this.setState({edit: false});
 
         if (this.state.isSavings) {
             Actions.balance.updateSavings(this.refs.edit.getDOMNode().value);
         } else {
             Actions.balance.updateBalance(this.refs.edit.getDOMNode().value);
         }
-
     },
 
     render() {
@@ -136,14 +144,14 @@ const Current = React.createClass({
         return (
             <div className={this.state.isTop ? "balance-wrap" : "fixed balance-wrap"}>
                 <div className="now-title">
-                    <a className={!this.state.isSavings ? "active" : ''} onClick={this.toggleSavings} href="javascript:void(0);">баланс</a>
-                    <a className={this.state.isSavings ? "active" : ''} onClick={this.toggleSavings} href="javascript:void(0);">сбережения</a>
+                    <a className={!this.state.isSavings ? "active" : ''} onClick={this.toggleSavings} href="javascript:void(0);">{User.isEn() ? 'balance' : 'баланс'}</a>
+                    <a className={this.state.isSavings ? "active" : ''} onClick={this.toggleSavings} href="javascript:void(0);">{User.isEn() ? 'savings' : 'сбережения'}</a>
                 </div>
                 <div onClick={this.edit} className={wrapClass}>
                     <div className="value-wrap">
                         {!this.state.isSavings ? [total.v, total.sign] : [savings.v, savings.sign]}
                     </div>
-                    <input ref="edit" className="value-edit" type="text" defaultValue={this.state.isSavings ? Data.getSavings() : Data.getBalance()}/>
+                    <input onKeyUp={this.keyup} ref="edit" className="value-edit" type="text"/>
                 </div>
             </div>
         )
@@ -157,7 +165,7 @@ const Category = React.createClass({
         let category = {name: this.props.name, code: this.props.code, tab: this.props.type};
 
         return (
-            <div onClick={this.props.categorySelect.bind(true, category)} key={this.props.key} className={isIncome ? "income category" : 'category'}>
+            <div onClick={this.props.categorySelect.bind(true, category)} className={isIncome ? "income category" : 'category'}>
                 <div className="value">{[value.v, value.sign]}</div>
                 <div className="name">{this.props.name}</div>
             </div>
