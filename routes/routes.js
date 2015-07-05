@@ -43,20 +43,25 @@ module.exports = function(app) {
 
             if (cat) {
                 var category = cat[1];
-                Type.findOne({"code": category}, {}, function(err, type) {
+                Type.findOne({"code": category}, {}, function(err, found) {
                     if (err) console.log(err);
 
-                    if (type.name) {
+                    if (found.name) {
                         entry.category = {
                             code: category,
-                            name: user.lang === 'en' ? type.name.en : type.name.ru
+                            name: user.lang === 'en' ? found.name.en : found.name.ru
                         };
                     }
 
                     Entry.create(entry, function(err, res) {
                         if (err) return false;
 
-                        User.findOneAndUpdate({"id": user.id}, _getUpdateUserFields(user, type, value, category));
+                        var update = _getUpdateUserFields(user, type, parseInt(value), category);
+
+                        User.findOneAndUpdate({"id": user.id}, {"balance": update.balance, "savings": update.savings}, {}, function(e,d) {
+                            console.log(e);
+                            console.log(d);
+                        });
 
                         return true;
                     });
@@ -65,7 +70,12 @@ module.exports = function(app) {
                 Entry.create(entry, function(err, res) {
                     if (err) return false;
 
-                    User.findOneAndUpdate({"id": user.id}, _getUpdateUserFields(user, type, value, category));
+                    var update = _getUpdateUserFields(user, type, parseInt(value), category);
+
+                    User.findOneAndUpdate({"id": user.id}, {"balance": update.balance, "savings": update.savings}, {}, function(e,d) {
+                        console.log(e);
+                        console.log(d);
+                    });
 
                     return true;
                 });
@@ -322,5 +332,5 @@ function _getUpdateUserFields(user, type, value, category) {
         }
     }
 
-    return {"balance": balance, "savings": savings};
+    return {balance: balance, savings: savings};
 }
