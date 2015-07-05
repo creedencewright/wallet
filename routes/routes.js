@@ -42,24 +42,31 @@ module.exports = function(app) {
             };
 
             if (cat) {
-                Type.findOne({"code": cat[1]}, {}, function(err, type) {
+                var category = cat[1];
+                Type.findOne({"code": category}, {}, function(err, type) {
                     if (err) console.log(err);
 
                     if (type.name) {
                         entry.category = {
-                            code: cat[1],
+                            code: category,
                             name: user.lang === 'en' ? type.name.en : type.name.ru
                         };
                     }
 
                     Entry.create(entry, function(err, res) {
                         if (err) return false;
+
+                        User.findOneAndUpdate({"id": user.id}, _getUpdateUserFields(user, type, value, category));
+
                         return true;
                     });
                 })
             } else {
                 Entry.create(entry, function(err, res) {
                     if (err) return false;
+
+                    User.findOneAndUpdate({"id": user.id}, _getUpdateUserFields(user, type, value, category));
+
                     return true;
                 });
             }
@@ -297,4 +304,23 @@ function isLoggedIn(req, res, next) {
 
     // if they aren't redirect them to the home page
     res.redirect('/');
+}
+
+function _getUpdateUserFields(user, type, value, category) {
+    category = category ? category : false;
+
+    var balance = parseInt(user.balance);
+    var savings = parseInt(user.savings);
+
+    if (type === 'expense') {
+        balance -= value;
+    } else {
+        balance += value;
+
+        if (category === 'savings') {
+            savings -= value;
+        }
+    }
+
+    return {"balance": balance, "savings": savings};
 }
