@@ -13,6 +13,7 @@ var babelify    = require('babelify');
 var prefix      = require('gulp-autoprefixer');
 var sprite      = require('gulp.spritesmith');
 var watch       = require('gulp-watch');
+var purify      = require('gulp-purifycss');
 
 gulp.task('browserify', function(){
     var b = browserify();
@@ -52,6 +53,7 @@ gulp.task('less', function() {
         .pipe(plumber({errorHandler: notify.onError("Error: <%= error.message %>")}))
         .pipe(less())
         .pipe(prefix(['last 2 versions']))
+        .pipe(purify(['./public/javascripts/bundle.js', './views/**/*.jade']))
         .pipe(minifycss())
         .pipe(gulp.dest(path))
         .pipe(reload());

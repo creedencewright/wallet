@@ -1,11 +1,11 @@
-var Type    = require('../models/types');
-var User    = require('../models/user');
-var async   = require('async');
-var moment  = require('moment');
-var _       = require('underscore');
-var passport = require('passport');
-var mongoose = require('mongoose');
-var Entry = require('../models/data')(mongoose);
+var Type        = require('../models/types');
+var User        = require('../models/user');
+var async       = require('async');
+var moment      = require('moment');
+var _           = require('underscore');
+var passport    = require('passport');
+var mongoose    = require('mongoose');
+var Entry       = require('../models/data')(mongoose);
 
 module.exports = function(app) {
 
@@ -18,6 +18,54 @@ module.exports = function(app) {
     });
     //==== TYPES ====
 
+    //IFTTT entry creation from email
+    app.post('/', function(req, res) {
+        var data    = req.body;
+        var name    = data.name;
+        var type    = data.sub.toLowerCase();
+        var value   = data.body.match(/^(\d+)/) ? data.body.match(/^(\d+)/)[1] : false;
+        var cat     = data.body.match(/.*\((.+)\)/);
+        var user;
+
+        if (!value || (type !== 'expense' && type !== 'income')) return false;
+
+        User.findOne({"local.username": name}, {}, function(err, found) {
+            if (err || !found) return false;
+
+            user = found;
+
+            var entry = {
+                time: moment().unix(),
+                type: type,
+                value: parseInt(value),
+                userId: user.id
+            };
+
+            if (cat) {
+                Type.findOne({"code": cat[1]}, {}, function(err, type) {
+                    if (err) console.log(err);
+
+                    if (type.name) {
+                        entry.category = {
+                            code: cat[1],
+                            name: user.lang === 'en' ? type.name.en : type.name.ru
+                        };
+                    }
+
+                    Entry.create(entry, function(err, res) {
+                        if (err) return false;
+                        return true;
+                    });
+                })
+            } else {
+                Entry.create(entry, function(err, res) {
+                    if (err) return false;
+                    return true;
+                });
+            }
+        });
+    });
+
     /* GET home page. */
     app.get('/', function(req, res) {
         //var types = [
@@ -28,135 +76,7 @@ module.exports = function(app) {
         //        },
         //        code: 'transport',
         //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "Одежда и обувь",
-        //            en: "Clothes"
-        //        },
-        //        code: 'clothes',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "кафе и рестораны",
-        //            en: "cafes & restaurants"
-        //        },
-        //        code: 'cafes',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "здоровье",
-        //            en: "health"
-        //        },
-        //        code: 'health',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "развлечения",
-        //            en: "entertainment"
-        //        },
-        //        code: 'entertainment',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "подарки",
-        //            en: "gifts"
-        //        },
-        //        code: 'gifts',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "подарки",
-        //            en: "gifts"
-        //        },
-        //        code: 'gifts',
-        //        type: 'income'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "дом и семья",
-        //            en: "house & family"
-        //        },
-        //        code: 'house',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "путешествия",
-        //            en: "travel"
-        //        },
-        //        code: 'travel',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "связь",
-        //            en: "cell"
-        //        },
-        //        code: 'cell',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "техника",
-        //            en: "gadgets"
-        //        },
-        //        code: 'gadgets',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "личное",
-        //            en: "personal"
-        //        },
-        //        code: 'personal',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "сбережения",
-        //            en: "savings"
-        //        },
-        //        code: 'savings',
-        //        type: 'income'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "сбережения",
-        //            en: "savings"
-        //        },
-        //        code: 'savings',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "продукты",
-        //            en: "groceries"
-        //        },
-        //        code: 'groceries',
-        //        type: 'expense'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "зарплата",
-        //            en: "salary"
-        //        },
-        //        code: 'salary',
-        //        type: 'income'
-        //    },
-        //    {
-        //        name: {
-        //            ru: "хобби",
-        //            en: "hobby"
-        //        },
-        //        code: 'hobby',
-        //        type: 'expense'
-        //    },
+        //    }
         //];
         //_.each(types, function(type) {
         //    Type.create(type);
