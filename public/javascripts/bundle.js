@@ -40154,7 +40154,9 @@ function _fetchInitData() {
     reqwest({
         url: '/fetch-all/',
         method: 'post',
-        success: _setInitData
+        success: _setInitData,
+        data: { userId: User.id() }
+
     });
 }
 

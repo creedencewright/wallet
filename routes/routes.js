@@ -18,71 +18,6 @@ module.exports = function(app) {
     });
     //==== TYPES ====
 
-    //IFTTT entry creation from email
-    app.post('/', function(req, res) {
-        var data    = req.body;
-        var name    = data.name;
-        var type    = data.sub.toLowerCase();
-        var value   = data.body.match(/^(\d+)/) ? data.body.match(/^(\d+)/)[1] : false;
-        var cat     = data.body.match(/.*\((.+)\)/);
-        var user;
-
-        if (!value || (type !== 'expense' && type !== 'income')) return false;
-
-        User.findOne({"local.username": name}, {}, function(err, found) {
-            if (err || !found) return false;
-
-            user = found;
-
-            var entry = {
-                time: moment().unix(),
-                type: type,
-                value: parseInt(value),
-                userId: user.id
-            };
-
-            if (cat) {
-                var category = cat[1];
-                Type.findOne({"code": category}, {}, function(err, found) {
-                    if (err) console.log(err);
-
-                    if (found.name) {
-                        entry.category = {
-                            code: category,
-                            name: user.lang === 'en' ? found.name.en : found.name.ru
-                        };
-                    }
-
-                    Entry.create(entry, function(err, res) {
-                        if (err) return false;
-
-                        var update = _getUpdateUserFields(user, type, parseInt(value), category);
-
-                        User.findOneAndUpdate({"id": user.id}, {"balance": update.balance, "savings": update.savings}, {}, function(e,d) {
-                            console.log(e);
-                            console.log(d);
-                        });
-
-                        return true;
-                    });
-                })
-            } else {
-                Entry.create(entry, function(err, res) {
-                    if (err) return false;
-
-                    var update = _getUpdateUserFields(user, type, parseInt(value), category);
-
-                    User.findOneAndUpdate({"id": user.id}, {"balance": update.balance, "savings": update.savings}, {}, function(e,d) {
-                        console.log(e);
-                        console.log(d);
-                    });
-
-                    return true;
-                });
-            }
-        });
-    });
-
     /* GET home page. */
     app.get('/', function(req, res) {
         //var types = [
@@ -175,7 +110,7 @@ module.exports = function(app) {
     app.post('/fetch-all/', function(req, res) {
         Entry
             .find({
-                "userId": req.user.id,
+                "userId": req.body.userId,
                 "time": {$gt: moment().startOf('month').unix(), $lt: moment().endOf('month').unix()}
             })
             .sort({"time":-1})
