@@ -27,6 +27,7 @@ build/Release
 node_modules
 .idea
 data
+app1.js
 
 # Debug log from npm
 npm-debug.log

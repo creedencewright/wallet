@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f832d151-d969-4bf6-bee9-164a96b2b093" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/javascripts/bundle.js" afterPath="$PROJECT_DIR$/public/javascripts/bundle.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app1.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/mongod.lock" afterPath="$PROJECT_DIR$/data/mongod.lock" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/javascripts/stores/data-store.js" afterPath="$PROJECT_DIR$/public/javascripts/stores/data-store.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/routes.js" afterPath="$PROJECT_DIR$/routes/routes.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -25,36 +28,18 @@
     <favorites_list name="wallet" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
-      <split-first>
-        <leaf>
-          <file leaf-file-name="routes.js" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/routes/routes.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.6413346">
-                  <caret line="112" column="41" selection-start-line="112" selection-start-column="41" selection-end-line="112" selection-end-column="41" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="data-store.js" pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/public/javascripts/stores/data-store.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.4485635">
-                  <caret line="171" column="8" selection-start-line="171" selection-start-column="8" selection-end-line="171" selection-end-column="8" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf>
+      <file leaf-file-name="login-wrap.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/public/javascripts/components/login/login-wrap.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.5421687">
+              <caret line="41" column="26" selection-start-line="41" selection-start-column="26" selection-end-line="41" selection-end-column="26" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="Git.Settings">
     <option name="ROOT_SYNC" value="DONT_SYNC" />
@@ -63,8 +48,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/models/User.js" />
-        <option value="$PROJECT_DIR$/public/javascripts/components/app.js" />
         <option value="$PROJECT_DIR$/public/javascripts/components/home/Income.js" />
         <option value="$PROJECT_DIR$/public/javascripts/components/home/types.js" />
         <option value="$PROJECT_DIR$/public/javascripts/components/common/add-savings.js" />
@@ -93,10 +76,8 @@
         <option value="$PROJECT_DIR$/bin/www" />
         <option value="$PROJECT_DIR$/config/passport.js" />
         <option value="$PROJECT_DIR$/public/javascripts/components/home/graph.js" />
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/public/stylesheets/style.less" />
         <option value="$PROJECT_DIR$/public/stylesheets/footer.less" />
-        <option value="$PROJECT_DIR$/public/javascripts/components/login/login-wrap.js" />
         <option value="$PROJECT_DIR$/public/stylesheets/pages/login.less" />
         <option value="$PROJECT_DIR$/public/stylesheets/header.less" />
         <option value="$PROJECT_DIR$/public/javascripts/components/home/add-expense.js" />
@@ -109,11 +90,15 @@
         <option value="$PROJECT_DIR$/public/javascripts/components/home/highlights.js" />
         <option value="$PROJECT_DIR$/Gulpfile.js" />
         <option value="$PROJECT_DIR$/public/stylesheets/style.css" />
-        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/public/stylesheets/pages/home/types.less" />
         <option value="$PROJECT_DIR$/public/stylesheets/pages/home.less" />
-        <option value="$PROJECT_DIR$/routes/routes.js" />
         <option value="$PROJECT_DIR$/public/javascripts/stores/data-store.js" />
+        <option value="$PROJECT_DIR$/bin/a.json" />
+        <option value="$PROJECT_DIR$/app1.js" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/app.js" />
+        <option value="$PROJECT_DIR$/routes/routes.js" />
+        <option value="$PROJECT_DIR$/public/javascripts/components/login/login-wrap.js" />
       </list>
     </option>
   </component>
@@ -172,7 +157,7 @@
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectView">
-    <navigator proportions="" version="1">
+    <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -183,7 +168,30 @@
       <autoscrollFromSource />
       <sortByType />
     </navigator>
-    <panes />
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="wallet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="wallet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="wallet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scratches" />
+    </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -258,7 +266,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
+    <frame x="0" y="0" width="1920" height="1080" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -319,13 +327,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/public/stylesheets/bootstrap/code.less">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/gulp-less/node_modules/less/node_modules/request/node_modules/hawk/node_modules/hoek/images/hoek.png">
       <provider selected="true" editor-type-id="images">
         <state />
@@ -429,13 +430,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.67469877">
-          <caret line="28" column="4" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.43373495">
@@ -475,13 +469,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4090462">
           <caret line="16" column="10" selection-start-line="16" selection-start-column="10" selection-end-line="16" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/javascripts/components/login/login-wrap.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.74434614">
-          <caret line="160" column="53" selection-start-line="160" selection-start-column="53" selection-end-line="160" selection-end-column="53" />
         </state>
       </provider>
     </entry>
@@ -604,24 +591,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/javascripts/components/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/models/user.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.2956441">
           <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5421687">
-          <caret line="23" column="24" selection-start-line="23" selection-start-column="24" selection-end-line="23" selection-end-column="24" />
         </state>
       </provider>
     </entry>
@@ -653,18 +626,90 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/routes.js">
+    <entry file="file://$PROJECT_DIR$/public/javascripts/stores/data-store.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6413346">
-          <caret line="112" column="41" selection-start-line="112" selection-start-column="41" selection-end-line="112" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="171" column="0" selection-start-line="171" selection-start-column="0" selection-end-line="171" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app1.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="//..." />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438268662872" expanded="true" signature="-1:-1" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.67469877">
+          <caret line="28" column="4" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/javascripts/components/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1433940160737" expanded="true" signature="-1:-1" placeholder="/**...*/" />
+            <marker date="1433940160737" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1433940160737" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1433940160737" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1433940160737" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1433940160737" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1433940160737" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.31325302">
+          <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding>
+            <marker date="1438269014348" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269014348" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269014348" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269014348" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269014348" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269014348" expanded="true" signature="-1:-1" placeholder="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/javascripts/stores/user-store.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.024096385">
-          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.38554215">
+          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
           <folding>
             <marker date="1434642997628" expanded="true" signature="-1:-1" placeholder="{&quot;id&quot;: false...}" />
             <marker date="1434642997628" expanded="true" signature="-1:-1" placeholder="{...}" />
@@ -682,10 +727,87 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/javascripts/stores/data-store.js">
+    <entry file="file://$PROJECT_DIR$/routes/routes.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4485635">
-          <caret line="171" column="8" selection-start-line="171" selection-start-column="8" selection-end-line="171" selection-end-column="8" />
+        <state vertical-scroll-proportion="0.42168674">
+          <caret line="82" column="59" selection-start-line="82" selection-start-column="59" selection-end-line="82" selection-end-column="59" />
+          <folding>
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="/*...*/" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="//..." />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="/*...*/" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1438269234623" expanded="true" signature="-1:-1" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/javascripts/components/login/login-wrap.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5421687">
+          <caret line="41" column="26" selection-start-line="41" selection-start-column="26" selection-end-line="41" selection-end-column="26" />
           <folding />
         </state>
       </provider>

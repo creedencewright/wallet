@@ -1,17 +1,17 @@
-var Type        = require('../models/types');
-var User        = require('../models/user');
-var async       = require('async');
-var moment      = require('moment');
-var _           = require('underscore');
-var passport    = require('passport');
-var mongoose    = require('mongoose');
-var Entry       = require('../models/data')(mongoose);
+var Type = require('../models/types');
+var User = require('../models/user');
+var async = require('async');
+var moment = require('moment');
+var _ = require('underscore');
+var passport = require('passport');
+var mongoose = require('mongoose');
+var Entry = require('../models/data')(mongoose);
 
 module.exports = function(app) {
 
     //==== TYPES ====
     app.post('/types/fetch', function(req, res) {
-        Type.find({}, function(err, types){
+        Type.find({}, function(err, types) {
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify(types));
         });
@@ -71,14 +71,16 @@ module.exports = function(app) {
 
     app.post('/register', function(req, res, next) {
         passport.authenticate('local-signup', function(err, user, info) {
-            if (err) { return next(err); }
+            if (err) {
+                return next(err);
+            }
             if (!user) {
                 return res.json({success: false, error: 'user'});
             }
 
             req.login(user, function(err) {
                 if (err) return next(err);
-                return res.json({success: true});
+                return res.json({success: true, id: user.id});
             });
 
         })(req, res, next);
@@ -86,21 +88,26 @@ module.exports = function(app) {
 
     app.post('/login', function(req, res, next) {
         passport.authenticate('local-login', function(err, user, info) {
-            if (err) { return next(err); }
+            if (err) {
+                return next(err);
+            }
             if (!user) {
                 return res.json({success: false, error: 'user'});
             }
 
             req.login(user, function(err) {
                 if (err) return next(err);
-                return res.json({success: true});
+                return res.json({success: true, id: user.id});
             });
 
         })(req, res, next);
     });
 
     app.post('/fetch-entries/', function(req, res) {
-        Entry.find({"type": req.body.type, "time": {$gt: req.body.start, $lt: req.body.end}}).limit(req.body.limit).sort({"time":-1}).exec(function(err,data) {
+        Entry.find({
+            "type": req.body.type,
+            "time": {$gt: req.body.start, $lt: req.body.end}
+        }).limit(req.body.limit).sort({"time": -1}).exec(function(err, data) {
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify(data));
         });
@@ -113,9 +120,11 @@ module.exports = function(app) {
                 "userId": req.body.userId,
                 "time": {$gt: moment().startOf('month').unix(), $lt: moment().endOf('month').unix()}
             })
-            .sort({"time":-1})
+            .sort({"time": -1})
             .exec(function(err, data) {
-                var grouped = _.groupBy(data, function(entry) { return entry.type });
+                var grouped = _.groupBy(data, function(entry) {
+                    return entry.type
+                });
                 res.setHeader('Content-Type', 'application/json');
                 res.end(JSON.stringify(grouped));
             });
@@ -148,9 +157,11 @@ module.exports = function(app) {
                 "userId": req.user.id,
                 "time": timeFilter
             })
-            .sort({"time":-1})
+            .sort({"time": -1})
             .exec(function(err, data) {
-                var grouped = _.groupBy(data, function(entry) { return entry.type });
+                var grouped = _.groupBy(data, function(entry) {
+                    return entry.type
+                });
                 res.setHeader('Content-Type', 'application/json');
                 res.end(JSON.stringify(grouped));
             });
@@ -165,7 +176,10 @@ module.exports = function(app) {
                 },
                 user: function(cb) {
                     var id = data.userId;
-                    User.findOneAndUpdate({"id": id}, {"balance": data.balance, "savings": data.savings}, {}, function(e, d) {
+                    User.findOneAndUpdate({"id": id}, {
+                        "balance": data.balance,
+                        "savings": data.savings
+                    }, {}, function(e, d) {
                         cb(e, d);
                     });
                 }
@@ -202,7 +216,10 @@ module.exports = function(app) {
                 },
                 user: function(cb) {
                     var id = data.userId;
-                    User.findOneAndUpdate({"id": id}, {"balance": data.balance, "savings": data.savings}, {}, function(e, d) {
+                    User.findOneAndUpdate({"id": id}, {
+                        "balance": data.balance,
+                        "savings": data.savings
+                    }, {}, function(e, d) {
                         cb(e, d);
                     });
                 }
@@ -221,7 +238,10 @@ module.exports = function(app) {
                     Entry.remove({"id": req.body.id}, cb);
                 },
                 user: function(cb) {
-                    User.findOneAndUpdate({"id": req.body.userId}, {"balance": req.body.balance, "savings": req.body.savings}, {}, function(e, d) {
+                    User.findOneAndUpdate({"id": req.body.userId}, {
+                        "balance": req.body.balance,
+                        "savings": req.body.savings
+                    }, {}, function(e, d) {
                         cb(e, d);
                     });
                 }

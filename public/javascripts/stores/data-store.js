@@ -169,7 +169,7 @@ function _fetchInitData() {
         method: 'post',
         success: _setInitData,
         data: {userId: User.id()}
-        
+
     })
 }
 
