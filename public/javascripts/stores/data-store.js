@@ -187,6 +187,7 @@ function _setData(data) {
 
 function _fetch(params) {
     _month = params.month ? params.month : _month;
+    params.userId = User.id();
 
     reqwest({
         url: '/fetch/',

@@ -154,7 +154,7 @@ module.exports = function(app) {
 
         Entry
             .find({
-                "userId": req.user.id,
+                "userId": req.body.userId,
                 "time": timeFilter
             })
             .sort({"time": -1})
